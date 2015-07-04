@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
+ *
  * Test the ViewFsBaseTest using a viewfs with authority: 
  *    viewfs://mountTableName/
  *    ie the authority is used to load a mount table.
@@ -39,41 +39,41 @@ import org.junit.Test;
  */
 
 public class TestViewFsWithAuthorityLocalFs extends ViewFsBaseTest {
-  URI schemeWithAuthority;
+    URI schemeWithAuthority;
 
-  @Override
-  @Before
-  public void setUp() throws Exception {
-    // create the test root on local_fs
-    fcTarget = FileContext.getLocalFSFileContext();
-    super.setUp(); // this sets up conf (and fcView which we replace)
-    
-    // Now create a viewfs using a mount table called "default"
-    // hence viewfs://default/
-    schemeWithAuthority = 
-      new URI(FsConstants.VIEWFS_SCHEME, "default", "/", null, null);
-    fcView = FileContext.getFileContext(schemeWithAuthority, conf);  
-  }
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        // create the test root on local_fs
+        fcTarget = FileContext.getLocalFSFileContext();
+        super.setUp(); // this sets up conf (and fcView which we replace)
 
-  @Override
-  @After
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-  
-  @Override
-  @Test
-  public void testBasicPaths() {
-      Assert.assertEquals(schemeWithAuthority,
-          fcView.getDefaultFileSystem().getUri());
-      Assert.assertEquals(fcView.makeQualified(
-          new Path("/user/" + System.getProperty("user.name"))),
-          fcView.getWorkingDirectory());
-      Assert.assertEquals(fcView.makeQualified(
-          new Path("/user/" + System.getProperty("user.name"))),
-          fcView.getHomeDirectory());
-      Assert.assertEquals(
-          new Path("/foo/bar").makeQualified(schemeWithAuthority, null),
-          fcView.makeQualified(new Path("/foo/bar")));
-  }
+        // Now create a viewfs using a mount table called "default"
+        // hence viewfs://default/
+        schemeWithAuthority =
+                new URI(FsConstants.VIEWFS_SCHEME, "default", "/", null, null);
+        fcView = FileContext.getFileContext(schemeWithAuthority, conf);
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    @Override
+    @Test
+    public void testBasicPaths() {
+        Assert.assertEquals(schemeWithAuthority,
+                fcView.getDefaultFileSystem().getUri());
+        Assert.assertEquals(fcView.makeQualified(
+                        new Path("/user/" + System.getProperty("user.name"))),
+                fcView.getWorkingDirectory());
+        Assert.assertEquals(fcView.makeQualified(
+                        new Path("/user/" + System.getProperty("user.name"))),
+                fcView.getHomeDirectory());
+        Assert.assertEquals(
+                new Path("/foo/bar").makeQualified(schemeWithAuthority, null),
+                fcView.makeQualified(new Path("/foo/bar")));
+    }
 }

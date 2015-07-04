@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,34 +40,34 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 @InterfaceStability.Stable
 public class SequenceFileInputFormat<K, V> extends FileInputFormat<K, V> {
 
-  @Override
-  public RecordReader<K, V> createRecordReader(InputSplit split,
-                                               TaskAttemptContext context
-                                               ) throws IOException {
-    return new SequenceFileRecordReader<K,V>();
-  }
-
-  @Override
-  protected long getFormatMinSplitSize() {
-    return SequenceFile.SYNC_INTERVAL;
-  }
-
-  @Override
-  protected List<FileStatus> listStatus(JobContext job
-                                        )throws IOException {
-
-    List<FileStatus> files = super.listStatus(job);
-    int len = files.size();
-    for(int i=0; i < len; ++i) {
-      FileStatus file = files.get(i);
-      if (file.isDirectory()) {     // it's a MapFile
-        Path p = file.getPath();
-        FileSystem fs = p.getFileSystem(job.getConfiguration());
-        // use the data file
-        files.set(i, fs.getFileStatus(new Path(p, MapFile.DATA_FILE_NAME)));
-      }
+    @Override
+    public RecordReader<K, V> createRecordReader(InputSplit split,
+                                                 TaskAttemptContext context
+    ) throws IOException {
+        return new SequenceFileRecordReader<K, V>();
     }
-    return files;
-  }
+
+    @Override
+    protected long getFormatMinSplitSize() {
+        return SequenceFile.SYNC_INTERVAL;
+    }
+
+    @Override
+    protected List<FileStatus> listStatus(JobContext job
+    ) throws IOException {
+
+        List<FileStatus> files = super.listStatus(job);
+        int len = files.size();
+        for (int i = 0; i < len; ++i) {
+            FileStatus file = files.get(i);
+            if (file.isDirectory()) {     // it's a MapFile
+                Path p = file.getPath();
+                FileSystem fs = p.getFileSystem(job.getConfiguration());
+                // use the data file
+                files.set(i, fs.getFileStatus(new Path(p, MapFile.DATA_FILE_NAME)));
+            }
+        }
+        return files;
+    }
 }
 

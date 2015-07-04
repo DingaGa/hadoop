@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,31 +33,31 @@ import org.apache.hadoop.hdfs.server.namenode.NNStorage.NameNodeDirType;
 import org.junit.Test;
 
 public class TestFSImageStorageInspector {
-  /**
-   * Simple test with image, edits, and inprogress edits
-   */
-  @Test
-  public void testCurrentStorageInspector() throws IOException {
-    FSImageTransactionalStorageInspector inspector = 
-        new FSImageTransactionalStorageInspector();
-    
-    StorageDirectory mockDir = FSImageTestUtil.mockStorageDirectory(
-        NameNodeDirType.IMAGE_AND_EDITS,
-        false,
-        "/foo/current/" + getImageFileName(123),
-        "/foo/current/" + getFinalizedEditsFileName(123, 456),
-        "/foo/current/" + getImageFileName(456),
-        "/foo/current/" + getInProgressEditsFileName(457));
+    /**
+     * Simple test with image, edits, and inprogress edits
+     */
+    @Test
+    public void testCurrentStorageInspector() throws IOException {
+        FSImageTransactionalStorageInspector inspector =
+                new FSImageTransactionalStorageInspector();
 
-    inspector.inspectDirectory(mockDir);
-    assertEquals(2, inspector.foundImages.size());
+        StorageDirectory mockDir = FSImageTestUtil.mockStorageDirectory(
+                NameNodeDirType.IMAGE_AND_EDITS,
+                false,
+                "/foo/current/" + getImageFileName(123),
+                "/foo/current/" + getFinalizedEditsFileName(123, 456),
+                "/foo/current/" + getImageFileName(456),
+                "/foo/current/" + getInProgressEditsFileName(457));
 
-    FSImageFile latestImage = inspector.getLatestImages().get(0);
-    assertEquals(456, latestImage.txId);
-    assertSame(mockDir, latestImage.sd);
-    assertTrue(inspector.isUpgradeFinalized());
-    
-    assertEquals(new File("/foo/current/"+getImageFileName(456)), 
-        latestImage.getFile());
-  }
+        inspector.inspectDirectory(mockDir);
+        assertEquals(2, inspector.foundImages.size());
+
+        FSImageFile latestImage = inspector.getLatestImages().get(0);
+        assertEquals(456, latestImage.txId);
+        assertSame(mockDir, latestImage.sd);
+        assertTrue(inspector.isUpgradeFinalized());
+
+        assertEquals(new File("/foo/current/" + getImageFileName(456)),
+                latestImage.getFile());
+    }
 }

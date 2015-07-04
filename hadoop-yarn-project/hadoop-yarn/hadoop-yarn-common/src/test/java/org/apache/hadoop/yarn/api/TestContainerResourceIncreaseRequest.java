@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,39 +30,39 @@ import org.apache.hadoop.yarn.proto.YarnProtos.ContainerResourceIncreaseRequestP
 import org.junit.Test;
 
 public class TestContainerResourceIncreaseRequest {
-  @Test
-  public void ContainerResourceIncreaseRequest() {
-    ContainerId containerId = ContainerId
-        .newInstance(ApplicationAttemptId.newInstance(
-            ApplicationId.newInstance(1234, 3), 3), 7);
-    Resource resource = Resource.newInstance(1023, 3);
-    ContainerResourceIncreaseRequest context = ContainerResourceIncreaseRequest
-        .newInstance(containerId, resource);
+    @Test
+    public void ContainerResourceIncreaseRequest() {
+        ContainerId containerId = ContainerId
+                .newInstance(ApplicationAttemptId.newInstance(
+                        ApplicationId.newInstance(1234, 3), 3), 7);
+        Resource resource = Resource.newInstance(1023, 3);
+        ContainerResourceIncreaseRequest context = ContainerResourceIncreaseRequest
+                .newInstance(containerId, resource);
 
-    // to proto and get it back
-    ContainerResourceIncreaseRequestProto proto = 
-        ((ContainerResourceIncreaseRequestPBImpl) context).getProto();
-    ContainerResourceIncreaseRequest contextRecover = 
-        new ContainerResourceIncreaseRequestPBImpl(proto);
+        // to proto and get it back
+        ContainerResourceIncreaseRequestProto proto =
+                ((ContainerResourceIncreaseRequestPBImpl) context).getProto();
+        ContainerResourceIncreaseRequest contextRecover =
+                new ContainerResourceIncreaseRequestPBImpl(proto);
 
-    // check value
-    Assert.assertEquals(contextRecover.getContainerId(), containerId);
-    Assert.assertEquals(contextRecover.getCapability(), resource);
-  }
+        // check value
+        Assert.assertEquals(contextRecover.getContainerId(), containerId);
+        Assert.assertEquals(contextRecover.getCapability(), resource);
+    }
 
-  @Test
-  public void testResourceChangeContextWithNullField() {
-    ContainerResourceIncreaseRequest context = ContainerResourceIncreaseRequest
-        .newInstance(null, null);
+    @Test
+    public void testResourceChangeContextWithNullField() {
+        ContainerResourceIncreaseRequest context = ContainerResourceIncreaseRequest
+                .newInstance(null, null);
 
-    // to proto and get it back
-    ContainerResourceIncreaseRequestProto proto = 
-        ((ContainerResourceIncreaseRequestPBImpl) context).getProto();
-    ContainerResourceIncreaseRequest contextRecover = 
-        new ContainerResourceIncreaseRequestPBImpl(proto);
+        // to proto and get it back
+        ContainerResourceIncreaseRequestProto proto =
+                ((ContainerResourceIncreaseRequestPBImpl) context).getProto();
+        ContainerResourceIncreaseRequest contextRecover =
+                new ContainerResourceIncreaseRequestPBImpl(proto);
 
-    // check value
-    Assert.assertNull(contextRecover.getContainerId());
-    Assert.assertNull(contextRecover.getCapability());
-  }
+        // check value
+        Assert.assertNull(contextRecover.getContainerId());
+        Assert.assertNull(contextRecover.getCapability());
+    }
 }

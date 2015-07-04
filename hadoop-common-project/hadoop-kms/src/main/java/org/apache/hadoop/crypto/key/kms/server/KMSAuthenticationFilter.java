@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,109 +45,109 @@ import java.util.Properties;
  */
 @InterfaceAudience.Private
 public class KMSAuthenticationFilter
-    extends DelegationTokenAuthenticationFilter {
-  private static final String CONF_PREFIX = KMSConfiguration.CONFIG_PREFIX +
-      "authentication.";
+        extends DelegationTokenAuthenticationFilter {
+    private static final String CONF_PREFIX = KMSConfiguration.CONFIG_PREFIX +
+            "authentication.";
 
-  @Override
-  protected Properties getConfiguration(String configPrefix,
-      FilterConfig filterConfig) {
-    Properties props = new Properties();
-    Configuration conf = KMSWebApp.getConfiguration();
-    for (Map.Entry<String, String> entry : conf) {
-      String name = entry.getKey();
-      if (name.startsWith(CONF_PREFIX)) {
-        String value = conf.get(name);
-        name = name.substring(CONF_PREFIX.length());
-        props.setProperty(name, value);
-      }
+    @Override
+    protected Properties getConfiguration(String configPrefix,
+                                          FilterConfig filterConfig) {
+        Properties props = new Properties();
+        Configuration conf = KMSWebApp.getConfiguration();
+        for (Map.Entry<String, String> entry : conf) {
+            String name = entry.getKey();
+            if (name.startsWith(CONF_PREFIX)) {
+                String value = conf.get(name);
+                name = name.substring(CONF_PREFIX.length());
+                props.setProperty(name, value);
+            }
+        }
+        String authType = props.getProperty(AUTH_TYPE);
+        if (authType.equals(PseudoAuthenticationHandler.TYPE)) {
+            props.setProperty(AUTH_TYPE,
+                    PseudoDelegationTokenAuthenticationHandler.class.getName());
+        } else if (authType.equals(KerberosAuthenticationHandler.TYPE)) {
+            props.setProperty(AUTH_TYPE,
+                    KerberosDelegationTokenAuthenticationHandler.class.getName());
+        }
+        props.setProperty(DelegationTokenAuthenticationHandler.TOKEN_KIND,
+                KMSClientProvider.TOKEN_KIND);
+        return props;
     }
-    String authType = props.getProperty(AUTH_TYPE);
-    if (authType.equals(PseudoAuthenticationHandler.TYPE)) {
-      props.setProperty(AUTH_TYPE,
-          PseudoDelegationTokenAuthenticationHandler.class.getName());
-    } else if (authType.equals(KerberosAuthenticationHandler.TYPE)) {
-      props.setProperty(AUTH_TYPE,
-          KerberosDelegationTokenAuthenticationHandler.class.getName());
+
+    protected Configuration getProxyuserConfiguration(FilterConfig filterConfig) {
+        Map<String, String> proxyuserConf = KMSWebApp.getConfiguration().
+                getValByRegex("hadoop\\.kms\\.proxyuser\\.");
+        Configuration conf = new Configuration(false);
+        for (Map.Entry<String, String> entry : proxyuserConf.entrySet()) {
+            conf.set(entry.getKey().substring("hadoop.kms.".length()),
+                    entry.getValue());
+        }
+        return conf;
     }
-    props.setProperty(DelegationTokenAuthenticationHandler.TOKEN_KIND,
-        KMSClientProvider.TOKEN_KIND);
-    return props;
-  }
 
-  protected Configuration getProxyuserConfiguration(FilterConfig filterConfig) {
-    Map<String, String> proxyuserConf = KMSWebApp.getConfiguration().
-        getValByRegex("hadoop\\.kms\\.proxyuser\\.");
-    Configuration conf = new Configuration(false);
-    for (Map.Entry<String, String> entry : proxyuserConf.entrySet()) {
-      conf.set(entry.getKey().substring("hadoop.kms.".length()),
-          entry.getValue());
-    }
-    return conf;
-  }
+    private static class KMSResponse extends HttpServletResponseWrapper {
+        public int statusCode;
+        public String msg;
 
-  private static class KMSResponse extends HttpServletResponseWrapper {
-    public int statusCode;
-    public String msg;
+        public KMSResponse(ServletResponse response) {
+            super((HttpServletResponse) response);
+        }
 
-    public KMSResponse(ServletResponse response) {
-      super((HttpServletResponse)response);
+        @Override
+        public void setStatus(int sc) {
+            statusCode = sc;
+            super.setStatus(sc);
+        }
+
+        @Override
+        public void sendError(int sc, String msg) throws IOException {
+            statusCode = sc;
+            this.msg = msg;
+            super.sendError(sc, msg);
+        }
+
+        @Override
+        public void sendError(int sc) throws IOException {
+            statusCode = sc;
+            super.sendError(sc);
+        }
+
+        @Override
+        public void setStatus(int sc, String sm) {
+            statusCode = sc;
+            msg = sm;
+            super.setStatus(sc, sm);
+        }
     }
 
     @Override
-    public void setStatus(int sc) {
-      statusCode = sc;
-      super.setStatus(sc);
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain filterChain) throws IOException, ServletException {
+        KMSResponse kmsResponse = new KMSResponse(response);
+        super.doFilter(request, kmsResponse, filterChain);
+
+        if (kmsResponse.statusCode != HttpServletResponse.SC_OK &&
+                kmsResponse.statusCode != HttpServletResponse.SC_CREATED &&
+                kmsResponse.statusCode != HttpServletResponse.SC_UNAUTHORIZED) {
+            KMSWebApp.getInvalidCallsMeter().mark();
+        }
+
+        // HttpServletResponse.SC_UNAUTHORIZED is because the request does not
+        // belong to an authenticated user.
+        if (kmsResponse.statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            KMSWebApp.getUnauthenticatedCallsMeter().mark();
+            String method = ((HttpServletRequest) request).getMethod();
+            StringBuffer requestURL = ((HttpServletRequest) request).getRequestURL();
+            String queryString = ((HttpServletRequest) request).getQueryString();
+            if (queryString != null) {
+                requestURL.append("?").append(queryString);
+            }
+
+            KMSWebApp.getKMSAudit().unauthenticated(
+                    request.getRemoteHost(), method, requestURL.toString(),
+                    kmsResponse.msg);
+        }
     }
-
-    @Override
-    public void sendError(int sc, String msg) throws IOException {
-      statusCode = sc;
-      this.msg = msg;
-      super.sendError(sc, msg);
-    }
-
-    @Override
-    public void sendError(int sc) throws IOException {
-      statusCode = sc;
-      super.sendError(sc);
-    }
-
-    @Override
-    public void setStatus(int sc, String sm) {
-      statusCode = sc;
-      msg = sm;
-      super.setStatus(sc, sm);
-    }
-  }
-
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response,
-      FilterChain filterChain) throws IOException, ServletException {
-    KMSResponse kmsResponse = new KMSResponse(response);
-    super.doFilter(request, kmsResponse, filterChain);
-
-    if (kmsResponse.statusCode != HttpServletResponse.SC_OK &&
-        kmsResponse.statusCode != HttpServletResponse.SC_CREATED &&
-        kmsResponse.statusCode != HttpServletResponse.SC_UNAUTHORIZED) {
-      KMSWebApp.getInvalidCallsMeter().mark();
-    }
-
-    // HttpServletResponse.SC_UNAUTHORIZED is because the request does not
-    // belong to an authenticated user.
-    if (kmsResponse.statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
-      KMSWebApp.getUnauthenticatedCallsMeter().mark();
-      String method = ((HttpServletRequest) request).getMethod();
-      StringBuffer requestURL = ((HttpServletRequest) request).getRequestURL();
-      String queryString = ((HttpServletRequest) request).getQueryString();
-      if (queryString != null) {
-        requestURL.append("?").append(queryString);
-      }
-
-      KMSWebApp.getKMSAudit().unauthenticated(
-          request.getRemoteHost(), method, requestURL.toString(),
-          kmsResponse.msg);
-    }
-  }
 
 }

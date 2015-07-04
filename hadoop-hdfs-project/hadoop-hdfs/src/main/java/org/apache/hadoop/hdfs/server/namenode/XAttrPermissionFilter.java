@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,47 +50,47 @@ import com.google.common.base.Preconditions;
  */
 @InterfaceAudience.Private
 public class XAttrPermissionFilter {
-  
-  static void checkPermissionForApi(FSPermissionChecker pc, XAttr xAttr) 
-      throws AccessControlException {
-    if (xAttr.getNameSpace() == XAttr.NameSpace.USER || 
-        (xAttr.getNameSpace() == XAttr.NameSpace.TRUSTED && 
-        pc.isSuperUser())) {
-      return;
-    }
-    throw new AccessControlException("User doesn't have permission for xattr: "
-        + XAttrHelper.getPrefixName(xAttr));
-  }
 
-  static void checkPermissionForApi(FSPermissionChecker pc,
-                                    List<XAttr> xAttrs) throws AccessControlException {
-    Preconditions.checkArgument(xAttrs != null);
-    if (xAttrs.isEmpty()) {
-      return;
+    static void checkPermissionForApi(FSPermissionChecker pc, XAttr xAttr)
+            throws AccessControlException {
+        if (xAttr.getNameSpace() == XAttr.NameSpace.USER ||
+                (xAttr.getNameSpace() == XAttr.NameSpace.TRUSTED &&
+                        pc.isSuperUser())) {
+            return;
+        }
+        throw new AccessControlException("User doesn't have permission for xattr: "
+                + XAttrHelper.getPrefixName(xAttr));
     }
 
-    for (XAttr xAttr : xAttrs) {
-      checkPermissionForApi(pc, xAttr);
-    }
-  }
+    static void checkPermissionForApi(FSPermissionChecker pc,
+                                      List<XAttr> xAttrs) throws AccessControlException {
+        Preconditions.checkArgument(xAttrs != null);
+        if (xAttrs.isEmpty()) {
+            return;
+        }
 
-  static List<XAttr> filterXAttrsForApi(FSPermissionChecker pc,
-      List<XAttr> xAttrs) {
-    assert xAttrs != null : "xAttrs can not be null";
-    if (xAttrs == null || xAttrs.isEmpty()) {
-      return xAttrs;
+        for (XAttr xAttr : xAttrs) {
+            checkPermissionForApi(pc, xAttr);
+        }
     }
-    
-    List<XAttr> filteredXAttrs = Lists.newArrayListWithCapacity(xAttrs.size());
-    for (XAttr xAttr : xAttrs) {
-      if (xAttr.getNameSpace() == XAttr.NameSpace.USER) {
-        filteredXAttrs.add(xAttr);
-      } else if (xAttr.getNameSpace() == XAttr.NameSpace.TRUSTED && 
-          pc.isSuperUser()) {
-        filteredXAttrs.add(xAttr);
-      }
+
+    static List<XAttr> filterXAttrsForApi(FSPermissionChecker pc,
+                                          List<XAttr> xAttrs) {
+        assert xAttrs != null : "xAttrs can not be null";
+        if (xAttrs == null || xAttrs.isEmpty()) {
+            return xAttrs;
+        }
+
+        List<XAttr> filteredXAttrs = Lists.newArrayListWithCapacity(xAttrs.size());
+        for (XAttr xAttr : xAttrs) {
+            if (xAttr.getNameSpace() == XAttr.NameSpace.USER) {
+                filteredXAttrs.add(xAttr);
+            } else if (xAttr.getNameSpace() == XAttr.NameSpace.TRUSTED &&
+                    pc.isSuperUser()) {
+                filteredXAttrs.add(xAttr);
+            }
+        }
+
+        return filteredXAttrs;
     }
-    
-    return filteredXAttrs;
-  }
 }

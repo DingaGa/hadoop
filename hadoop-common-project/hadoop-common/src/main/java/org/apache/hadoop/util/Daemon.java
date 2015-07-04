@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,50 +23,59 @@ import java.util.concurrent.ThreadFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 
-/** A thread that has called {@link Thread#setDaemon(boolean) } with true.*/
+/**
+ * A thread that has called {@link Thread#setDaemon(boolean) } with true.
+ */
 @InterfaceAudience.LimitedPrivate({"HDFS", "MapReduce"})
 @InterfaceStability.Unstable
 public class Daemon extends Thread {
 
-  {
-    setDaemon(true);                              // always a daemon
-  }
-
-  /**
-   * Provide a factory for named daemon threads,
-   * for use in ExecutorServices constructors
-   */
-  @InterfaceAudience.LimitedPrivate({"HDFS", "MapReduce"})
-  public static class DaemonFactory extends Daemon implements ThreadFactory {
-
-    @Override
-    public Thread newThread(Runnable runnable) {
-      return new Daemon(runnable);
+    {
+        setDaemon(true);                              // always a daemon
     }
 
-  }
+    /**
+     * Provide a factory for named daemon threads,
+     * for use in ExecutorServices constructors
+     */
+    @InterfaceAudience.LimitedPrivate({"HDFS", "MapReduce"})
+    public static class DaemonFactory extends Daemon implements ThreadFactory {
 
-  Runnable runnable = null;
-  /** Construct a daemon thread. */
-  public Daemon() {
-    super();
-  }
+        @Override
+        public Thread newThread(Runnable runnable) {
+            return new Daemon(runnable);
+        }
 
-  /** Construct a daemon thread. */
-  public Daemon(Runnable runnable) {
-    super(runnable);
-    this.runnable = runnable;
-    this.setName(((Object)runnable).toString());
-  }
+    }
 
-  /** Construct a daemon thread to be part of a specified thread group. */
-  public Daemon(ThreadGroup group, Runnable runnable) {
-    super(group, runnable);
-    this.runnable = runnable;
-    this.setName(((Object)runnable).toString());
-  }
+    Runnable runnable = null;
 
-  public Runnable getRunnable() {
-    return runnable;
-  }
+    /**
+     * Construct a daemon thread.
+     */
+    public Daemon() {
+        super();
+    }
+
+    /**
+     * Construct a daemon thread.
+     */
+    public Daemon(Runnable runnable) {
+        super(runnable);
+        this.runnable = runnable;
+        this.setName(((Object) runnable).toString());
+    }
+
+    /**
+     * Construct a daemon thread to be part of a specified thread group.
+     */
+    public Daemon(ThreadGroup group, Runnable runnable) {
+        super(group, runnable);
+        this.runnable = runnable;
+        this.setName(((Object) runnable).toString());
+    }
+
+    public Runnable getRunnable() {
+        return runnable;
+    }
 }

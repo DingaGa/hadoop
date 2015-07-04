@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,38 +29,41 @@ import org.apache.hadoop.classification.InterfaceStability;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public interface MetricsRecord {
-  /**
-   * Get the timestamp of the metrics
-   * @return  the timestamp
-   */
-  long timestamp();
+    /**
+     * Get the timestamp of the metrics
+     *
+     * @return the timestamp
+     */
+    long timestamp();
 
-  /**
-   * @return the metrics record name
-   */
-  String name();
+    /**
+     * @return the metrics record name
+     */
+    String name();
 
-  /**
-   * @return the description of the metrics record
-   */
-  String description();
+    /**
+     * @return the description of the metrics record
+     */
+    String description();
 
-  /**
-   * @return the context name of the metrics record
-   */
-  String context();
+    /**
+     * @return the context name of the metrics record
+     */
+    String context();
 
-  /**
-   * Get the tags of the record
-   * Note: returning a collection instead of iterable as we
-   * need to use tags as keys (hence Collection#hashCode etc.) in maps
-   * @return an unmodifiable collection of tags
-   */
-  Collection<MetricsTag> tags();
+    /**
+     * Get the tags of the record
+     * Note: returning a collection instead of iterable as we
+     * need to use tags as keys (hence Collection#hashCode etc.) in maps
+     *
+     * @return an unmodifiable collection of tags
+     */
+    Collection<MetricsTag> tags();
 
-  /**
-   * Get the metrics of the record
-   * @return an immutable iterable interface for metrics
-   */
-  Iterable<AbstractMetric> metrics();
+    /**
+     * Get the metrics of the record
+     *
+     * @return an immutable iterable interface for metrics
+     */
+    Iterable<AbstractMetric> metrics();
 }

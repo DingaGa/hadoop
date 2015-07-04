@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,96 +49,96 @@ import org.apache.hadoop.yarn.factory.providers.RecordFactoryProvider;
 import org.junit.Test;
 
 public class TestKillAMPreemptionPolicy {
-  private final RecordFactory recordFactory = RecordFactoryProvider
-      .getRecordFactory(null);
+    private final RecordFactory recordFactory = RecordFactoryProvider
+            .getRecordFactory(null);
 
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testKillAMPreemptPolicy() {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testKillAMPreemptPolicy() {
 
-    ApplicationId appId = ApplicationId.newInstance(123456789, 1);
-    ContainerId container = ContainerId.newInstance(
-        ApplicationAttemptId.newInstance(appId, 1), 1);
-    AMPreemptionPolicy.Context mPctxt = mock(AMPreemptionPolicy.Context.class);
-    when(mPctxt.getTaskAttempt(any(ContainerId.class))).thenReturn(
-        MRBuilderUtils.newTaskAttemptId(MRBuilderUtils.newTaskId(
-            MRBuilderUtils.newJobId(appId, 1), 1, TaskType.MAP), 0));
-    List<Container> p = new ArrayList<Container>();
-    p.add(Container.newInstance(container, null, null, null, null, null));
-    when(mPctxt.getContainers(any(TaskType.class))).thenReturn(p);
+        ApplicationId appId = ApplicationId.newInstance(123456789, 1);
+        ContainerId container = ContainerId.newInstance(
+                ApplicationAttemptId.newInstance(appId, 1), 1);
+        AMPreemptionPolicy.Context mPctxt = mock(AMPreemptionPolicy.Context.class);
+        when(mPctxt.getTaskAttempt(any(ContainerId.class))).thenReturn(
+                MRBuilderUtils.newTaskAttemptId(MRBuilderUtils.newTaskId(
+                        MRBuilderUtils.newJobId(appId, 1), 1, TaskType.MAP), 0));
+        List<Container> p = new ArrayList<Container>();
+        p.add(Container.newInstance(container, null, null, null, null, null));
+        when(mPctxt.getContainers(any(TaskType.class))).thenReturn(p);
 
-    KillAMPreemptionPolicy policy = new KillAMPreemptionPolicy();
+        KillAMPreemptionPolicy policy = new KillAMPreemptionPolicy();
 
-    // strictContract is null & contract is null
-    RunningAppContext mActxt = getRunningAppContext();
-    policy.init(mActxt);
-    PreemptionMessage pM = getPreemptionMessage(false, false, container);
-    policy.preempt(mPctxt, pM);
-    verify(mActxt.getEventHandler(), times(0)).handle(
-        any(TaskAttemptEvent.class));
-    verify(mActxt.getEventHandler(), times(0)).handle(
-        any(JobCounterUpdateEvent.class));
+        // strictContract is null & contract is null
+        RunningAppContext mActxt = getRunningAppContext();
+        policy.init(mActxt);
+        PreemptionMessage pM = getPreemptionMessage(false, false, container);
+        policy.preempt(mPctxt, pM);
+        verify(mActxt.getEventHandler(), times(0)).handle(
+                any(TaskAttemptEvent.class));
+        verify(mActxt.getEventHandler(), times(0)).handle(
+                any(JobCounterUpdateEvent.class));
 
-    // strictContract is not null & contract is null
-    mActxt = getRunningAppContext();
-    policy.init(mActxt);
-    pM = getPreemptionMessage(true, false, container);
-    policy.preempt(mPctxt, pM);
-    verify(mActxt.getEventHandler(), times(2)).handle(
-        any(TaskAttemptEvent.class));
-    verify(mActxt.getEventHandler(), times(2)).handle(
-        any(JobCounterUpdateEvent.class));
+        // strictContract is not null & contract is null
+        mActxt = getRunningAppContext();
+        policy.init(mActxt);
+        pM = getPreemptionMessage(true, false, container);
+        policy.preempt(mPctxt, pM);
+        verify(mActxt.getEventHandler(), times(2)).handle(
+                any(TaskAttemptEvent.class));
+        verify(mActxt.getEventHandler(), times(2)).handle(
+                any(JobCounterUpdateEvent.class));
 
-    // strictContract is null & contract is not null
-    mActxt = getRunningAppContext();
-    policy.init(mActxt);
-    pM = getPreemptionMessage(false, true, container);
-    policy.preempt(mPctxt, pM);
-    verify(mActxt.getEventHandler(), times(2)).handle(
-        any(TaskAttemptEvent.class));
-    verify(mActxt.getEventHandler(), times(2)).handle(
-        any(JobCounterUpdateEvent.class));
+        // strictContract is null & contract is not null
+        mActxt = getRunningAppContext();
+        policy.init(mActxt);
+        pM = getPreemptionMessage(false, true, container);
+        policy.preempt(mPctxt, pM);
+        verify(mActxt.getEventHandler(), times(2)).handle(
+                any(TaskAttemptEvent.class));
+        verify(mActxt.getEventHandler(), times(2)).handle(
+                any(JobCounterUpdateEvent.class));
 
-    // strictContract is not null & contract is not null
-    mActxt = getRunningAppContext();
-    policy.init(mActxt);
-    pM = getPreemptionMessage(true, true, container);
-    policy.preempt(mPctxt, pM);
-    verify(mActxt.getEventHandler(), times(4)).handle(
-        any(TaskAttemptEvent.class));
-    verify(mActxt.getEventHandler(), times(4)).handle(
-        any(JobCounterUpdateEvent.class));
-  }
-
-  private RunningAppContext getRunningAppContext() {
-    RunningAppContext mActxt = mock(RunningAppContext.class);
-    EventHandler<?> eventHandler = mock(EventHandler.class);
-    when(mActxt.getEventHandler()).thenReturn(eventHandler);
-    return mActxt;
-  }
-
-  private PreemptionMessage getPreemptionMessage(boolean strictContract,
-      boolean contract, final ContainerId container) {
-    PreemptionMessage preemptionMessage = recordFactory
-        .newRecordInstance(PreemptionMessage.class);
-    Set<PreemptionContainer> cntrs = new HashSet<PreemptionContainer>();
-    PreemptionContainer preemptContainer = recordFactory
-        .newRecordInstance(PreemptionContainer.class);
-    preemptContainer.setId(container);
-    cntrs.add(preemptContainer);
-    if (strictContract) {
-      StrictPreemptionContract set = recordFactory
-          .newRecordInstance(StrictPreemptionContract.class);
-      set.setContainers(cntrs);
-      preemptionMessage.setStrictContract(set);
+        // strictContract is not null & contract is not null
+        mActxt = getRunningAppContext();
+        policy.init(mActxt);
+        pM = getPreemptionMessage(true, true, container);
+        policy.preempt(mPctxt, pM);
+        verify(mActxt.getEventHandler(), times(4)).handle(
+                any(TaskAttemptEvent.class));
+        verify(mActxt.getEventHandler(), times(4)).handle(
+                any(JobCounterUpdateEvent.class));
     }
-    if (contract) {
-      PreemptionContract preemptContract = recordFactory
-          .newRecordInstance(PreemptionContract.class);
-      preemptContract.setContainers(cntrs);
-      preemptionMessage.setContract(preemptContract);
+
+    private RunningAppContext getRunningAppContext() {
+        RunningAppContext mActxt = mock(RunningAppContext.class);
+        EventHandler<?> eventHandler = mock(EventHandler.class);
+        when(mActxt.getEventHandler()).thenReturn(eventHandler);
+        return mActxt;
     }
-    return preemptionMessage;
-  }
+
+    private PreemptionMessage getPreemptionMessage(boolean strictContract,
+                                                   boolean contract, final ContainerId container) {
+        PreemptionMessage preemptionMessage = recordFactory
+                .newRecordInstance(PreemptionMessage.class);
+        Set<PreemptionContainer> cntrs = new HashSet<PreemptionContainer>();
+        PreemptionContainer preemptContainer = recordFactory
+                .newRecordInstance(PreemptionContainer.class);
+        preemptContainer.setId(container);
+        cntrs.add(preemptContainer);
+        if (strictContract) {
+            StrictPreemptionContract set = recordFactory
+                    .newRecordInstance(StrictPreemptionContract.class);
+            set.setContainers(cntrs);
+            preemptionMessage.setStrictContract(set);
+        }
+        if (contract) {
+            PreemptionContract preemptContract = recordFactory
+                    .newRecordInstance(PreemptionContract.class);
+            preemptContract.setContainers(cntrs);
+            preemptionMessage.setContract(preemptContract);
+        }
+        return preemptionMessage;
+    }
 
 }

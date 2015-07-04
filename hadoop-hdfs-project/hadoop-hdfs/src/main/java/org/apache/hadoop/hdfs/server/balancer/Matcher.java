@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,30 +22,30 @@ import org.apache.hadoop.net.Node;
 
 /** A matcher interface for matching nodes. */
 public interface Matcher {
-  /** Given the cluster topology, does the left node match the right node? */
-  public boolean match(NetworkTopology cluster, Node left,  Node right);
+    /** Given the cluster topology, does the left node match the right node? */
+    public boolean match(NetworkTopology cluster, Node left, Node right);
 
-  /** Match datanodes in the same node group. */
-  public static final Matcher SAME_NODE_GROUP = new Matcher() {
-    @Override
-    public boolean match(NetworkTopology cluster, Node left, Node right) {
-      return cluster.isOnSameNodeGroup(left, right);
-    }
-  };
+    /** Match datanodes in the same node group. */
+    public static final Matcher SAME_NODE_GROUP = new Matcher() {
+        @Override
+        public boolean match(NetworkTopology cluster, Node left, Node right) {
+            return cluster.isOnSameNodeGroup(left, right);
+        }
+    };
 
-  /** Match datanodes in the same rack. */
-  public static final Matcher SAME_RACK = new Matcher() {
-    @Override
-    public boolean match(NetworkTopology cluster, Node left, Node right) {
-      return cluster.isOnSameRack(left, right);
-    }
-  };
+    /** Match datanodes in the same rack. */
+    public static final Matcher SAME_RACK = new Matcher() {
+        @Override
+        public boolean match(NetworkTopology cluster, Node left, Node right) {
+            return cluster.isOnSameRack(left, right);
+        }
+    };
 
-  /** Match any datanode with any other datanode. */
-  public static final Matcher ANY_OTHER = new Matcher() {
-    @Override
-    public boolean match(NetworkTopology cluster, Node left, Node right) {
-      return left != right;
-    }
-  };
+    /** Match any datanode with any other datanode. */
+    public static final Matcher ANY_OTHER = new Matcher() {
+        @Override
+        public boolean match(NetworkTopology cluster, Node left, Node right) {
+            return left != right;
+        }
+    };
 }

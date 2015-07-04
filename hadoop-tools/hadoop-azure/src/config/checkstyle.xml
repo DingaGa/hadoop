@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
-    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+        "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@
     <!-- Checks that each Java package has a Javadoc file used for commenting. -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage       -->
     <module name="JavadocPackage">
-      <property name="allowLegacy" value="true"/>
+        <property name="allowLegacy" value="true"/>
     </module>
 
     <!-- Checks that property files contain the same keys.         -->
@@ -67,8 +67,8 @@
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
 
         <module name="JavadocType">
-          <property name="scope" value="public"/>
-        </module>  
+            <property name="scope" value="public"/>
+        </module>
 
         <!-- 
         <module name="JavadocMethod"/>
@@ -92,7 +92,8 @@
         <!-- Checks for imports                              -->
         <!-- See http://checkstyle.sf.net/config_import.html -->
         <module name="AvoidStarImport"/>
-        <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
+        <module name="IllegalImport"/>
+        <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
@@ -101,19 +102,19 @@
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
 
         <module name="LineLength">
-          <property name="max" value="160" />
+            <property name="max" value="160"/>
         </module>
-        
+
         <module name="MethodLength">
-          <property name="max" value="3000"/>
+            <property name="max" value="3000"/>
         </module>
-        
+
         <module name="ParameterNumber"/>
 
 
         <!-- Checks for whitespace                               -->
         <!-- See http://checkstyle.sf.net/config_whitespace.html -->
-        
+
         <module name="EmptyForIteratorPad"/>
         <module name="MethodParamPad"/>
         <!-- module name="NoWhitespaceAfter"/> -->

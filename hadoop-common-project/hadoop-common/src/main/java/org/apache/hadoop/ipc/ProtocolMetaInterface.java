@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,13 +30,14 @@ import org.apache.hadoop.classification.InterfaceStability;
 @InterfaceAudience.Private
 @InterfaceStability.Stable
 public interface ProtocolMetaInterface {
-  
-  /**
-   * Checks whether the given method name is supported by the server.
-   * It is assumed that all method names are unique for a protocol.
-   * @param methodName The name of the method
-   * @return true if method is supported, otherwise false.
-   * @throws IOException
-   */
-  public boolean isMethodSupported(String methodName) throws IOException;
+
+    /**
+     * Checks whether the given method name is supported by the server.
+     * It is assumed that all method names are unique for a protocol.
+     *
+     * @param methodName The name of the method
+     * @return true if method is supported, otherwise false.
+     * @throws IOException
+     */
+    public boolean isMethodSupported(String methodName) throws IOException;
 }

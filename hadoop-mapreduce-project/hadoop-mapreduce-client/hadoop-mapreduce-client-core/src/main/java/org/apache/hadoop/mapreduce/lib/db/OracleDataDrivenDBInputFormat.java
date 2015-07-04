@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,39 +55,39 @@ import org.apache.hadoop.conf.Configuration;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class OracleDataDrivenDBInputFormat<T extends DBWritable>
-    extends DataDrivenDBInputFormat<T> implements Configurable {
+        extends DataDrivenDBInputFormat<T> implements Configurable {
 
-  /**
-   * @return the DBSplitter implementation to use to divide the table/query into InputSplits.
-   */
-  @Override
-  protected DBSplitter getSplitter(int sqlDataType) {
-    switch (sqlDataType) {
-    case Types.DATE:
-    case Types.TIME:
-    case Types.TIMESTAMP:
-      return new OracleDateSplitter();
+    /**
+     * @return the DBSplitter implementation to use to divide the table/query into InputSplits.
+     */
+    @Override
+    protected DBSplitter getSplitter(int sqlDataType) {
+        switch (sqlDataType) {
+            case Types.DATE:
+            case Types.TIME:
+            case Types.TIMESTAMP:
+                return new OracleDateSplitter();
 
-    default:
-      return super.getSplitter(sqlDataType);
+            default:
+                return super.getSplitter(sqlDataType);
+        }
     }
-  }
 
-  @Override
-  protected RecordReader<LongWritable, T> createDBRecordReader(DBInputSplit split,
-      Configuration conf) throws IOException {
+    @Override
+    protected RecordReader<LongWritable, T> createDBRecordReader(DBInputSplit split,
+                                                                 Configuration conf) throws IOException {
 
-    DBConfiguration dbConf = getDBConf();
-    @SuppressWarnings("unchecked")
-    Class<T> inputClass = (Class<T>) (dbConf.getInputClass());
+        DBConfiguration dbConf = getDBConf();
+        @SuppressWarnings("unchecked")
+        Class<T> inputClass = (Class<T>) (dbConf.getInputClass());
 
-    try {
-      // Use Oracle-specific db reader
-      return new OracleDataDrivenDBRecordReader<T>(split, inputClass,
-          conf, getConnection(), dbConf, dbConf.getInputConditions(),
-          dbConf.getInputFieldNames(), dbConf.getInputTableName());
-    } catch (SQLException ex) {
-      throw new IOException(ex.getMessage());
+        try {
+            // Use Oracle-specific db reader
+            return new OracleDataDrivenDBRecordReader<T>(split, inputClass,
+                    conf, getConnection(), dbConf, dbConf.getInputConditions(),
+                    dbConf.getInputFieldNames(), dbConf.getInputTableName());
+        } catch (SQLException ex) {
+            throw new IOException(ex.getMessage());
+        }
     }
-  }
 }

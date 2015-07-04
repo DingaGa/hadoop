@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,26 +26,27 @@ import org.apache.hadoop.oncrpc.security.Verifier;
  * GETATTR3 Response
  */
 public class GETATTR3Response extends NFS3Response {
-  private Nfs3FileAttributes postOpAttr;
-  public GETATTR3Response(int status) {
-    this(status, new Nfs3FileAttributes());
-  }
-  
-  public GETATTR3Response(int status, Nfs3FileAttributes attrs) {
-    super(status);
-    this.postOpAttr = attrs;
-  }
-  
-  public void setPostOpAttr(Nfs3FileAttributes postOpAttr) {
-    this.postOpAttr = postOpAttr;
-  }
-  
-  @Override
-  public XDR writeHeaderAndResponse(XDR out, int xid, Verifier verifier) {
-    super.writeHeaderAndResponse(out, xid, verifier);
-    if (getStatus() == Nfs3Status.NFS3_OK) {
-      postOpAttr.serialize(out);
+    private Nfs3FileAttributes postOpAttr;
+
+    public GETATTR3Response(int status) {
+        this(status, new Nfs3FileAttributes());
     }
-    return out;
-  }
+
+    public GETATTR3Response(int status, Nfs3FileAttributes attrs) {
+        super(status);
+        this.postOpAttr = attrs;
+    }
+
+    public void setPostOpAttr(Nfs3FileAttributes postOpAttr) {
+        this.postOpAttr = postOpAttr;
+    }
+
+    @Override
+    public XDR writeHeaderAndResponse(XDR out, int xid, Verifier verifier) {
+        super.writeHeaderAndResponse(out, xid, verifier);
+        if (getStatus() == Nfs3Status.NFS3_OK) {
+            postOpAttr.serialize(out);
+        }
+        return out;
+    }
 }

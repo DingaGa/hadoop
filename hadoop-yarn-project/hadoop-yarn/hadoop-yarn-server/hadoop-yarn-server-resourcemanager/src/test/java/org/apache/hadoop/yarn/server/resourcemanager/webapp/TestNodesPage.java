@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,72 +38,72 @@ import com.google.inject.Module;
  * data for all the columns in the table as specified in the header.
  */
 public class TestNodesPage {
-  
-  final int numberOfRacks = 2;
-  final int numberOfNodesPerRack = 6;
-  // The following is because of the way TestRMWebApp.mockRMContext creates
-  // nodes.
-  final int numberOfLostNodesPerRack = numberOfNodesPerRack
-      / NodeState.values().length;
 
-  // Number of Actual Table Headers for NodesPage.NodesBlock might change in
-  // future. In that case this value should be adjusted to the new value.
-  final int numberOfThInMetricsTable = 16;
-  final int numberOfActualTableHeaders = 12;
+    final int numberOfRacks = 2;
+    final int numberOfNodesPerRack = 6;
+    // The following is because of the way TestRMWebApp.mockRMContext creates
+    // nodes.
+    final int numberOfLostNodesPerRack = numberOfNodesPerRack
+            / NodeState.values().length;
 
-  private Injector injector;
-  
-  @Before
-  public void setUp() throws Exception {
-    final RMContext mockRMContext =
-        TestRMWebApp.mockRMContext(3, numberOfRacks, numberOfNodesPerRack,
-          8 * TestRMWebApp.GiB);
-    injector =
-        WebAppTests.createMockInjector(RMContext.class, mockRMContext,
-          new Module() {
-            @Override
-            public void configure(Binder binder) {
-              try {
-                binder.bind(ResourceManager.class).toInstance(
-                  TestRMWebApp.mockRm(mockRMContext));
-              } catch (IOException e) {
-                throw new IllegalStateException(e);
-              }
-            }
-          });
-  }
+    // Number of Actual Table Headers for NodesPage.NodesBlock might change in
+    // future. In that case this value should be adjusted to the new value.
+    final int numberOfThInMetricsTable = 16;
+    final int numberOfActualTableHeaders = 12;
 
-  @Test
-  public void testNodesBlockRender() throws Exception {
-    injector.getInstance(NodesBlock.class).render();
-    PrintWriter writer = injector.getInstance(PrintWriter.class);
-    WebAppTests.flushOutput(injector);
+    private Injector injector;
 
-    Mockito.verify(writer,
-        Mockito.times(numberOfActualTableHeaders + numberOfThInMetricsTable))
-        .print("<th");
-    Mockito.verify(
-        writer,
-        Mockito.times(numberOfRacks * numberOfNodesPerRack
-            * numberOfActualTableHeaders + numberOfThInMetricsTable)).print(
-        "<td");
-  }
-  
-  @Test
-  public void testNodesBlockRenderForLostNodes() {
-    NodesBlock nodesBlock = injector.getInstance(NodesBlock.class);
-    nodesBlock.set("node.state", "lost");
-    nodesBlock.render();
-    PrintWriter writer = injector.getInstance(PrintWriter.class);
-    WebAppTests.flushOutput(injector);
+    @Before
+    public void setUp() throws Exception {
+        final RMContext mockRMContext =
+                TestRMWebApp.mockRMContext(3, numberOfRacks, numberOfNodesPerRack,
+                        8 * TestRMWebApp.GiB);
+        injector =
+                WebAppTests.createMockInjector(RMContext.class, mockRMContext,
+                        new Module() {
+                            @Override
+                            public void configure(Binder binder) {
+                                try {
+                                    binder.bind(ResourceManager.class).toInstance(
+                                            TestRMWebApp.mockRm(mockRMContext));
+                                } catch (IOException e) {
+                                    throw new IllegalStateException(e);
+                                }
+                            }
+                        });
+    }
 
-    Mockito.verify(writer,
-        Mockito.times(numberOfActualTableHeaders + numberOfThInMetricsTable))
-        .print("<th");
-    Mockito.verify(
-        writer,
-        Mockito.times(numberOfRacks * numberOfLostNodesPerRack
-            * numberOfActualTableHeaders + numberOfThInMetricsTable)).print(
-        "<td");
-  }
+    @Test
+    public void testNodesBlockRender() throws Exception {
+        injector.getInstance(NodesBlock.class).render();
+        PrintWriter writer = injector.getInstance(PrintWriter.class);
+        WebAppTests.flushOutput(injector);
+
+        Mockito.verify(writer,
+                Mockito.times(numberOfActualTableHeaders + numberOfThInMetricsTable))
+                .print("<th");
+        Mockito.verify(
+                writer,
+                Mockito.times(numberOfRacks * numberOfNodesPerRack
+                        * numberOfActualTableHeaders + numberOfThInMetricsTable)).print(
+                "<td");
+    }
+
+    @Test
+    public void testNodesBlockRenderForLostNodes() {
+        NodesBlock nodesBlock = injector.getInstance(NodesBlock.class);
+        nodesBlock.set("node.state", "lost");
+        nodesBlock.render();
+        PrintWriter writer = injector.getInstance(PrintWriter.class);
+        WebAppTests.flushOutput(injector);
+
+        Mockito.verify(writer,
+                Mockito.times(numberOfActualTableHeaders + numberOfThInMetricsTable))
+                .print("<th");
+        Mockito.verify(
+                writer,
+                Mockito.times(numberOfRacks * numberOfLostNodesPerRack
+                        * numberOfActualTableHeaders + numberOfThInMetricsTable)).print(
+                "<td");
+    }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,43 +30,43 @@ import org.apache.hadoop.io.Text;
  */
 public class FSCheckpointID implements CheckpointID {
 
-  private Path path;
+    private Path path;
 
-  public FSCheckpointID(){
-  }
+    public FSCheckpointID() {
+    }
 
-  public FSCheckpointID(Path path) {
-    this.path = path;
-  }
+    public FSCheckpointID(Path path) {
+        this.path = path;
+    }
 
-  public Path getPath() {
-    return path;
-  }
+    public Path getPath() {
+        return path;
+    }
 
-  @Override
-  public String toString() {
-    return path.toString();
-  }
+    @Override
+    public String toString() {
+        return path.toString();
+    }
 
-  @Override
-  public void write(DataOutput out) throws IOException {
-    Text.writeString(out, path.toString());
-  }
+    @Override
+    public void write(DataOutput out) throws IOException {
+        Text.writeString(out, path.toString());
+    }
 
-  @Override
-  public void readFields(DataInput in) throws IOException {
-    this.path = new Path(Text.readString(in));
-  }
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        this.path = new Path(Text.readString(in));
+    }
 
-  @Override
-  public boolean equals(Object other) {
-    return other instanceof FSCheckpointID
-      && path.equals(((FSCheckpointID)other).path);
-  }
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof FSCheckpointID
+                && path.equals(((FSCheckpointID) other).path);
+    }
 
-  @Override
-  public int hashCode() {
-    return path.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return path.hashCode();
+    }
 
 }

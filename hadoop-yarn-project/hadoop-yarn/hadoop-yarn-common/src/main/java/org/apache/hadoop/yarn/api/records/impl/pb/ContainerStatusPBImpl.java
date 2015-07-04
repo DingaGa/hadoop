@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,156 +34,157 @@ import com.google.protobuf.TextFormat;
 @Private
 @Unstable
 public class ContainerStatusPBImpl extends ContainerStatus {
-  ContainerStatusProto proto = ContainerStatusProto.getDefaultInstance();
-  ContainerStatusProto.Builder builder = null;
-  boolean viaProto = false;
-  
-  private ContainerId containerId = null;
-  
-  
-  public ContainerStatusPBImpl() {
-    builder = ContainerStatusProto.newBuilder();
-  }
+    ContainerStatusProto proto = ContainerStatusProto.getDefaultInstance();
+    ContainerStatusProto.Builder builder = null;
+    boolean viaProto = false;
 
-  public ContainerStatusPBImpl(ContainerStatusProto proto) {
-    this.proto = proto;
-    viaProto = true;
-  }
-  
-  public ContainerStatusProto getProto() {
-      mergeLocalToProto();
-    proto = viaProto ? proto : builder.build();
-    viaProto = true;
-    return proto;
-  }
+    private ContainerId containerId = null;
 
-  @Override
-  public int hashCode() {
-    return getProto().hashCode();
-  }
 
-  @Override
-  public boolean equals(Object other) {
-    if (other == null)
-      return false;
-    if (other.getClass().isAssignableFrom(this.getClass())) {
-      return this.getProto().equals(this.getClass().cast(other).getProto());
+    public ContainerStatusPBImpl() {
+        builder = ContainerStatusProto.newBuilder();
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("ContainerStatus: [");
-    sb.append("ContainerId: ").append(getContainerId()).append(", ");
-    sb.append("State: ").append(getState()).append(", ");
-    sb.append("Diagnostics: ").append(getDiagnostics()).append(", ");
-    sb.append("ExitStatus: ").append(getExitStatus()).append(", ");
-    sb.append("]");
-    return sb.toString();
-  }
-
-  private void mergeLocalToBuilder() {
-    if (containerId != null) {
-      builder.setContainerId(convertToProtoFormat(this.containerId));
+    public ContainerStatusPBImpl(ContainerStatusProto proto) {
+        this.proto = proto;
+        viaProto = true;
     }
-  }
 
-  private void mergeLocalToProto() {
-    if (viaProto) 
-      maybeInitBuilder();
-    mergeLocalToBuilder();
-    proto = builder.build();
-    viaProto = true;
-  }
-
-  private void maybeInitBuilder() {
-    if (viaProto || builder == null) {
-      builder = ContainerStatusProto.newBuilder(proto);
+    public ContainerStatusProto getProto() {
+        mergeLocalToProto();
+        proto = viaProto ? proto : builder.build();
+        viaProto = true;
+        return proto;
     }
-    viaProto = false;
-  }
-    
-  
-  @Override
-  public ContainerState getState() {
-    ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
-    if (!p.hasState()) {
-      return null;
+
+    @Override
+    public int hashCode() {
+        return getProto().hashCode();
     }
-    return convertFromProtoFormat(p.getState());
-  }
 
-  @Override
-  public void setState(ContainerState state) {
-    maybeInitBuilder();
-    if (state == null) {
-      builder.clearState();
-      return;
+    @Override
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (other.getClass().isAssignableFrom(this.getClass())) {
+            return this.getProto().equals(this.getClass().cast(other).getProto());
+        }
+        return false;
     }
-    builder.setState(convertToProtoFormat(state));
-  }
-  @Override
-  public ContainerId getContainerId() {
-    ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
-    if (this.containerId != null) {
-      return this.containerId;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ContainerStatus: [");
+        sb.append("ContainerId: ").append(getContainerId()).append(", ");
+        sb.append("State: ").append(getState()).append(", ");
+        sb.append("Diagnostics: ").append(getDiagnostics()).append(", ");
+        sb.append("ExitStatus: ").append(getExitStatus()).append(", ");
+        sb.append("]");
+        return sb.toString();
     }
-    if (!p.hasContainerId()) {
-      return null;
+
+    private void mergeLocalToBuilder() {
+        if (containerId != null) {
+            builder.setContainerId(convertToProtoFormat(this.containerId));
+        }
     }
-    this.containerId =  convertFromProtoFormat(p.getContainerId());
-    return this.containerId;
-  }
 
-  @Override
-  public void setContainerId(ContainerId containerId) {
-    maybeInitBuilder();
-    if (containerId == null) 
-      builder.clearContainerId();
-    this.containerId = containerId;
-  }
-  @Override
-  public int getExitStatus() {
-    ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
-    return p.getExitStatus();
-  }
+    private void mergeLocalToProto() {
+        if (viaProto)
+            maybeInitBuilder();
+        mergeLocalToBuilder();
+        proto = builder.build();
+        viaProto = true;
+    }
 
-  @Override
-  public void setExitStatus(int exitStatus) {
-    maybeInitBuilder();
-    builder.setExitStatus(exitStatus);
-  }
-
-  @Override
-  public String getDiagnostics() {
-    ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
-    return (p.getDiagnostics());    
-  }
-
-  @Override
-  public void setDiagnostics(String diagnostics) {
-    maybeInitBuilder();
-    builder.setDiagnostics(diagnostics);
-  }
-
-  private ContainerStateProto convertToProtoFormat(ContainerState e) {
-    return ProtoUtils.convertToProtoFormat(e);
-  }
-
-  private ContainerState convertFromProtoFormat(ContainerStateProto e) {
-    return ProtoUtils.convertFromProtoFormat(e);
-  }
-
-  private ContainerIdPBImpl convertFromProtoFormat(ContainerIdProto p) {
-    return new ContainerIdPBImpl(p);
-  }
-
-  private ContainerIdProto convertToProtoFormat(ContainerId t) {
-    return ((ContainerIdPBImpl)t).getProto();
-  }
+    private void maybeInitBuilder() {
+        if (viaProto || builder == null) {
+            builder = ContainerStatusProto.newBuilder(proto);
+        }
+        viaProto = false;
+    }
 
 
+    @Override
+    public ContainerState getState() {
+        ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
+        if (!p.hasState()) {
+            return null;
+        }
+        return convertFromProtoFormat(p.getState());
+    }
 
-}  
+    @Override
+    public void setState(ContainerState state) {
+        maybeInitBuilder();
+        if (state == null) {
+            builder.clearState();
+            return;
+        }
+        builder.setState(convertToProtoFormat(state));
+    }
+
+    @Override
+    public ContainerId getContainerId() {
+        ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
+        if (this.containerId != null) {
+            return this.containerId;
+        }
+        if (!p.hasContainerId()) {
+            return null;
+        }
+        this.containerId = convertFromProtoFormat(p.getContainerId());
+        return this.containerId;
+    }
+
+    @Override
+    public void setContainerId(ContainerId containerId) {
+        maybeInitBuilder();
+        if (containerId == null)
+            builder.clearContainerId();
+        this.containerId = containerId;
+    }
+
+    @Override
+    public int getExitStatus() {
+        ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
+        return p.getExitStatus();
+    }
+
+    @Override
+    public void setExitStatus(int exitStatus) {
+        maybeInitBuilder();
+        builder.setExitStatus(exitStatus);
+    }
+
+    @Override
+    public String getDiagnostics() {
+        ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
+        return (p.getDiagnostics());
+    }
+
+    @Override
+    public void setDiagnostics(String diagnostics) {
+        maybeInitBuilder();
+        builder.setDiagnostics(diagnostics);
+    }
+
+    private ContainerStateProto convertToProtoFormat(ContainerState e) {
+        return ProtoUtils.convertToProtoFormat(e);
+    }
+
+    private ContainerState convertFromProtoFormat(ContainerStateProto e) {
+        return ProtoUtils.convertFromProtoFormat(e);
+    }
+
+    private ContainerIdPBImpl convertFromProtoFormat(ContainerIdProto p) {
+        return new ContainerIdPBImpl(p);
+    }
+
+    private ContainerIdProto convertToProtoFormat(ContainerId t) {
+        return ((ContainerIdPBImpl) t).getProto();
+    }
+
+
+}

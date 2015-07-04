@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,62 +33,62 @@ import org.apache.hadoop.mapred.Reporter;
  */
 class DummyInputFormat implements InputFormat<Object, Object> {
 
-  static class EmptySplit implements InputSplit {
-    public void write(DataOutput out) throws IOException {
-    }
-
-    public void readFields(DataInput in) throws IOException {
-    }
-
-    public long getLength() {
-      return 0L;
-    }
-
-    public String[] getLocations() {
-      return new String[0];
-    }
-  }
-
-  public InputSplit[] getSplits(JobConf job, int numSplits) throws IOException {
-    InputSplit[] splits = new InputSplit[numSplits];
-    for (int i = 0; i < splits.length; ++i) {
-      splits[i] = new EmptySplit();
-    }
-    return splits;
-  }
-
-  public RecordReader<Object, Object> getRecordReader(InputSplit split,
-      JobConf job, Reporter reporter) throws IOException {
-    return new RecordReader<Object, Object>() {
-
-      boolean once = false;
-
-      public boolean next(Object key, Object value) throws IOException {
-        if (!once) {
-          once = true;
-          return true;
+    static class EmptySplit implements InputSplit {
+        public void write(DataOutput out) throws IOException {
         }
-        return false;
-      }
 
-      public Object createKey() {
-        return new Object();
-      }
+        public void readFields(DataInput in) throws IOException {
+        }
 
-      public Object createValue() {
-        return new Object();
-      }
+        public long getLength() {
+            return 0L;
+        }
 
-      public long getPos() throws IOException {
-        return 0L;
-      }
+        public String[] getLocations() {
+            return new String[0];
+        }
+    }
 
-      public void close() throws IOException {
-      }
+    public InputSplit[] getSplits(JobConf job, int numSplits) throws IOException {
+        InputSplit[] splits = new InputSplit[numSplits];
+        for (int i = 0; i < splits.length; ++i) {
+            splits[i] = new EmptySplit();
+        }
+        return splits;
+    }
 
-      public float getProgress() throws IOException {
-        return 0.0f;
-      }
-    };
-  }
+    public RecordReader<Object, Object> getRecordReader(InputSplit split,
+                                                        JobConf job, Reporter reporter) throws IOException {
+        return new RecordReader<Object, Object>() {
+
+            boolean once = false;
+
+            public boolean next(Object key, Object value) throws IOException {
+                if (!once) {
+                    once = true;
+                    return true;
+                }
+                return false;
+            }
+
+            public Object createKey() {
+                return new Object();
+            }
+
+            public Object createValue() {
+                return new Object();
+            }
+
+            public long getPos() throws IOException {
+                return 0L;
+            }
+
+            public void close() throws IOException {
+            }
+
+            public float getProgress() throws IOException {
+                return 0.0f;
+            }
+        };
+    }
 }

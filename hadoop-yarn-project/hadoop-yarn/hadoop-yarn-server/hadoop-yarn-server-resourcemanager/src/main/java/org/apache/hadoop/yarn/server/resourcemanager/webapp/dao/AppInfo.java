@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,249 +42,249 @@ import com.google.common.base.Joiner;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AppInfo {
 
-  @XmlTransient
-  protected String appIdNum;
-  @XmlTransient
-  protected boolean trackingUrlIsNotReady;
-  @XmlTransient
-  protected String trackingUrlPretty;
-  @XmlTransient
-  protected boolean amContainerLogsExist = false;
-  @XmlTransient
-  protected ApplicationId applicationId;
-  @XmlTransient
-  private String schemePrefix;
+    @XmlTransient
+    protected String appIdNum;
+    @XmlTransient
+    protected boolean trackingUrlIsNotReady;
+    @XmlTransient
+    protected String trackingUrlPretty;
+    @XmlTransient
+    protected boolean amContainerLogsExist = false;
+    @XmlTransient
+    protected ApplicationId applicationId;
+    @XmlTransient
+    private String schemePrefix;
 
-  // these are ok for any user to see
-  protected String id;
-  protected String user;
-  protected String name;
-  protected String queue;
-  protected YarnApplicationState state;
-  protected FinalApplicationStatus finalStatus;
-  protected float progress;
-  protected String trackingUI;
-  protected String trackingUrl;
-  protected String diagnostics;
-  protected long clusterId;
-  protected String applicationType;
-  protected String applicationTags = "";
-  
-  // these are only allowed if acls allow
-  protected long startedTime;
-  protected long finishedTime;
-  protected long elapsedTime;
-  protected String amContainerLogs;
-  protected String amHostHttpAddress;
-  protected int allocatedMB;
-  protected int allocatedVCores;
-  protected int runningContainers;
-  
-  // preemption info fields
-  protected int preemptedResourceMB;
-  protected int preemptedResourceVCores;
-  protected int numNonAMContainerPreempted;
-  protected int numAMContainerPreempted;
+    // these are ok for any user to see
+    protected String id;
+    protected String user;
+    protected String name;
+    protected String queue;
+    protected YarnApplicationState state;
+    protected FinalApplicationStatus finalStatus;
+    protected float progress;
+    protected String trackingUI;
+    protected String trackingUrl;
+    protected String diagnostics;
+    protected long clusterId;
+    protected String applicationType;
+    protected String applicationTags = "";
 
-  public AppInfo() {
-  } // JAXB needs this
+    // these are only allowed if acls allow
+    protected long startedTime;
+    protected long finishedTime;
+    protected long elapsedTime;
+    protected String amContainerLogs;
+    protected String amHostHttpAddress;
+    protected int allocatedMB;
+    protected int allocatedVCores;
+    protected int runningContainers;
 
-  public AppInfo(RMApp app, Boolean hasAccess, String schemePrefix) {
-    this.schemePrefix = schemePrefix;
-    if (app != null) {
-      String trackingUrl = app.getTrackingUrl();
-      this.state = app.createApplicationState();
-      this.trackingUrlIsNotReady = trackingUrl == null || trackingUrl.isEmpty()
-          || YarnApplicationState.NEW == this.state
-          || YarnApplicationState.NEW_SAVING == this.state
-          || YarnApplicationState.SUBMITTED == this.state
-          || YarnApplicationState.ACCEPTED == this.state;
-      this.trackingUI = this.trackingUrlIsNotReady ? "UNASSIGNED" : (app
-          .getFinishTime() == 0 ? "ApplicationMaster" : "History");
-      if (!trackingUrlIsNotReady) {
-        this.trackingUrl =
-            WebAppUtils.getURLWithScheme(schemePrefix,
-                trackingUrl);
-        this.trackingUrlPretty = this.trackingUrl;
-      } else {
-        this.trackingUrlPretty = "UNASSIGNED";
-      }
-      this.applicationId = app.getApplicationId();
-      this.applicationType = app.getApplicationType();
-      this.appIdNum = String.valueOf(app.getApplicationId().getId());
-      this.id = app.getApplicationId().toString();
-      this.user = app.getUser().toString();
-      this.name = app.getName().toString();
-      this.queue = app.getQueue().toString();
-      this.progress = app.getProgress() * 100;
-      this.diagnostics = app.getDiagnostics().toString();
-      if (diagnostics == null || diagnostics.isEmpty()) {
-        this.diagnostics = "";
-      }
-      if (app.getApplicationTags() != null && !app.getApplicationTags().isEmpty()) {
-        this.applicationTags = Joiner.on(',').join(app.getApplicationTags());
-      }
-      this.finalStatus = app.getFinalApplicationStatus();
-      this.clusterId = ResourceManager.getClusterTimeStamp();
-      if (hasAccess) {
-        this.startedTime = app.getStartTime();
-        this.finishedTime = app.getFinishTime();
-        this.elapsedTime = Times.elapsed(app.getStartTime(),
-            app.getFinishTime());
+    // preemption info fields
+    protected int preemptedResourceMB;
+    protected int preemptedResourceVCores;
+    protected int numNonAMContainerPreempted;
+    protected int numAMContainerPreempted;
 
-        RMAppAttempt attempt = app.getCurrentAppAttempt();
-        if (attempt != null) {
-          Container masterContainer = attempt.getMasterContainer();
-          if (masterContainer != null) {
-            this.amContainerLogsExist = true;
-            this.amContainerLogs = WebAppUtils.getRunningLogURL(
-                schemePrefix + masterContainer.getNodeHttpAddress(),
-                ConverterUtils.toString(masterContainer.getId()),
-                app.getUser());
-            this.amHostHttpAddress = masterContainer.getNodeHttpAddress();
-          }
-          
-          ApplicationResourceUsageReport resourceReport = attempt
-              .getApplicationResourceUsageReport();
-          if (resourceReport != null) {
-            Resource usedResources = resourceReport.getUsedResources();
-            allocatedMB = usedResources.getMemory();
-            allocatedVCores = usedResources.getVirtualCores();
-            runningContainers = resourceReport.getNumUsedContainers();
-          }
+    public AppInfo() {
+    } // JAXB needs this
+
+    public AppInfo(RMApp app, Boolean hasAccess, String schemePrefix) {
+        this.schemePrefix = schemePrefix;
+        if (app != null) {
+            String trackingUrl = app.getTrackingUrl();
+            this.state = app.createApplicationState();
+            this.trackingUrlIsNotReady = trackingUrl == null || trackingUrl.isEmpty()
+                    || YarnApplicationState.NEW == this.state
+                    || YarnApplicationState.NEW_SAVING == this.state
+                    || YarnApplicationState.SUBMITTED == this.state
+                    || YarnApplicationState.ACCEPTED == this.state;
+            this.trackingUI = this.trackingUrlIsNotReady ? "UNASSIGNED" : (app
+                    .getFinishTime() == 0 ? "ApplicationMaster" : "History");
+            if (!trackingUrlIsNotReady) {
+                this.trackingUrl =
+                        WebAppUtils.getURLWithScheme(schemePrefix,
+                                trackingUrl);
+                this.trackingUrlPretty = this.trackingUrl;
+            } else {
+                this.trackingUrlPretty = "UNASSIGNED";
+            }
+            this.applicationId = app.getApplicationId();
+            this.applicationType = app.getApplicationType();
+            this.appIdNum = String.valueOf(app.getApplicationId().getId());
+            this.id = app.getApplicationId().toString();
+            this.user = app.getUser().toString();
+            this.name = app.getName().toString();
+            this.queue = app.getQueue().toString();
+            this.progress = app.getProgress() * 100;
+            this.diagnostics = app.getDiagnostics().toString();
+            if (diagnostics == null || diagnostics.isEmpty()) {
+                this.diagnostics = "";
+            }
+            if (app.getApplicationTags() != null && !app.getApplicationTags().isEmpty()) {
+                this.applicationTags = Joiner.on(',').join(app.getApplicationTags());
+            }
+            this.finalStatus = app.getFinalApplicationStatus();
+            this.clusterId = ResourceManager.getClusterTimeStamp();
+            if (hasAccess) {
+                this.startedTime = app.getStartTime();
+                this.finishedTime = app.getFinishTime();
+                this.elapsedTime = Times.elapsed(app.getStartTime(),
+                        app.getFinishTime());
+
+                RMAppAttempt attempt = app.getCurrentAppAttempt();
+                if (attempt != null) {
+                    Container masterContainer = attempt.getMasterContainer();
+                    if (masterContainer != null) {
+                        this.amContainerLogsExist = true;
+                        this.amContainerLogs = WebAppUtils.getRunningLogURL(
+                                schemePrefix + masterContainer.getNodeHttpAddress(),
+                                ConverterUtils.toString(masterContainer.getId()),
+                                app.getUser());
+                        this.amHostHttpAddress = masterContainer.getNodeHttpAddress();
+                    }
+
+                    ApplicationResourceUsageReport resourceReport = attempt
+                            .getApplicationResourceUsageReport();
+                    if (resourceReport != null) {
+                        Resource usedResources = resourceReport.getUsedResources();
+                        allocatedMB = usedResources.getMemory();
+                        allocatedVCores = usedResources.getVirtualCores();
+                        runningContainers = resourceReport.getNumUsedContainers();
+                    }
+                }
+            }
+
+            // copy preemption info fields
+            RMAppMetrics appMetrics = app.getRMAppMetrics();
+            numAMContainerPreempted =
+                    appMetrics.getNumAMContainersPreempted();
+            preemptedResourceMB =
+                    appMetrics.getResourcePreempted().getMemory();
+            numNonAMContainerPreempted =
+                    appMetrics.getNumNonAMContainersPreempted();
+            preemptedResourceVCores =
+                    appMetrics.getResourcePreempted().getVirtualCores();
         }
-      }
-
-      // copy preemption info fields
-      RMAppMetrics appMetrics = app.getRMAppMetrics();
-      numAMContainerPreempted =
-          appMetrics.getNumAMContainersPreempted();
-      preemptedResourceMB =
-          appMetrics.getResourcePreempted().getMemory();
-      numNonAMContainerPreempted =
-          appMetrics.getNumNonAMContainersPreempted();
-      preemptedResourceVCores =
-          appMetrics.getResourcePreempted().getVirtualCores();
     }
-  }
 
-  public boolean isTrackingUrlReady() {
-    return !this.trackingUrlIsNotReady;
-  }
+    public boolean isTrackingUrlReady() {
+        return !this.trackingUrlIsNotReady;
+    }
 
-  public ApplicationId getApplicationId() {
-    return this.applicationId;
-  }
+    public ApplicationId getApplicationId() {
+        return this.applicationId;
+    }
 
-  public String getAppId() {
-    return this.id;
-  }
+    public String getAppId() {
+        return this.id;
+    }
 
-  public String getAppIdNum() {
-    return this.appIdNum;
-  }
+    public String getAppIdNum() {
+        return this.appIdNum;
+    }
 
-  public String getUser() {
-    return this.user;
-  }
+    public String getUser() {
+        return this.user;
+    }
 
-  public String getQueue() {
-    return this.queue;
-  }
+    public String getQueue() {
+        return this.queue;
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    public String getName() {
+        return this.name;
+    }
 
-  public String getState() {
-    return this.state.toString();
-  }
+    public String getState() {
+        return this.state.toString();
+    }
 
-  public float getProgress() {
-    return this.progress;
-  }
+    public float getProgress() {
+        return this.progress;
+    }
 
-  public String getTrackingUI() {
-    return this.trackingUI;
-  }
+    public String getTrackingUI() {
+        return this.trackingUI;
+    }
 
-  public String getNote() {
-    return this.diagnostics;
-  }
+    public String getNote() {
+        return this.diagnostics;
+    }
 
-  public String getFinalStatus() {
-    return this.finalStatus.toString();
-  }
+    public String getFinalStatus() {
+        return this.finalStatus.toString();
+    }
 
-  public String getTrackingUrl() {
-    return this.trackingUrl;
-  }
+    public String getTrackingUrl() {
+        return this.trackingUrl;
+    }
 
-  public String getTrackingUrlPretty() {
-    return this.trackingUrlPretty;
-  }
+    public String getTrackingUrlPretty() {
+        return this.trackingUrlPretty;
+    }
 
-  public long getStartTime() {
-    return this.startedTime;
-  }
+    public long getStartTime() {
+        return this.startedTime;
+    }
 
-  public long getFinishTime() {
-    return this.finishedTime;
-  }
+    public long getFinishTime() {
+        return this.finishedTime;
+    }
 
-  public long getElapsedTime() {
-    return this.elapsedTime;
-  }
+    public long getElapsedTime() {
+        return this.elapsedTime;
+    }
 
-  public String getAMContainerLogs() {
-    return this.amContainerLogs;
-  }
+    public String getAMContainerLogs() {
+        return this.amContainerLogs;
+    }
 
-  public String getAMHostHttpAddress() {
-    return this.amHostHttpAddress;
-  }
+    public String getAMHostHttpAddress() {
+        return this.amHostHttpAddress;
+    }
 
-  public boolean amContainerLogsExist() {
-    return this.amContainerLogsExist;
-  }
+    public boolean amContainerLogsExist() {
+        return this.amContainerLogsExist;
+    }
 
-  public long getClusterId() {
-    return this.clusterId;
-  }
+    public long getClusterId() {
+        return this.clusterId;
+    }
 
-  public String getApplicationType() {
-    return this.applicationType;
-  }
+    public String getApplicationType() {
+        return this.applicationType;
+    }
 
-  public String getApplicationTags() {
-    return this.applicationTags;
-  }
-  
-  public int getRunningContainers() {
-    return this.runningContainers;
-  }
-  
-  public int getAllocatedMB() {
-    return this.allocatedMB;
-  }
-  
-  public int getAllocatedVCores() {
-    return this.allocatedVCores;
-  }
-  
-  public int getPreemptedMB() {
-    return preemptedResourceMB;
-  }
+    public String getApplicationTags() {
+        return this.applicationTags;
+    }
 
-  public int getPreemptedVCores() {
-    return preemptedResourceVCores;
-  }
+    public int getRunningContainers() {
+        return this.runningContainers;
+    }
 
-  public int getNumNonAMContainersPreempted() {
-    return numNonAMContainerPreempted;
-  }
-  
-  public int getNumAMContainersPreempted() {
-    return numAMContainerPreempted;
-  }
+    public int getAllocatedMB() {
+        return this.allocatedMB;
+    }
+
+    public int getAllocatedVCores() {
+        return this.allocatedVCores;
+    }
+
+    public int getPreemptedMB() {
+        return preemptedResourceMB;
+    }
+
+    public int getPreemptedVCores() {
+        return preemptedResourceVCores;
+    }
+
+    public int getNumNonAMContainersPreempted() {
+        return numNonAMContainerPreempted;
+    }
+
+    public int getNumAMContainersPreempted() {
+        return numAMContainerPreempted;
+    }
 }

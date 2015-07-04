@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,66 +38,66 @@ import com.google.inject.Inject;
 
 public class ContainerBlock extends HtmlBlock {
 
-  private static final Log LOG = LogFactory.getLog(ContainerBlock.class);
-  private final ApplicationContext appContext;
+    private static final Log LOG = LogFactory.getLog(ContainerBlock.class);
+    private final ApplicationContext appContext;
 
-  @Inject
-  public ContainerBlock(ApplicationContext appContext, ViewContext ctx) {
-    super(ctx);
-    this.appContext = appContext;
-  }
-
-  @Override
-  protected void render(Block html) {
-    String containerid = $(CONTAINER_ID);
-    if (containerid.isEmpty()) {
-      puts("Bad request: requires container ID");
-      return;
+    @Inject
+    public ContainerBlock(ApplicationContext appContext, ViewContext ctx) {
+        super(ctx);
+        this.appContext = appContext;
     }
 
-    ContainerId containerId = null;
-    try {
-      containerId = ConverterUtils.toContainerId(containerid);
-    } catch (IllegalArgumentException e) {
-      puts("Invalid container ID: " + containerid);
-      return;
+    @Override
+    protected void render(Block html) {
+        String containerid = $(CONTAINER_ID);
+        if (containerid.isEmpty()) {
+            puts("Bad request: requires container ID");
+            return;
+        }
+
+        ContainerId containerId = null;
+        try {
+            containerId = ConverterUtils.toContainerId(containerid);
+        } catch (IllegalArgumentException e) {
+            puts("Invalid container ID: " + containerid);
+            return;
+        }
+
+        ContainerReport containerReport;
+        try {
+            containerReport = appContext.getContainer(containerId);
+        } catch (IOException e) {
+            String message = "Failed to read the container " + containerid + ".";
+            LOG.error(message, e);
+            html.p()._(message)._();
+            return;
+        }
+        if (containerReport == null) {
+            puts("Container not found: " + containerid);
+            return;
+        }
+
+        ContainerInfo container = new ContainerInfo(containerReport);
+        setTitle(join("Container ", containerid));
+
+        info("Container Overview")
+                ._("State:", container.getContainerState())
+                ._("Exit Status:", container.getContainerExitStatus())
+                ._("Node:", container.getAssignedNodeId())
+                ._("Priority:", container.getPriority())
+                ._("Started:", Times.format(container.getStartedTime()))
+                ._(
+                        "Elapsed:",
+                        StringUtils.formatTime(Times.elapsed(container.getStartedTime(),
+                                container.getFinishedTime())))
+                ._(
+                        "Resource:",
+                        container.getAllocatedMB() + " Memory, "
+                                + container.getAllocatedVCores() + " VCores")
+                ._("Logs:", container.getLogUrl() == null ? "#" : container.getLogUrl(),
+                        container.getLogUrl() == null ? "N/A" : "Logs")
+                ._("Diagnostics:", container.getDiagnosticsInfo());
+
+        html._(InfoBlock.class);
     }
-
-    ContainerReport containerReport;
-    try {
-      containerReport = appContext.getContainer(containerId);
-    } catch (IOException e) {
-      String message = "Failed to read the container " + containerid + ".";
-      LOG.error(message, e);
-      html.p()._(message)._();
-      return;
-    }
-    if (containerReport == null) {
-      puts("Container not found: " + containerid);
-      return;
-    }
-
-    ContainerInfo container = new ContainerInfo(containerReport);
-    setTitle(join("Container ", containerid));
-
-    info("Container Overview")
-      ._("State:", container.getContainerState())
-      ._("Exit Status:", container.getContainerExitStatus())
-      ._("Node:", container.getAssignedNodeId())
-      ._("Priority:", container.getPriority())
-      ._("Started:", Times.format(container.getStartedTime()))
-      ._(
-        "Elapsed:",
-        StringUtils.formatTime(Times.elapsed(container.getStartedTime(),
-          container.getFinishedTime())))
-      ._(
-        "Resource:",
-        container.getAllocatedMB() + " Memory, "
-            + container.getAllocatedVCores() + " VCores")
-      ._("Logs:", container.getLogUrl() == null ? "#" : container.getLogUrl(),
-          container.getLogUrl() == null ? "N/A" : "Logs")
-      ._("Diagnostics:", container.getDiagnosticsInfo());
-
-    html._(InfoBlock.class);
-  }
 }

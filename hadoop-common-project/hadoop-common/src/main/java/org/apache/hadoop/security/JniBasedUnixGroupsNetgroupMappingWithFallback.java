@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,38 +26,38 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.util.NativeCodeLoader;
 
 public class JniBasedUnixGroupsNetgroupMappingWithFallback implements
-    GroupMappingServiceProvider {
+        GroupMappingServiceProvider {
 
-  private static final Log LOG = LogFactory
-      .getLog(JniBasedUnixGroupsNetgroupMappingWithFallback.class);
+    private static final Log LOG = LogFactory
+            .getLog(JniBasedUnixGroupsNetgroupMappingWithFallback.class);
 
-  private GroupMappingServiceProvider impl;
+    private GroupMappingServiceProvider impl;
 
-  public JniBasedUnixGroupsNetgroupMappingWithFallback() {
-    if (NativeCodeLoader.isNativeCodeLoaded()) {
-      this.impl = new JniBasedUnixGroupsNetgroupMapping();
-    } else {
-      LOG.info("Falling back to shell based");
-      this.impl = new ShellBasedUnixGroupsNetgroupMapping();
+    public JniBasedUnixGroupsNetgroupMappingWithFallback() {
+        if (NativeCodeLoader.isNativeCodeLoaded()) {
+            this.impl = new JniBasedUnixGroupsNetgroupMapping();
+        } else {
+            LOG.info("Falling back to shell based");
+            this.impl = new ShellBasedUnixGroupsNetgroupMapping();
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Group mapping impl=" + impl.getClass().getName());
+        }
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Group mapping impl=" + impl.getClass().getName());
+
+    @Override
+    public List<String> getGroups(String user) throws IOException {
+        return impl.getGroups(user);
     }
-  }
 
-  @Override
-  public List<String> getGroups(String user) throws IOException {
-    return impl.getGroups(user);
-  }
+    @Override
+    public void cacheGroupsRefresh() throws IOException {
+        impl.cacheGroupsRefresh();
+    }
 
-  @Override
-  public void cacheGroupsRefresh() throws IOException {
-    impl.cacheGroupsRefresh();
-  }
-
-  @Override
-  public void cacheGroupsAdd(List<String> groups) throws IOException {
-    impl.cacheGroupsAdd(groups);
-  }
+    @Override
+    public void cacheGroupsAdd(List<String> groups) throws IOException {
+        impl.cacheGroupsAdd(groups);
+    }
 
 }

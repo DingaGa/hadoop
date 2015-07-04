@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,48 +27,48 @@ import org.apache.hadoop.oncrpc.security.Verifier;
  * CREATE3 Response
  */
 public class CREATE3Response extends NFS3Response {
-  private final FileHandle objHandle;
-  private final Nfs3FileAttributes postOpObjAttr;
-  private WccData dirWcc;
+    private final FileHandle objHandle;
+    private final Nfs3FileAttributes postOpObjAttr;
+    private WccData dirWcc;
 
-  public CREATE3Response(int status) {
-    this(status, null, null, null);
-  }
-
-  public CREATE3Response(int status, FileHandle handle,
-      Nfs3FileAttributes postOpObjAttr, WccData dirWcc) {
-    super(status);
-    this.objHandle = handle;
-    this.postOpObjAttr = postOpObjAttr;
-    this.dirWcc = dirWcc;
-  }
-
-  public FileHandle getObjHandle() {
-    return objHandle;
-  }
-
-  public Nfs3FileAttributes getPostOpObjAttr() {
-    return postOpObjAttr;
-  }
-
-  public WccData getDirWcc() {
-    return dirWcc;
-  }
-
-  @Override
-  public XDR writeHeaderAndResponse(XDR out, int xid, Verifier verifier) {
-    super.writeHeaderAndResponse(out, xid, verifier);
-    if (getStatus() == Nfs3Status.NFS3_OK) {
-      out.writeBoolean(true); // Handle follows
-      objHandle.serialize(out);
-      out.writeBoolean(true); // Attributes follow
-      postOpObjAttr.serialize(out);
+    public CREATE3Response(int status) {
+        this(status, null, null, null);
     }
-    if (dirWcc == null) {
-      dirWcc = new WccData(null, null);
-    }
-    dirWcc.serialize(out);
 
-    return out;
-  }
+    public CREATE3Response(int status, FileHandle handle,
+                           Nfs3FileAttributes postOpObjAttr, WccData dirWcc) {
+        super(status);
+        this.objHandle = handle;
+        this.postOpObjAttr = postOpObjAttr;
+        this.dirWcc = dirWcc;
+    }
+
+    public FileHandle getObjHandle() {
+        return objHandle;
+    }
+
+    public Nfs3FileAttributes getPostOpObjAttr() {
+        return postOpObjAttr;
+    }
+
+    public WccData getDirWcc() {
+        return dirWcc;
+    }
+
+    @Override
+    public XDR writeHeaderAndResponse(XDR out, int xid, Verifier verifier) {
+        super.writeHeaderAndResponse(out, xid, verifier);
+        if (getStatus() == Nfs3Status.NFS3_OK) {
+            out.writeBoolean(true); // Handle follows
+            objHandle.serialize(out);
+            out.writeBoolean(true); // Attributes follow
+            postOpObjAttr.serialize(out);
+        }
+        if (dirWcc == null) {
+            dirWcc = new WccData(null, null);
+        }
+        dirWcc.serialize(out);
+
+        return out;
+    }
 }

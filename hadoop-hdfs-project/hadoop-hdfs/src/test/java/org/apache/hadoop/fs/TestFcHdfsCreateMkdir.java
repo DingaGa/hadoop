@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,43 +33,43 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 public class TestFcHdfsCreateMkdir extends
-                    FileContextCreateMkdirBaseTest {
-  
-  private static MiniDFSCluster cluster;
-  private static Path defaultWorkingDirectory;
-  
-  @Override
-  protected FileContextTestHelper createFileContextHelper() {
-    return new FileContextTestHelper("/tmp/TestFcHdfsCreateMkdir");
-  }
+        FileContextCreateMkdirBaseTest {
+
+    private static MiniDFSCluster cluster;
+    private static Path defaultWorkingDirectory;
+
+    @Override
+    protected FileContextTestHelper createFileContextHelper() {
+        return new FileContextTestHelper("/tmp/TestFcHdfsCreateMkdir");
+    }
 
 
-  @BeforeClass
-  public static void clusterSetupAtBegining()
-                                    throws IOException, LoginException, URISyntaxException  {
-    Configuration conf = new HdfsConfiguration();
-    cluster = new MiniDFSCluster.Builder(conf).numDataNodes(2).build();
-    fc = FileContext.getFileContext(cluster.getURI(0), conf);
-    defaultWorkingDirectory = fc.makeQualified( new Path("/user/" + 
-        UserGroupInformation.getCurrentUser().getShortUserName()));
-    fc.mkdir(defaultWorkingDirectory, FileContext.DEFAULT_PERM, true);
-  }
+    @BeforeClass
+    public static void clusterSetupAtBegining()
+            throws IOException, LoginException, URISyntaxException {
+        Configuration conf = new HdfsConfiguration();
+        cluster = new MiniDFSCluster.Builder(conf).numDataNodes(2).build();
+        fc = FileContext.getFileContext(cluster.getURI(0), conf);
+        defaultWorkingDirectory = fc.makeQualified(new Path("/user/" +
+                UserGroupInformation.getCurrentUser().getShortUserName()));
+        fc.mkdir(defaultWorkingDirectory, FileContext.DEFAULT_PERM, true);
+    }
 
-      
-  @AfterClass
-  public static void ClusterShutdownAtEnd() throws Exception {
-    cluster.shutdown();   
-  }
-  
-  @Override
-  @Before
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-  
-  @Override
-  @After
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
+
+    @AfterClass
+    public static void ClusterShutdownAtEnd() throws Exception {
+        cluster.shutdown();
+    }
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
 }

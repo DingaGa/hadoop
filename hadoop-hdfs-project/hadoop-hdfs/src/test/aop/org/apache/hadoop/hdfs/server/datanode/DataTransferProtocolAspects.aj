@@ -32,8 +32,8 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Receiver;
 
 /** Aspect for DataTransferProtocol */
 public aspect DataTransferProtocolAspects {
-  public static final Log LOG = LogFactory.getLog(
-      DataTransferProtocolAspects.class);
+    public static final Log LOG = LogFactory.getLog(
+            DataTransferProtocolAspects.class);
   /*
   {
     ((Log4JLogger)NameNode.stateChangeLog).getLogger().setLevel(Level.ALL);
@@ -45,36 +45,36 @@ public aspect DataTransferProtocolAspects {
   }
   */
 
-  pointcut receiverOp(DataXceiver dataxceiver):
-    call(Op Receiver.readOp()) && target(dataxceiver);
+    pointcut receiverOp(DataXceiver dataxceiver):
+            call(Op Receiver.readOp()) && target(dataxceiver);
 
-  after(DataXceiver dataxceiver) returning(Op op): receiverOp(dataxceiver) {
-    LOG.info("FI: receiverOp " + op + ", datanode="
-        + dataxceiver.getDataNode().getDatanodeId().getName());    
-  }
+    after(DataXceiver dataxceiver) returning(Op op): receiverOp(dataxceiver) {
+        LOG.info("FI: receiverOp " + op + ", datanode="
+                + dataxceiver.getDataNode().getDatanodeId().getName());
+    }
 
-  pointcut statusRead(DataXceiver dataxceiver):
-    call(BlockOpResponseProto BlockOpResponseProto.parseFrom(InputStream)) && this(dataxceiver);
+    pointcut statusRead(DataXceiver dataxceiver):
+            call(BlockOpResponseProto BlockOpResponseProto.parseFrom(InputStream)) && this(dataxceiver);
 
-  after(DataXceiver dataxceiver) returning(BlockOpResponseProto status
-      ) throws IOException: statusRead(dataxceiver) {
-    final DataNode d = dataxceiver.getDataNode();
-    LOG.info("FI: statusRead " + status + ", datanode="
-        + d.getDatanodeId().getName());    
-    DataTransferTest dtTest = DataTransferTestUtil.getDataTransferTest();
-    if (dtTest != null) 
-      dtTest.fiStatusRead.run(d.getDatanodeId());
-  }
+    after(DataXceiver dataxceiver) returning(BlockOpResponseProto status
+    )throws IOException: statusRead(dataxceiver) {
+        final DataNode d = dataxceiver.getDataNode();
+        LOG.info("FI: statusRead " + status + ", datanode="
+                + d.getDatanodeId().getName());
+        DataTransferTest dtTest = DataTransferTestUtil.getDataTransferTest();
+        if (dtTest != null)
+            dtTest.fiStatusRead.run(d.getDatanodeId());
+    }
 
-  pointcut receiverOpWriteBlock(DataXceiver dataxceiver):
-    call(void Receiver.opWriteBlock(DataInputStream)) && target(dataxceiver);
+    pointcut receiverOpWriteBlock(DataXceiver dataxceiver):
+            call(void Receiver.opWriteBlock(DataInputStream)) && target(dataxceiver);
 
-  before(DataXceiver dataxceiver
-      ) throws IOException: receiverOpWriteBlock(dataxceiver) {
-    LOG.info("FI: receiverOpWriteBlock");
-    DataTransferTest dtTest = DataTransferTestUtil.getDataTransferTest();
-    if (dtTest != null)
-      dtTest.fiReceiverOpWriteBlock.run(
-          dataxceiver.getDataNode().getDatanodeId());
-  }
+    before(DataXceiver dataxceiver
+    )throws IOException: receiverOpWriteBlock(dataxceiver) {
+        LOG.info("FI: receiverOpWriteBlock");
+        DataTransferTest dtTest = DataTransferTestUtil.getDataTransferTest();
+        if (dtTest != null)
+            dtTest.fiReceiverOpWriteBlock.run(
+                    dataxceiver.getDataNode().getDatanodeId());
+    }
 }

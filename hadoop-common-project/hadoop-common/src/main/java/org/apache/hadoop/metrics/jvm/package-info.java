@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 @InterfaceAudience.Private
-@InterfaceStability.Evolving
-package org.apache.hadoop.metrics.jvm;
+@InterfaceStability.Evolving package org.apache.hadoop.metrics.jvm;
+
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;

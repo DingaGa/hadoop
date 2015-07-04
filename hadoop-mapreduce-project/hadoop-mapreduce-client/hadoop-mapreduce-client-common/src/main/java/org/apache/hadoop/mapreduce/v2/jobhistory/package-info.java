@@ -15,6 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@InterfaceAudience.Private
-package org.apache.hadoop.mapreduce.v2.jobhistory;
+@InterfaceAudience.Private package org.apache.hadoop.mapreduce.v2.jobhistory;
+
 import org.apache.hadoop.classification.InterfaceAudience;

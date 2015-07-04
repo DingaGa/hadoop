@@ -28,19 +28,19 @@ import org.apache.hadoop.hdfs.protocol.HdfsFileStatus;
 import org.apache.hadoop.security.UserGroupInformation;
 
 public aspect FileDataServletAspects {
-  static final Log LOG = FileDataServlet.LOG;
+    static final Log LOG = FileDataServlet.LOG;
 
-  pointcut callCreateUrl() : call (URL FileDataServlet.createRedirectURL(
-      String, String, HdfsFileStatus, UserGroupInformation, ClientProtocol,
-      HttpServletRequest, String));
+    pointcut callCreateUrl(): call (URL FileDataServlet.createRedirectURL(
+            String, String, HdfsFileStatus, UserGroupInformation, ClientProtocol,
+                    HttpServletRequest, String));
 
-  /** Replace host name with "localhost" for unit test environment. */
-  URL around () throws IOException : callCreateUrl() {
-    final URL original = proceed();
-    LOG.info("FI: original url = " + original);
-    final URL replaced = new URL("http", "localhost", original.getPort(),
-        original.getPath() + '?' + original.getQuery());
-    LOG.info("FI: replaced url = " + replaced);
-    return replaced;
-  }
+    /** Replace host name with "localhost" for unit test environment. */
+    URL around ()throws IOException: callCreateUrl() {
+        final URL original = proceed();
+        LOG.info("FI: original url = " + original);
+        final URL replaced = new URL("http", "localhost", original.getPort(),
+                original.getPath() + '?' + original.getQuery());
+        LOG.info("FI: replaced url = " + replaced);
+        return replaced;
+    }
 }

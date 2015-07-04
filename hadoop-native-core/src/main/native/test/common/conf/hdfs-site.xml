@@ -20,54 +20,54 @@
 
 <configuration>
 
-<property>
-    <name>foo.overridden</name>
-    <value>hdfs-site-val</value>
-</property>
+    <property>
+        <name>foo.overridden</name>
+        <value>hdfs-site-val</value>
+    </property>
 
-<property>
-    <name>double.foo.bar</name>
-    <value>woo:${foo.bar}${foo.bar}</value>
-</property>
+    <property>
+        <name>double.foo.bar</name>
+        <value>woo:${foo.bar}${foo.bar}</value>
+    </property>
 
-<property>
-    <name>triple.foo.bar</name>
-    <value>woo:${foo.bar}${double.foo.bar}</value>
-</property>
+    <property>
+        <name>triple.foo.bar</name>
+        <value>woo:${foo.bar}${double.foo.bar}</value>
+    </property>
 
-<property>
-    <name>foo.final</name>
-    <value>0</value>
-</property>
+    <property>
+        <name>foo.final</name>
+        <value>0</value>
+    </property>
 
-<property>
-    <name>tweedledum</name>
-    <value>${tweedledee}</value>
-</property>
+    <property>
+        <name>tweedledum</name>
+        <value>${tweedledee}</value>
+    </property>
 
-<property>
-    <name>tweedledee</name>
-    <value>${tweedledum}</value>
-</property>
+    <property>
+        <name>tweedledee</name>
+        <value>${tweedledum}</value>
+    </property>
 
-<property>
-    <name>joiner</name>
-    <value>${joiner.a}${joiner.b}</value>
-</property>
+    <property>
+        <name>joiner</name>
+        <value>${joiner.a}${joiner.b}</value>
+    </property>
 
-<property>
-    <name>joiner.a</name>
-    <value>${joiner</value>
-</property>
+    <property>
+        <name>joiner.a</name>
+        <value>${joiner</value>
+    </property>
 
-<property>
-    <name>joiner.b</name>
-    <value>.c}</value>
-</property>
+    <property>
+        <name>joiner.b</name>
+        <value>.c}</value>
+    </property>
 
-<property>
-    <name>joiner.c</name>
-    <value>woo</value>
-</property>
+    <property>
+        <name>joiner.c</name>
+        <value>woo</value>
+    </property>
 
 </configuration>

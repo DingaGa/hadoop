@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,32 +25,32 @@ import org.apache.hadoop.oncrpc.XDR;
  * READDIRPLUS3 Request
  */
 public class READDIRPLUS3Request extends RequestWithHandle {
-  private final long cookie;
-  private final long cookieVerf;
-  private final int dirCount;
-  private final int maxCount;
+    private final long cookie;
+    private final long cookieVerf;
+    private final int dirCount;
+    private final int maxCount;
 
-  public READDIRPLUS3Request(XDR xdr) throws IOException {
-    super(xdr);
-    cookie = xdr.readHyper();
-    cookieVerf = xdr.readHyper();
-    dirCount = xdr.readInt();
-    maxCount = xdr.readInt();
-  }
+    public READDIRPLUS3Request(XDR xdr) throws IOException {
+        super(xdr);
+        cookie = xdr.readHyper();
+        cookieVerf = xdr.readHyper();
+        dirCount = xdr.readInt();
+        maxCount = xdr.readInt();
+    }
 
-  public long getCookie() {
-    return this.cookie;
-  }
+    public long getCookie() {
+        return this.cookie;
+    }
 
-  public long getCookieVerf() {
-    return this.cookieVerf;
-  }
+    public long getCookieVerf() {
+        return this.cookieVerf;
+    }
 
-  public int getDirCount() {
-    return dirCount;
-  }
+    public int getDirCount() {
+        return dirCount;
+    }
 
-  public int getMaxCount() {
-    return maxCount;
-  }
+    public int getMaxCount() {
+        return maxCount;
+    }
 }

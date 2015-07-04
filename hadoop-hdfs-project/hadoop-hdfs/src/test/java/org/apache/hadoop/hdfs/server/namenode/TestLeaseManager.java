@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,30 +28,30 @@ import org.mockito.Mockito;
 
 
 public class TestLeaseManager {
-  final Configuration conf = new HdfsConfiguration();
-  
-  @Test
-  public void testRemoveLeaseWithPrefixPath() throws Exception {
-    MiniDFSCluster cluster = new MiniDFSCluster.Builder(conf).numDataNodes(2).build();
-    cluster.waitActive();
+    final Configuration conf = new HdfsConfiguration();
 
-    LeaseManager lm = NameNodeAdapter.getLeaseManager(cluster.getNamesystem());
-    lm.addLease("holder1", "/a/b");
-    lm.addLease("holder2", "/a/c");
-    assertNotNull(lm.getLeaseByPath("/a/b"));
-    assertNotNull(lm.getLeaseByPath("/a/c"));
+    @Test
+    public void testRemoveLeaseWithPrefixPath() throws Exception {
+        MiniDFSCluster cluster = new MiniDFSCluster.Builder(conf).numDataNodes(2).build();
+        cluster.waitActive();
 
-    lm.removeLeaseWithPrefixPath("/a");
+        LeaseManager lm = NameNodeAdapter.getLeaseManager(cluster.getNamesystem());
+        lm.addLease("holder1", "/a/b");
+        lm.addLease("holder2", "/a/c");
+        assertNotNull(lm.getLeaseByPath("/a/b"));
+        assertNotNull(lm.getLeaseByPath("/a/c"));
 
-    assertNull(lm.getLeaseByPath("/a/b"));
-    assertNull(lm.getLeaseByPath("/a/c"));
+        lm.removeLeaseWithPrefixPath("/a");
 
-    lm.addLease("holder1", "/a/b");
-    lm.addLease("holder2", "/a/c");
+        assertNull(lm.getLeaseByPath("/a/b"));
+        assertNull(lm.getLeaseByPath("/a/c"));
 
-    lm.removeLeaseWithPrefixPath("/a/");
+        lm.addLease("holder1", "/a/b");
+        lm.addLease("holder2", "/a/c");
 
-    assertNull(lm.getLeaseByPath("/a/b"));
-    assertNull(lm.getLeaseByPath("/a/c"));
-  }
+        lm.removeLeaseWithPrefixPath("/a/");
+
+        assertNull(lm.getLeaseByPath("/a/b"));
+        assertNull(lm.getLeaseByPath("/a/c"));
+    }
 }

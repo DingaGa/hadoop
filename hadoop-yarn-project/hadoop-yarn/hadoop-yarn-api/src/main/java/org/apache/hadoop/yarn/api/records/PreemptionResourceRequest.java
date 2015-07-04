@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,24 +33,24 @@ import org.apache.hadoop.yarn.util.Records;
 @Evolving
 public abstract class PreemptionResourceRequest {
 
-  @Private
-  @Unstable
-  public static PreemptionResourceRequest newInstance(ResourceRequest req) {
-    PreemptionResourceRequest request =
-        Records.newRecord(PreemptionResourceRequest.class);
-    request.setResourceRequest(req);
-    return request;
-  }
+    @Private
+    @Unstable
+    public static PreemptionResourceRequest newInstance(ResourceRequest req) {
+        PreemptionResourceRequest request =
+                Records.newRecord(PreemptionResourceRequest.class);
+        request.setResourceRequest(req);
+        return request;
+    }
 
-  /**
-   * @return Resource described in this request, to be matched against running
-   * containers.
-   */
-  @Public
-  @Evolving
-  public abstract ResourceRequest getResourceRequest();
+    /**
+     * @return Resource described in this request, to be matched against running
+     * containers.
+     */
+    @Public
+    @Evolving
+    public abstract ResourceRequest getResourceRequest();
 
-  @Private
-  @Unstable
-  public abstract void setResourceRequest(ResourceRequest req);
+    @Private
+    @Unstable
+    public abstract void setResourceRequest(ResourceRequest req);
 }

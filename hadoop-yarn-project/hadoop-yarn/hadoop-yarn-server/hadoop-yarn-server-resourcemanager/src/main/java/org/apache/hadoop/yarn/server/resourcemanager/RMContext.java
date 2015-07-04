@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,63 +44,63 @@ import org.apache.hadoop.yarn.server.resourcemanager.security.RMDelegationTokenS
  */
 public interface RMContext {
 
-  Dispatcher getDispatcher();
+    Dispatcher getDispatcher();
 
-  boolean isHAEnabled();
+    boolean isHAEnabled();
 
-  HAServiceState getHAServiceState();
+    HAServiceState getHAServiceState();
 
-  RMStateStore getStateStore();
+    RMStateStore getStateStore();
 
-  ConcurrentMap<ApplicationId, RMApp> getRMApps();
-  
-  ConcurrentMap<String, RMNode> getInactiveRMNodes();
+    ConcurrentMap<ApplicationId, RMApp> getRMApps();
 
-  ConcurrentMap<NodeId, RMNode> getRMNodes();
+    ConcurrentMap<String, RMNode> getInactiveRMNodes();
 
-  AMLivelinessMonitor getAMLivelinessMonitor();
+    ConcurrentMap<NodeId, RMNode> getRMNodes();
 
-  AMLivelinessMonitor getAMFinishingMonitor();
+    AMLivelinessMonitor getAMLivelinessMonitor();
 
-  ContainerAllocationExpirer getContainerAllocationExpirer();
-  
-  DelegationTokenRenewer getDelegationTokenRenewer();
+    AMLivelinessMonitor getAMFinishingMonitor();
 
-  AMRMTokenSecretManager getAMRMTokenSecretManager();
+    ContainerAllocationExpirer getContainerAllocationExpirer();
 
-  RMContainerTokenSecretManager getContainerTokenSecretManager();
-  
-  NMTokenSecretManagerInRM getNMTokenSecretManager();
+    DelegationTokenRenewer getDelegationTokenRenewer();
 
-  ResourceScheduler getScheduler();
+    AMRMTokenSecretManager getAMRMTokenSecretManager();
 
-  NodesListManager getNodesListManager();
+    RMContainerTokenSecretManager getContainerTokenSecretManager();
 
-  ClientToAMTokenSecretManagerInRM getClientToAMTokenSecretManager();
+    NMTokenSecretManagerInRM getNMTokenSecretManager();
 
-  AdminService getRMAdminService();
+    ResourceScheduler getScheduler();
 
-  ClientRMService getClientRMService();
+    NodesListManager getNodesListManager();
 
-  ApplicationMasterService getApplicationMasterService();
+    ClientToAMTokenSecretManagerInRM getClientToAMTokenSecretManager();
 
-  ResourceTrackerService getResourceTrackerService();
+    AdminService getRMAdminService();
 
-  void setClientRMService(ClientRMService clientRMService);
+    ClientRMService getClientRMService();
 
-  RMDelegationTokenSecretManager getRMDelegationTokenSecretManager();
+    ApplicationMasterService getApplicationMasterService();
 
-  void setRMDelegationTokenSecretManager(
-      RMDelegationTokenSecretManager delegationTokenSecretManager);
+    ResourceTrackerService getResourceTrackerService();
 
-  RMApplicationHistoryWriter getRMApplicationHistoryWriter();
+    void setClientRMService(ClientRMService clientRMService);
 
-  void setRMApplicationHistoryWriter(
-      RMApplicationHistoryWriter rmApplicationHistoryWriter);
+    RMDelegationTokenSecretManager getRMDelegationTokenSecretManager();
 
-  ConfigurationProvider getConfigurationProvider();
+    void setRMDelegationTokenSecretManager(
+            RMDelegationTokenSecretManager delegationTokenSecretManager);
 
-  boolean isWorkPreservingRecoveryEnabled();
-  
-  int getEpoch();
+    RMApplicationHistoryWriter getRMApplicationHistoryWriter();
+
+    void setRMApplicationHistoryWriter(
+            RMApplicationHistoryWriter rmApplicationHistoryWriter);
+
+    ConfigurationProvider getConfigurationProvider();
+
+    boolean isWorkPreservingRecoveryEnabled();
+
+    int getEpoch();
 }

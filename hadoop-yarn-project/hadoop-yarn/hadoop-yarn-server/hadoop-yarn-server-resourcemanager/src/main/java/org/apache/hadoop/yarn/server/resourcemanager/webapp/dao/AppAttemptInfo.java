@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,50 +30,50 @@ import org.apache.hadoop.yarn.webapp.util.WebAppUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AppAttemptInfo {
 
-  protected int id;
-  protected long startTime;
-  protected String containerId;
-  protected String nodeHttpAddress;
-  protected String nodeId;
-  protected String logsLink;
+    protected int id;
+    protected long startTime;
+    protected String containerId;
+    protected String nodeHttpAddress;
+    protected String nodeId;
+    protected String logsLink;
 
-  public AppAttemptInfo() {
-  }
-
-  public AppAttemptInfo(RMAppAttempt attempt, String user) {
-    this.startTime = 0;
-    this.containerId = "";
-    this.nodeHttpAddress = "";
-    this.nodeId = "";
-    this.logsLink = "";
-    if (attempt != null) {
-      this.id = attempt.getAppAttemptId().getAttemptId();
-      this.startTime = attempt.getStartTime();
-      Container masterContainer = attempt.getMasterContainer();
-      if (masterContainer != null) {
-        this.containerId = masterContainer.getId().toString();
-        this.nodeHttpAddress = masterContainer.getNodeHttpAddress();
-        this.nodeId = masterContainer.getNodeId().toString();
-        this.logsLink =
-            WebAppUtils.getRunningLogURL("//" + masterContainer.getNodeHttpAddress(),
-                ConverterUtils.toString(masterContainer.getId()), user);
-      }
+    public AppAttemptInfo() {
     }
-  }
 
-  public int getAttemptId() {
-    return this.id;
-  }
+    public AppAttemptInfo(RMAppAttempt attempt, String user) {
+        this.startTime = 0;
+        this.containerId = "";
+        this.nodeHttpAddress = "";
+        this.nodeId = "";
+        this.logsLink = "";
+        if (attempt != null) {
+            this.id = attempt.getAppAttemptId().getAttemptId();
+            this.startTime = attempt.getStartTime();
+            Container masterContainer = attempt.getMasterContainer();
+            if (masterContainer != null) {
+                this.containerId = masterContainer.getId().toString();
+                this.nodeHttpAddress = masterContainer.getNodeHttpAddress();
+                this.nodeId = masterContainer.getNodeId().toString();
+                this.logsLink =
+                        WebAppUtils.getRunningLogURL("//" + masterContainer.getNodeHttpAddress(),
+                                ConverterUtils.toString(masterContainer.getId()), user);
+            }
+        }
+    }
 
-  public long getStartTime() {
-    return this.startTime;
-  }
+    public int getAttemptId() {
+        return this.id;
+    }
 
-  public String getNodeHttpAddress() {
-    return this.nodeHttpAddress;
-  }
+    public long getStartTime() {
+        return this.startTime;
+    }
 
-  public String getLogsLink() {
-    return this.logsLink;
-  }
+    public String getNodeHttpAddress() {
+        return this.nodeHttpAddress;
+    }
+
+    public String getLogsLink() {
+        return this.logsLink;
+    }
 }

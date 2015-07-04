@@ -31,18 +31,18 @@ import org.apache.hadoop.hdfs.server.namenode.FSNamesystem;
  * the first listPath RPC. 
  */
 public privileged aspect ListPathAspects {
-  public static final Log LOG = LogFactory.getLog(ListPathAspects.class);
+    public static final Log LOG = LogFactory.getLog(ListPathAspects.class);
 
-  pointcut callGetListing(FSNamesystem fd, String src,
-                          byte[] startAfter, boolean needLocation) : 
-    call(DirectoryListing FSNamesystem.getListing(String, byte[], boolean))
-    && target(fd)
-    && args(src, startAfter, needLocation);
+    pointcut callGetListing(FSNamesystem fd, String src,
+                            byte[] startAfter, boolean needLocation):
+            call(DirectoryListing FSNamesystem.getListing(String, byte[], boolean))
+                    && target(fd)
+                    && args(src, startAfter, needLocation);
 
-  after(FSNamesystem fd, String src, byte[] startAfter, boolean needLocation) 
-    throws IOException, UnresolvedLinkException: 
-      callGetListing(fd, src, startAfter, needLocation) {
-    LOG.info("FI: callGetListing");
-    fd.delete(src, true);
-  }
+    after(FSNamesystem fd, String src, byte[] startAfter, boolean needLocation)
+            throws IOException, UnresolvedLinkException:
+            callGetListing(fd, src, startAfter, needLocation) {
+        LOG.info("FI: callGetListing");
+        fd.delete(src, true);
+    }
 }

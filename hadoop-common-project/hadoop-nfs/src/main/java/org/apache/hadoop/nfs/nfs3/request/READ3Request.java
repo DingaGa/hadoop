@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,34 +28,34 @@ import com.google.common.annotations.VisibleForTesting;
  * READ3 Request
  */
 public class READ3Request extends RequestWithHandle {
-  private final long offset;
-  private final int count;
+    private final long offset;
+    private final int count;
 
-  public READ3Request(XDR xdr) throws IOException {
-    super(xdr);
-    offset = xdr.readHyper();
-    count = xdr.readInt();
-  }
+    public READ3Request(XDR xdr) throws IOException {
+        super(xdr);
+        offset = xdr.readHyper();
+        count = xdr.readInt();
+    }
 
-  @VisibleForTesting
-  public READ3Request(FileHandle handle, long offset, int count) {
-    super(handle);
-    this.offset = offset;
-    this.count = count;
-  }
-  
-  public long getOffset() {
-    return this.offset;
-  }
-  
-  public int getCount() {
-    return this.count;
-  }
-  
-  @Override
-  public void serialize(XDR xdr) {
-    handle.serialize(xdr);
-    xdr.writeLongAsHyper(offset);
-    xdr.writeInt(count);
-  }
+    @VisibleForTesting
+    public READ3Request(FileHandle handle, long offset, int count) {
+        super(handle);
+        this.offset = offset;
+        this.count = count;
+    }
+
+    public long getOffset() {
+        return this.offset;
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    @Override
+    public void serialize(XDR xdr) {
+        handle.serialize(xdr);
+        xdr.writeLongAsHyper(offset);
+        xdr.writeInt(count);
+    }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,53 +46,53 @@ import com.google.protobuf.ServiceException;
 @Private
 public class ApplicationMasterProtocolPBServiceImpl implements ApplicationMasterProtocolPB {
 
-  private ApplicationMasterProtocol real;
-  
-  public ApplicationMasterProtocolPBServiceImpl(ApplicationMasterProtocol impl) {
-    this.real = impl;
-  }
-  
-  @Override
-  public AllocateResponseProto allocate(RpcController arg0,
-      AllocateRequestProto proto) throws ServiceException {
-    AllocateRequestPBImpl request = new AllocateRequestPBImpl(proto);
-    try {
-      AllocateResponse response = real.allocate(request);
-      return ((AllocateResponsePBImpl)response).getProto();
-    } catch (YarnException e) {
-      throw new ServiceException(e);
-    } catch (IOException e) {
-      throw new ServiceException(e);
-    }
-  }
+    private ApplicationMasterProtocol real;
 
-  @Override
-  public FinishApplicationMasterResponseProto finishApplicationMaster(
-      RpcController arg0, FinishApplicationMasterRequestProto proto)
-      throws ServiceException {
-    FinishApplicationMasterRequestPBImpl request = new FinishApplicationMasterRequestPBImpl(proto);
-    try {
-      FinishApplicationMasterResponse response = real.finishApplicationMaster(request);
-      return ((FinishApplicationMasterResponsePBImpl)response).getProto();
-    } catch (YarnException e) {
-      throw new ServiceException(e);
-    } catch (IOException e) {
-      throw new ServiceException(e);
+    public ApplicationMasterProtocolPBServiceImpl(ApplicationMasterProtocol impl) {
+        this.real = impl;
     }
-  }
 
-  @Override
-  public RegisterApplicationMasterResponseProto registerApplicationMaster(
-      RpcController arg0, RegisterApplicationMasterRequestProto proto)
-      throws ServiceException {
-    RegisterApplicationMasterRequestPBImpl request = new RegisterApplicationMasterRequestPBImpl(proto);
-    try {
-      RegisterApplicationMasterResponse response = real.registerApplicationMaster(request);
-      return ((RegisterApplicationMasterResponsePBImpl)response).getProto();
-    } catch (YarnException e) {
-      throw new ServiceException(e);
-    } catch (IOException e) {
-      throw new ServiceException(e);
+    @Override
+    public AllocateResponseProto allocate(RpcController arg0,
+                                          AllocateRequestProto proto) throws ServiceException {
+        AllocateRequestPBImpl request = new AllocateRequestPBImpl(proto);
+        try {
+            AllocateResponse response = real.allocate(request);
+            return ((AllocateResponsePBImpl) response).getProto();
+        } catch (YarnException e) {
+            throw new ServiceException(e);
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
     }
-  }
+
+    @Override
+    public FinishApplicationMasterResponseProto finishApplicationMaster(
+            RpcController arg0, FinishApplicationMasterRequestProto proto)
+            throws ServiceException {
+        FinishApplicationMasterRequestPBImpl request = new FinishApplicationMasterRequestPBImpl(proto);
+        try {
+            FinishApplicationMasterResponse response = real.finishApplicationMaster(request);
+            return ((FinishApplicationMasterResponsePBImpl) response).getProto();
+        } catch (YarnException e) {
+            throw new ServiceException(e);
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public RegisterApplicationMasterResponseProto registerApplicationMaster(
+            RpcController arg0, RegisterApplicationMasterRequestProto proto)
+            throws ServiceException {
+        RegisterApplicationMasterRequestPBImpl request = new RegisterApplicationMasterRequestPBImpl(proto);
+        try {
+            RegisterApplicationMasterResponse response = real.registerApplicationMaster(request);
+            return ((RegisterApplicationMasterResponsePBImpl) response).getProto();
+        } catch (YarnException e) {
+            throw new ServiceException(e);
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+    }
 }

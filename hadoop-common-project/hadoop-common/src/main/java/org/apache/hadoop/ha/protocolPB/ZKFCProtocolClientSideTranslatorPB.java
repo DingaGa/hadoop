@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,52 +39,52 @@ import com.google.protobuf.ServiceException;
 
 
 public class ZKFCProtocolClientSideTranslatorPB implements
-  ZKFCProtocol, Closeable, ProtocolTranslator {
+        ZKFCProtocol, Closeable, ProtocolTranslator {
 
-  private final static RpcController NULL_CONTROLLER = null;
-  private final ZKFCProtocolPB rpcProxy;
+    private final static RpcController NULL_CONTROLLER = null;
+    private final ZKFCProtocolPB rpcProxy;
 
-  public ZKFCProtocolClientSideTranslatorPB(
-      InetSocketAddress addr, Configuration conf,
-      SocketFactory socketFactory, int timeout) throws IOException {
-    RPC.setProtocolEngine(conf, ZKFCProtocolPB.class,
-        ProtobufRpcEngine.class);
-    rpcProxy = RPC.getProxy(ZKFCProtocolPB.class,
-        RPC.getProtocolVersion(ZKFCProtocolPB.class), addr,
-        UserGroupInformation.getCurrentUser(), conf, socketFactory, timeout);
-  }
-
-  @Override
-  public void cedeActive(int millisToCede) throws IOException,
-      AccessControlException {
-    try {
-      CedeActiveRequestProto req = CedeActiveRequestProto.newBuilder()
-          .setMillisToCede(millisToCede)
-          .build();
-      rpcProxy.cedeActive(NULL_CONTROLLER, req);      
-    } catch (ServiceException e) {
-      throw ProtobufHelper.getRemoteException(e);
+    public ZKFCProtocolClientSideTranslatorPB(
+            InetSocketAddress addr, Configuration conf,
+            SocketFactory socketFactory, int timeout) throws IOException {
+        RPC.setProtocolEngine(conf, ZKFCProtocolPB.class,
+                ProtobufRpcEngine.class);
+        rpcProxy = RPC.getProxy(ZKFCProtocolPB.class,
+                RPC.getProtocolVersion(ZKFCProtocolPB.class), addr,
+                UserGroupInformation.getCurrentUser(), conf, socketFactory, timeout);
     }
-  }
 
-  @Override
-  public void gracefulFailover() throws IOException, AccessControlException {
-    try {
-      rpcProxy.gracefulFailover(NULL_CONTROLLER,
-          GracefulFailoverRequestProto.getDefaultInstance());
-    } catch (ServiceException e) {
-      throw ProtobufHelper.getRemoteException(e);
+    @Override
+    public void cedeActive(int millisToCede) throws IOException,
+            AccessControlException {
+        try {
+            CedeActiveRequestProto req = CedeActiveRequestProto.newBuilder()
+                    .setMillisToCede(millisToCede)
+                    .build();
+            rpcProxy.cedeActive(NULL_CONTROLLER, req);
+        } catch (ServiceException e) {
+            throw ProtobufHelper.getRemoteException(e);
+        }
     }
-  }
+
+    @Override
+    public void gracefulFailover() throws IOException, AccessControlException {
+        try {
+            rpcProxy.gracefulFailover(NULL_CONTROLLER,
+                    GracefulFailoverRequestProto.getDefaultInstance());
+        } catch (ServiceException e) {
+            throw ProtobufHelper.getRemoteException(e);
+        }
+    }
 
 
-  @Override
-  public void close() {
-    RPC.stopProxy(rpcProxy);
-  }
+    @Override
+    public void close() {
+        RPC.stopProxy(rpcProxy);
+    }
 
-  @Override
-  public Object getUnderlyingProxyObject() {
-    return rpcProxy;
-  }
+    @Override
+    public Object getUnderlyingProxyObject() {
+        return rpcProxy;
+    }
 }

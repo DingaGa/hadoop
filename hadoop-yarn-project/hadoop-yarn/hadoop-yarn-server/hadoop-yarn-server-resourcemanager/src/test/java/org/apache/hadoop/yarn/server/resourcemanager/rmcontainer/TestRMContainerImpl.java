@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,190 +60,190 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TestRMContainerImpl {
 
-  @Test
-  public void testReleaseWhileRunning() {
+    @Test
+    public void testReleaseWhileRunning() {
 
-    DrainDispatcher drainDispatcher = new DrainDispatcher();
-    EventHandler<RMAppAttemptEvent> appAttemptEventHandler = mock(EventHandler.class);
-    EventHandler generic = mock(EventHandler.class);
-    drainDispatcher.register(RMAppAttemptEventType.class,
-        appAttemptEventHandler);
-    drainDispatcher.register(RMNodeEventType.class, generic);
-    drainDispatcher.init(new YarnConfiguration());
-    drainDispatcher.start();
-    NodeId nodeId = BuilderUtils.newNodeId("host", 3425);
-    ApplicationId appId = BuilderUtils.newApplicationId(1, 1);
-    ApplicationAttemptId appAttemptId = BuilderUtils.newApplicationAttemptId(
-        appId, 1);
-    ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
-    ContainerAllocationExpirer expirer = mock(ContainerAllocationExpirer.class);
+        DrainDispatcher drainDispatcher = new DrainDispatcher();
+        EventHandler<RMAppAttemptEvent> appAttemptEventHandler = mock(EventHandler.class);
+        EventHandler generic = mock(EventHandler.class);
+        drainDispatcher.register(RMAppAttemptEventType.class,
+                appAttemptEventHandler);
+        drainDispatcher.register(RMNodeEventType.class, generic);
+        drainDispatcher.init(new YarnConfiguration());
+        drainDispatcher.start();
+        NodeId nodeId = BuilderUtils.newNodeId("host", 3425);
+        ApplicationId appId = BuilderUtils.newApplicationId(1, 1);
+        ApplicationAttemptId appAttemptId = BuilderUtils.newApplicationAttemptId(
+                appId, 1);
+        ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
+        ContainerAllocationExpirer expirer = mock(ContainerAllocationExpirer.class);
 
-    Resource resource = BuilderUtils.newResource(512, 1);
-    Priority priority = BuilderUtils.newPriority(5);
+        Resource resource = BuilderUtils.newResource(512, 1);
+        Priority priority = BuilderUtils.newPriority(5);
 
-    Container container = BuilderUtils.newContainer(containerId, nodeId,
-        "host:3465", resource, priority, null);
+        Container container = BuilderUtils.newContainer(containerId, nodeId,
+                "host:3465", resource, priority, null);
 
-    RMApplicationHistoryWriter writer = mock(RMApplicationHistoryWriter.class);
-    RMContext rmContext = mock(RMContext.class);
-    when(rmContext.getDispatcher()).thenReturn(drainDispatcher);
-    when(rmContext.getContainerAllocationExpirer()).thenReturn(expirer);
-    when(rmContext.getRMApplicationHistoryWriter()).thenReturn(writer);
-    RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
-        nodeId, "user", rmContext);
+        RMApplicationHistoryWriter writer = mock(RMApplicationHistoryWriter.class);
+        RMContext rmContext = mock(RMContext.class);
+        when(rmContext.getDispatcher()).thenReturn(drainDispatcher);
+        when(rmContext.getContainerAllocationExpirer()).thenReturn(expirer);
+        when(rmContext.getRMApplicationHistoryWriter()).thenReturn(writer);
+        RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
+                nodeId, "user", rmContext);
 
-    assertEquals(RMContainerState.NEW, rmContainer.getState());
-    assertEquals(resource, rmContainer.getAllocatedResource());
-    assertEquals(nodeId, rmContainer.getAllocatedNode());
-    assertEquals(priority, rmContainer.getAllocatedPriority());
-    verify(writer).containerStarted(any(RMContainer.class));
+        assertEquals(RMContainerState.NEW, rmContainer.getState());
+        assertEquals(resource, rmContainer.getAllocatedResource());
+        assertEquals(nodeId, rmContainer.getAllocatedNode());
+        assertEquals(priority, rmContainer.getAllocatedPriority());
+        verify(writer).containerStarted(any(RMContainer.class));
 
-    rmContainer.handle(new RMContainerEvent(containerId,
-        RMContainerEventType.START));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.ALLOCATED, rmContainer.getState());
-    rmContainer.handle(new RMContainerEvent(containerId,
-        RMContainerEventType.ACQUIRED));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.ACQUIRED, rmContainer.getState());
+        rmContainer.handle(new RMContainerEvent(containerId,
+                RMContainerEventType.START));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.ALLOCATED, rmContainer.getState());
+        rmContainer.handle(new RMContainerEvent(containerId,
+                RMContainerEventType.ACQUIRED));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.ACQUIRED, rmContainer.getState());
 
-    rmContainer.handle(new RMContainerEvent(containerId,
-        RMContainerEventType.LAUNCHED));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.RUNNING, rmContainer.getState());
-    assertEquals("//host:3465/node/containerlogs/container_1_0001_01_000001/user",
-        rmContainer.getLogURL());
+        rmContainer.handle(new RMContainerEvent(containerId,
+                RMContainerEventType.LAUNCHED));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.RUNNING, rmContainer.getState());
+        assertEquals("//host:3465/node/containerlogs/container_1_0001_01_000001/user",
+                rmContainer.getLogURL());
 
-    // In RUNNING state. Verify RELEASED and associated actions.
-    reset(appAttemptEventHandler);
-    ContainerStatus containerStatus = SchedulerUtils
-        .createAbnormalContainerStatus(containerId,
-            SchedulerUtils.RELEASED_CONTAINER);
-    rmContainer.handle(new RMContainerFinishedEvent(containerId,
-        containerStatus, RMContainerEventType.RELEASED));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.RELEASED, rmContainer.getState());
-    assertEquals(SchedulerUtils.RELEASED_CONTAINER,
-        rmContainer.getDiagnosticsInfo());
-    assertEquals(ContainerExitStatus.ABORTED,
-        rmContainer.getContainerExitStatus());
-    assertEquals(ContainerState.COMPLETE, rmContainer.getContainerState());
-    verify(writer).containerFinished(any(RMContainer.class));
+        // In RUNNING state. Verify RELEASED and associated actions.
+        reset(appAttemptEventHandler);
+        ContainerStatus containerStatus = SchedulerUtils
+                .createAbnormalContainerStatus(containerId,
+                        SchedulerUtils.RELEASED_CONTAINER);
+        rmContainer.handle(new RMContainerFinishedEvent(containerId,
+                containerStatus, RMContainerEventType.RELEASED));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.RELEASED, rmContainer.getState());
+        assertEquals(SchedulerUtils.RELEASED_CONTAINER,
+                rmContainer.getDiagnosticsInfo());
+        assertEquals(ContainerExitStatus.ABORTED,
+                rmContainer.getContainerExitStatus());
+        assertEquals(ContainerState.COMPLETE, rmContainer.getContainerState());
+        verify(writer).containerFinished(any(RMContainer.class));
 
-    ArgumentCaptor<RMAppAttemptContainerFinishedEvent> captor = ArgumentCaptor
-        .forClass(RMAppAttemptContainerFinishedEvent.class);
-    verify(appAttemptEventHandler).handle(captor.capture());
-    RMAppAttemptContainerFinishedEvent cfEvent = captor.getValue();
-    assertEquals(appAttemptId, cfEvent.getApplicationAttemptId());
-    assertEquals(containerStatus, cfEvent.getContainerStatus());
-    assertEquals(RMAppAttemptEventType.CONTAINER_FINISHED, cfEvent.getType());
-    
-    // In RELEASED state. A FINIHSED event may come in.
-    rmContainer.handle(new RMContainerFinishedEvent(containerId, SchedulerUtils
-        .createAbnormalContainerStatus(containerId, "FinishedContainer"),
-        RMContainerEventType.FINISHED));
-    assertEquals(RMContainerState.RELEASED, rmContainer.getState());
-  }
+        ArgumentCaptor<RMAppAttemptContainerFinishedEvent> captor = ArgumentCaptor
+                .forClass(RMAppAttemptContainerFinishedEvent.class);
+        verify(appAttemptEventHandler).handle(captor.capture());
+        RMAppAttemptContainerFinishedEvent cfEvent = captor.getValue();
+        assertEquals(appAttemptId, cfEvent.getApplicationAttemptId());
+        assertEquals(containerStatus, cfEvent.getContainerStatus());
+        assertEquals(RMAppAttemptEventType.CONTAINER_FINISHED, cfEvent.getType());
 
-  @Test
-  public void testExpireWhileRunning() {
+        // In RELEASED state. A FINIHSED event may come in.
+        rmContainer.handle(new RMContainerFinishedEvent(containerId, SchedulerUtils
+                .createAbnormalContainerStatus(containerId, "FinishedContainer"),
+                RMContainerEventType.FINISHED));
+        assertEquals(RMContainerState.RELEASED, rmContainer.getState());
+    }
 
-    DrainDispatcher drainDispatcher = new DrainDispatcher();
-    EventHandler<RMAppAttemptEvent> appAttemptEventHandler = mock(EventHandler.class);
-    EventHandler generic = mock(EventHandler.class);
-    drainDispatcher.register(RMAppAttemptEventType.class,
-        appAttemptEventHandler);
-    drainDispatcher.register(RMNodeEventType.class, generic);
-    drainDispatcher.init(new YarnConfiguration());
-    drainDispatcher.start();
-    NodeId nodeId = BuilderUtils.newNodeId("host", 3425);
-    ApplicationId appId = BuilderUtils.newApplicationId(1, 1);
-    ApplicationAttemptId appAttemptId = BuilderUtils.newApplicationAttemptId(
-        appId, 1);
-    ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
-    ContainerAllocationExpirer expirer = mock(ContainerAllocationExpirer.class);
+    @Test
+    public void testExpireWhileRunning() {
 
-    Resource resource = BuilderUtils.newResource(512, 1);
-    Priority priority = BuilderUtils.newPriority(5);
+        DrainDispatcher drainDispatcher = new DrainDispatcher();
+        EventHandler<RMAppAttemptEvent> appAttemptEventHandler = mock(EventHandler.class);
+        EventHandler generic = mock(EventHandler.class);
+        drainDispatcher.register(RMAppAttemptEventType.class,
+                appAttemptEventHandler);
+        drainDispatcher.register(RMNodeEventType.class, generic);
+        drainDispatcher.init(new YarnConfiguration());
+        drainDispatcher.start();
+        NodeId nodeId = BuilderUtils.newNodeId("host", 3425);
+        ApplicationId appId = BuilderUtils.newApplicationId(1, 1);
+        ApplicationAttemptId appAttemptId = BuilderUtils.newApplicationAttemptId(
+                appId, 1);
+        ContainerId containerId = BuilderUtils.newContainerId(appAttemptId, 1);
+        ContainerAllocationExpirer expirer = mock(ContainerAllocationExpirer.class);
 
-    Container container = BuilderUtils.newContainer(containerId, nodeId,
-        "host:3465", resource, priority, null);
+        Resource resource = BuilderUtils.newResource(512, 1);
+        Priority priority = BuilderUtils.newPriority(5);
 
-    RMApplicationHistoryWriter writer = mock(RMApplicationHistoryWriter.class);
-    RMContext rmContext = mock(RMContext.class);
-    when(rmContext.getDispatcher()).thenReturn(drainDispatcher);
-    when(rmContext.getContainerAllocationExpirer()).thenReturn(expirer);
-    when(rmContext.getRMApplicationHistoryWriter()).thenReturn(writer);
-    RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
-        nodeId, "user", rmContext);
+        Container container = BuilderUtils.newContainer(containerId, nodeId,
+                "host:3465", resource, priority, null);
 
-    assertEquals(RMContainerState.NEW, rmContainer.getState());
-    assertEquals(resource, rmContainer.getAllocatedResource());
-    assertEquals(nodeId, rmContainer.getAllocatedNode());
-    assertEquals(priority, rmContainer.getAllocatedPriority());
-    verify(writer).containerStarted(any(RMContainer.class));
+        RMApplicationHistoryWriter writer = mock(RMApplicationHistoryWriter.class);
+        RMContext rmContext = mock(RMContext.class);
+        when(rmContext.getDispatcher()).thenReturn(drainDispatcher);
+        when(rmContext.getContainerAllocationExpirer()).thenReturn(expirer);
+        when(rmContext.getRMApplicationHistoryWriter()).thenReturn(writer);
+        RMContainer rmContainer = new RMContainerImpl(container, appAttemptId,
+                nodeId, "user", rmContext);
 
-    rmContainer.handle(new RMContainerEvent(containerId,
-        RMContainerEventType.START));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.ALLOCATED, rmContainer.getState());
+        assertEquals(RMContainerState.NEW, rmContainer.getState());
+        assertEquals(resource, rmContainer.getAllocatedResource());
+        assertEquals(nodeId, rmContainer.getAllocatedNode());
+        assertEquals(priority, rmContainer.getAllocatedPriority());
+        verify(writer).containerStarted(any(RMContainer.class));
 
-    rmContainer.handle(new RMContainerEvent(containerId,
-        RMContainerEventType.ACQUIRED));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.ACQUIRED, rmContainer.getState());
+        rmContainer.handle(new RMContainerEvent(containerId,
+                RMContainerEventType.START));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.ALLOCATED, rmContainer.getState());
 
-    rmContainer.handle(new RMContainerEvent(containerId,
-        RMContainerEventType.LAUNCHED));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.RUNNING, rmContainer.getState());
-    assertEquals("//host:3465/node/containerlogs/container_1_0001_01_000001/user",
-        rmContainer.getLogURL());
+        rmContainer.handle(new RMContainerEvent(containerId,
+                RMContainerEventType.ACQUIRED));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.ACQUIRED, rmContainer.getState());
 
-    // In RUNNING state. Verify EXPIRE and associated actions.
-    reset(appAttemptEventHandler);
-    ContainerStatus containerStatus = SchedulerUtils
-        .createAbnormalContainerStatus(containerId,
-            SchedulerUtils.EXPIRED_CONTAINER);
-    rmContainer.handle(new RMContainerFinishedEvent(containerId,
-        containerStatus, RMContainerEventType.EXPIRE));
-    drainDispatcher.await();
-    assertEquals(RMContainerState.RUNNING, rmContainer.getState());
-    verify(writer, never()).containerFinished(any(RMContainer.class));
-  }
-  
-  @Test
-  public void testExistenceOfResourceRequestInRMContainer() throws Exception {
-    Configuration conf = new Configuration();
-    MockRM rm1 = new MockRM(conf);
-    rm1.start();
-    MockNM nm1 = rm1.registerNode("unknownhost:1234", 8000);
-    RMApp app1 = rm1.submitApp(1024);
-    MockAM am1 = MockRM.launchAndRegisterAM(app1, rm1, nm1);
-    ResourceScheduler scheduler = rm1.getResourceScheduler();
+        rmContainer.handle(new RMContainerEvent(containerId,
+                RMContainerEventType.LAUNCHED));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.RUNNING, rmContainer.getState());
+        assertEquals("//host:3465/node/containerlogs/container_1_0001_01_000001/user",
+                rmContainer.getLogURL());
 
-    // request a container.
-    am1.allocate("127.0.0.1", 1024, 1, new ArrayList<ContainerId>());
-    ContainerId containerId2 = ContainerId.newInstance(
-        am1.getApplicationAttemptId(), 2);
-    rm1.waitForState(nm1, containerId2, RMContainerState.ALLOCATED);
+        // In RUNNING state. Verify EXPIRE and associated actions.
+        reset(appAttemptEventHandler);
+        ContainerStatus containerStatus = SchedulerUtils
+                .createAbnormalContainerStatus(containerId,
+                        SchedulerUtils.EXPIRED_CONTAINER);
+        rmContainer.handle(new RMContainerFinishedEvent(containerId,
+                containerStatus, RMContainerEventType.EXPIRE));
+        drainDispatcher.await();
+        assertEquals(RMContainerState.RUNNING, rmContainer.getState());
+        verify(writer, never()).containerFinished(any(RMContainer.class));
+    }
 
-    // Verify whether list of ResourceRequest is present in RMContainer
-    // while moving to ALLOCATED state
-    Assert.assertNotNull(scheduler.getRMContainer(containerId2)
-        .getResourceRequests());
+    @Test
+    public void testExistenceOfResourceRequestInRMContainer() throws Exception {
+        Configuration conf = new Configuration();
+        MockRM rm1 = new MockRM(conf);
+        rm1.start();
+        MockNM nm1 = rm1.registerNode("unknownhost:1234", 8000);
+        RMApp app1 = rm1.submitApp(1024);
+        MockAM am1 = MockRM.launchAndRegisterAM(app1, rm1, nm1);
+        ResourceScheduler scheduler = rm1.getResourceScheduler();
 
-    // Allocate container
-    am1.allocate(new ArrayList<ResourceRequest>(), new ArrayList<ContainerId>())
-        .getAllocatedContainers();
-    rm1.waitForState(nm1, containerId2, RMContainerState.ACQUIRED);
+        // request a container.
+        am1.allocate("127.0.0.1", 1024, 1, new ArrayList<ContainerId>());
+        ContainerId containerId2 = ContainerId.newInstance(
+                am1.getApplicationAttemptId(), 2);
+        rm1.waitForState(nm1, containerId2, RMContainerState.ALLOCATED);
 
-    // After RMContainer moving to ACQUIRED state, list of ResourceRequest will
-    // be empty
-    Assert.assertNull(scheduler.getRMContainer(containerId2)
-        .getResourceRequests());
-  }
+        // Verify whether list of ResourceRequest is present in RMContainer
+        // while moving to ALLOCATED state
+        Assert.assertNotNull(scheduler.getRMContainer(containerId2)
+                .getResourceRequests());
+
+        // Allocate container
+        am1.allocate(new ArrayList<ResourceRequest>(), new ArrayList<ContainerId>())
+                .getAllocatedContainers();
+        rm1.waitForState(nm1, containerId2, RMContainerState.ACQUIRED);
+
+        // After RMContainer moving to ACQUIRED state, list of ResourceRequest will
+        // be empty
+        Assert.assertNull(scheduler.getRMContainer(containerId2)
+                .getResourceRequests());
+    }
 }

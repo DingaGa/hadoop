@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -102,10 +102,10 @@ public class GraphiteSink implements MetricsSink, Closeable {
         }
 
         try {
-            if(writer != null){
-              writer.write(lines.toString());
+            if (writer != null) {
+                writer.write(lines.toString());
             } else {
-              throw new MetricsException("Writer in GraphiteSink is null!");
+                throw new MetricsException("Writer in GraphiteSink is null!");
             }
         } catch (Exception e) {
             throw new MetricsException("Error sending metrics", e);
@@ -123,18 +123,18 @@ public class GraphiteSink implements MetricsSink, Closeable {
 
     @Override
     public void close() throws IOException {
-      try {
-        IOUtils.closeStream(writer);
-        writer = null;
-        LOG.info("writer in GraphiteSink is closed!");
-      } catch (Throwable e){
-        throw new MetricsException("Error closing writer", e);
-      } finally {
-        if (socket != null && !socket.isClosed()) {
-          socket.close();
-          socket = null;
-          LOG.info("socket in GraphiteSink is closed!");
+        try {
+            IOUtils.closeStream(writer);
+            writer = null;
+            LOG.info("writer in GraphiteSink is closed!");
+        } catch (Throwable e) {
+            throw new MetricsException("Error closing writer", e);
+        } finally {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                socket = null;
+                LOG.info("socket in GraphiteSink is closed!");
+            }
         }
-      }
     }
 }

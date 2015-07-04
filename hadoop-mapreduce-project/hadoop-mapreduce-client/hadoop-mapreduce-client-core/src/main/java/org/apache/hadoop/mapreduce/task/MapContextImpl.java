@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,44 +41,44 @@ import org.apache.hadoop.mapreduce.TaskAttemptID;
  */
 @InterfaceAudience.Private
 @InterfaceStability.Unstable
-public class MapContextImpl<KEYIN,VALUEIN,KEYOUT,VALUEOUT> 
-    extends TaskInputOutputContextImpl<KEYIN,VALUEIN,KEYOUT,VALUEOUT> 
-    implements MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
-  private RecordReader<KEYIN,VALUEIN> reader;
-  private InputSplit split;
+public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+        extends TaskInputOutputContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+        implements MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
+    private RecordReader<KEYIN, VALUEIN> reader;
+    private InputSplit split;
 
-  public MapContextImpl(Configuration conf, TaskAttemptID taskid,
-                        RecordReader<KEYIN,VALUEIN> reader,
-                        RecordWriter<KEYOUT,VALUEOUT> writer,
-                        OutputCommitter committer,
-                        StatusReporter reporter,
-                        InputSplit split) {
-    super(conf, taskid, writer, committer, reporter);
-    this.reader = reader;
-    this.split = split;
-  }
+    public MapContextImpl(Configuration conf, TaskAttemptID taskid,
+                          RecordReader<KEYIN, VALUEIN> reader,
+                          RecordWriter<KEYOUT, VALUEOUT> writer,
+                          OutputCommitter committer,
+                          StatusReporter reporter,
+                          InputSplit split) {
+        super(conf, taskid, writer, committer, reporter);
+        this.reader = reader;
+        this.split = split;
+    }
 
-  /**
-   * Get the input split for this map.
-   */
-  public InputSplit getInputSplit() {
-    return split;
-  }
+    /**
+     * Get the input split for this map.
+     */
+    public InputSplit getInputSplit() {
+        return split;
+    }
 
-  @Override
-  public KEYIN getCurrentKey() throws IOException, InterruptedException {
-    return reader.getCurrentKey();
-  }
+    @Override
+    public KEYIN getCurrentKey() throws IOException, InterruptedException {
+        return reader.getCurrentKey();
+    }
 
-  @Override
-  public VALUEIN getCurrentValue() throws IOException, InterruptedException {
-    return reader.getCurrentValue();
-  }
+    @Override
+    public VALUEIN getCurrentValue() throws IOException, InterruptedException {
+        return reader.getCurrentValue();
+    }
 
-  @Override
-  public boolean nextKeyValue() throws IOException, InterruptedException {
-    return reader.nextKeyValue();
-  }
+    @Override
+    public boolean nextKeyValue() throws IOException, InterruptedException {
+        return reader.nextKeyValue();
+    }
 
 }
      

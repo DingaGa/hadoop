@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,56 +38,56 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 @Singleton
 public class RMWebAppFilter extends GuiceContainer {
 
-  private Injector injector;
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+    private Injector injector;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-  // define a set of URIs which do not need to do redirection
-  private static final Set<String> NON_REDIRECTED_URIS = Sets.newHashSet(
-      "/conf", "/stacks", "/logLevel", "/logs");
+    // define a set of URIs which do not need to do redirection
+    private static final Set<String> NON_REDIRECTED_URIS = Sets.newHashSet(
+            "/conf", "/stacks", "/logLevel", "/logs");
 
-  @Inject
-  public RMWebAppFilter(Injector injector) {
-    super(injector);
-    this.injector=injector;
-  }
-
-  @Override
-  public void doFilter(HttpServletRequest request,
-      HttpServletResponse response, FilterChain chain) throws IOException,
-      ServletException {
-    response.setCharacterEncoding("UTF-8");
-    String uri = HtmlQuoting.quoteHtmlChars(request.getRequestURI());
-
-    if (uri == null) {
-      uri = "/";
-    }
-    RMWebApp rmWebApp = injector.getInstance(RMWebApp.class);
-    rmWebApp.checkIfStandbyRM();
-    if (rmWebApp.isStandby()
-        && shouldRedirect(rmWebApp, uri)) {
-      String redirectPath = rmWebApp.getRedirectPath() + uri;
-
-      if (redirectPath != null && !redirectPath.isEmpty()) {
-        String redirectMsg =
-            "This is standby RM. Redirecting to the current active RM: "
-                + redirectPath;
-        response.addHeader("Refresh", "3; url=" + redirectPath);
-        PrintWriter out = response.getWriter();
-        out.println(redirectMsg);
-        return;
-      }
+    @Inject
+    public RMWebAppFilter(Injector injector) {
+        super(injector);
+        this.injector = injector;
     }
 
-    super.doFilter(request, response, chain);
+    @Override
+    public void doFilter(HttpServletRequest request,
+                         HttpServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
+        response.setCharacterEncoding("UTF-8");
+        String uri = HtmlQuoting.quoteHtmlChars(request.getRequestURI());
 
-  }
+        if (uri == null) {
+            uri = "/";
+        }
+        RMWebApp rmWebApp = injector.getInstance(RMWebApp.class);
+        rmWebApp.checkIfStandbyRM();
+        if (rmWebApp.isStandby()
+                && shouldRedirect(rmWebApp, uri)) {
+            String redirectPath = rmWebApp.getRedirectPath() + uri;
 
-  private boolean shouldRedirect(RMWebApp rmWebApp, String uri) {
-    return !uri.equals("/" + rmWebApp.wsName() + "/v1/cluster/info")
-        && !uri.equals("/" + rmWebApp.name() + "/cluster")
-        && !NON_REDIRECTED_URIS.contains(uri);
-  }
+            if (redirectPath != null && !redirectPath.isEmpty()) {
+                String redirectMsg =
+                        "This is standby RM. Redirecting to the current active RM: "
+                                + redirectPath;
+                response.addHeader("Refresh", "3; url=" + redirectPath);
+                PrintWriter out = response.getWriter();
+                out.println(redirectMsg);
+                return;
+            }
+        }
+
+        super.doFilter(request, response, chain);
+
+    }
+
+    private boolean shouldRedirect(RMWebApp rmWebApp, String uri) {
+        return !uri.equals("/" + rmWebApp.wsName() + "/v1/cluster/info")
+                && !uri.equals("/" + rmWebApp.name() + "/cluster")
+                && !NON_REDIRECTED_URIS.contains(uri);
+    }
 }

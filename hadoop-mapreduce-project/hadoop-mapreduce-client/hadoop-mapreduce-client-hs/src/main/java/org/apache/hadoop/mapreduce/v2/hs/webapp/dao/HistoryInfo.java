@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,32 +29,32 @@ import org.apache.hadoop.util.VersionInfo;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class HistoryInfo {
 
-  protected long startedOn;
-  protected String hadoopVersion;
-  protected String hadoopBuildVersion;
-  protected String hadoopVersionBuiltOn;
+    protected long startedOn;
+    protected String hadoopVersion;
+    protected String hadoopBuildVersion;
+    protected String hadoopVersionBuiltOn;
 
-  public HistoryInfo() {
-    this.startedOn = JobHistoryServer.historyServerTimeStamp;
-    this.hadoopVersion = VersionInfo.getVersion();
-    this.hadoopBuildVersion = VersionInfo.getBuildVersion();
-    this.hadoopVersionBuiltOn = VersionInfo.getDate();
-  }
+    public HistoryInfo() {
+        this.startedOn = JobHistoryServer.historyServerTimeStamp;
+        this.hadoopVersion = VersionInfo.getVersion();
+        this.hadoopBuildVersion = VersionInfo.getBuildVersion();
+        this.hadoopVersionBuiltOn = VersionInfo.getDate();
+    }
 
-  public String getHadoopVersion() {
-    return this.hadoopVersion;
-  }
+    public String getHadoopVersion() {
+        return this.hadoopVersion;
+    }
 
-  public String getHadoopBuildVersion() {
-    return this.hadoopBuildVersion;
-  }
+    public String getHadoopBuildVersion() {
+        return this.hadoopBuildVersion;
+    }
 
-  public String getHadoopVersionBuiltOn() {
-    return this.hadoopVersionBuiltOn;
-  }
+    public String getHadoopVersionBuiltOn() {
+        return this.hadoopVersionBuiltOn;
+    }
 
-  public long getStartedOn() {
-    return this.startedOn;
-  }
+    public long getStartedOn() {
+        return this.startedOn;
+    }
 
 }

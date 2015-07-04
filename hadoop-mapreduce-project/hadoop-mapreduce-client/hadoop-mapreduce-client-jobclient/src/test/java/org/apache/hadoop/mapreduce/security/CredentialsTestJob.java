@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,97 +46,97 @@ import org.apache.hadoop.util.ToolRunner;
  */
 public class CredentialsTestJob extends Configured implements Tool {
 
-  private static final int NUM_OF_KEYS = 10;
+    private static final int NUM_OF_KEYS = 10;
 
-  private static void checkSecrets(Credentials ts) {
-    if  ( ts == null){
-      throw new RuntimeException("The credentials are not available"); 
-      // fail the test
+    private static void checkSecrets(Credentials ts) {
+        if (ts == null) {
+            throw new RuntimeException("The credentials are not available");
+            // fail the test
+        }
+
+        for (int i = 0; i < NUM_OF_KEYS; i++) {
+            String secretName = "alias" + i;
+            // get token storage and a key
+            byte[] secretValue = ts.getSecretKey(new Text(secretName));
+            System.out.println(secretValue);
+
+            if (secretValue == null) {
+                throw new RuntimeException("The key " + secretName + " is not available. ");
+                // fail the test
+            }
+
+            String secretValueStr = new String(secretValue);
+
+            if (!("password" + i).equals(secretValueStr)) {
+                throw new RuntimeException("The key " + secretName +
+                        " is not correct. Expected value is " + ("password" + i) +
+                        ". Actual value is " + secretValueStr); // fail the test
+            }
+        }
     }
 
-    for(int i=0; i<NUM_OF_KEYS; i++) {
-      String secretName = "alias"+i;
-      // get token storage and a key
-      byte[] secretValue =  ts.getSecretKey(new Text(secretName));
-      System.out.println(secretValue);
+    public static class CredentialsTestMapper
+            extends Mapper<IntWritable, IntWritable, IntWritable, NullWritable> {
+        Credentials ts;
 
-      if (secretValue == null){
-        throw new RuntimeException("The key "+ secretName + " is not available. "); 
-        // fail the test
-      }
+        protected void setup(Context context)
+                throws IOException, InterruptedException {
+            ts = context.getCredentials();
+        }
 
-      String secretValueStr = new String (secretValue);
+        public void map(IntWritable key, IntWritable value, Context context
+        ) throws IOException, InterruptedException {
+            checkSecrets(ts);
 
-      if  ( !("password"+i).equals(secretValueStr)){
-        throw new RuntimeException("The key "+ secretName +
-            " is not correct. Expected value is "+ ("password"+i) +
-            ". Actual value is " + secretValueStr); // fail the test
-      }        
-    }
-  }
-
-  public static class CredentialsTestMapper 
-  extends Mapper<IntWritable, IntWritable, IntWritable, NullWritable> {
-    Credentials ts;
-
-    protected void setup(Context context) 
-    throws IOException, InterruptedException {
-      ts = context.getCredentials();
+        }
     }
 
-    public void map(IntWritable key, IntWritable value, Context context
-    ) throws IOException, InterruptedException {
-      checkSecrets(ts);
+    public static class CredentialsTestReducer
+            extends Reducer<IntWritable, NullWritable, NullWritable, NullWritable> {
+        Credentials ts;
 
+        protected void setup(Context context)
+                throws IOException, InterruptedException {
+            ts = context.getCredentials();
+        }
+
+        public void reduce(IntWritable key, Iterable<NullWritable> values,
+                           Context context)
+                throws IOException {
+            checkSecrets(ts);
+        }
     }
-  }
 
-  public static class CredentialsTestReducer  
-  extends Reducer<IntWritable, NullWritable, NullWritable, NullWritable> {
-    Credentials ts;
-
-    protected void setup(Context context) 
-    throws IOException, InterruptedException {
-      ts = context.getCredentials();
+    public static void main(String[] args) throws Exception {
+        int res = ToolRunner.run(new Configuration(), new CredentialsTestJob(), args);
+        System.exit(res);
     }
 
-    public void reduce(IntWritable key, Iterable<NullWritable> values,
-        Context context)
-    throws IOException {
-      checkSecrets(ts);
+    public Job createJob()
+            throws IOException {
+        Configuration conf = getConf();
+        conf.setInt(MRJobConfig.NUM_MAPS, 1);
+        Job job = Job.getInstance(conf, "test");
+        job.setNumReduceTasks(1);
+        job.setJarByClass(CredentialsTestJob.class);
+        job.setNumReduceTasks(1);
+        job.setMapperClass(CredentialsTestJob.CredentialsTestMapper.class);
+        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputValueClass(NullWritable.class);
+        job.setReducerClass(CredentialsTestJob.CredentialsTestReducer.class);
+        job.setInputFormatClass(SleepJob.SleepInputFormat.class);
+        job.setPartitionerClass(SleepJob.SleepJobPartitioner.class);
+        job.setOutputFormatClass(NullOutputFormat.class);
+        job.setSpeculativeExecution(false);
+        job.setJobName("test job");
+        FileInputFormat.addInputPath(job, new Path("ignored"));
+        return job;
     }
-  }
 
-  public static void main(String[] args) throws Exception {
-    int res = ToolRunner.run(new Configuration(), new CredentialsTestJob(), args);
-    System.exit(res);
-  }
+    public int run(String[] args) throws Exception {
 
-  public Job createJob() 
-  throws IOException {
-    Configuration conf = getConf();
-    conf.setInt(MRJobConfig.NUM_MAPS, 1);
-    Job job = Job.getInstance(conf, "test");
-    job.setNumReduceTasks(1);
-    job.setJarByClass(CredentialsTestJob.class);
-    job.setNumReduceTasks(1);
-    job.setMapperClass(CredentialsTestJob.CredentialsTestMapper.class);
-    job.setMapOutputKeyClass(IntWritable.class);
-    job.setMapOutputValueClass(NullWritable.class);
-    job.setReducerClass(CredentialsTestJob.CredentialsTestReducer.class);
-    job.setInputFormatClass(SleepJob.SleepInputFormat.class);
-    job.setPartitionerClass(SleepJob.SleepJobPartitioner.class);
-    job.setOutputFormatClass(NullOutputFormat.class);
-    job.setSpeculativeExecution(false);
-    job.setJobName("test job");
-    FileInputFormat.addInputPath(job, new Path("ignored"));
-    return job;
-  }
-
-  public int run(String[] args) throws Exception {
-
-    Job job = createJob();
-    return job.waitForCompletion(true) ? 0 : 1;
-  }
+        Job job = createJob();
+        return job.waitForCompletion(true) ? 0 : 1;
+    }
 
 }

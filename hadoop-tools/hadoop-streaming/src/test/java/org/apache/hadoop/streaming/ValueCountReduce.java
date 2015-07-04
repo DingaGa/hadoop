@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,32 +33,32 @@ import org.apache.hadoop.mapred.Reporter;
 
 public class ValueCountReduce implements Reducer {
 
-  /**
-   * @param args
-   */
-  public static void main(String[] args) {
-    // TODO Auto-generated method stub
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
 
-  }
-
-  public void reduce(Object arg0, Iterator arg1, OutputCollector arg2, Reporter arg3) throws IOException {
-    int count = 0;
-    while (arg1.hasNext()) {
-      count += 1;
-      arg1.next();
     }
-    arg2.collect(arg0, new Text("" + count));
-  }
 
-  public void configure(JobConf arg0) {
-    // TODO Auto-generated method stub
-    
-  }
+    public void reduce(Object arg0, Iterator arg1, OutputCollector arg2, Reporter arg3) throws IOException {
+        int count = 0;
+        while (arg1.hasNext()) {
+            count += 1;
+            arg1.next();
+        }
+        arg2.collect(arg0, new Text("" + count));
+    }
 
-  public void close() throws IOException {
-    // TODO Auto-generated method stub
-    
-  }
+    public void configure(JobConf arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void close() throws IOException {
+        // TODO Auto-generated method stub
+
+    }
 
 }
 

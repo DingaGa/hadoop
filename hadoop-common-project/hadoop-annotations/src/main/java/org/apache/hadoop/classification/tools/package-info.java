@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 @InterfaceAudience.LimitedPrivate({"Common", "Avro", "Chukwa", "HBase", "HDFS",
-  "Hive", "MapReduce", "Pig", "ZooKeeper"})
-package org.apache.hadoop.classification.tools;
+        "Hive", "MapReduce", "Pig", "ZooKeeper"}) package org.apache.hadoop.classification.tools;
 
 import org.apache.hadoop.classification.InterfaceAudience;

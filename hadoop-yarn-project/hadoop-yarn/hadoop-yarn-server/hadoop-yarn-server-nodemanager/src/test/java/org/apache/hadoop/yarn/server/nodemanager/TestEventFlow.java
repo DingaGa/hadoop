@@ -1,20 +1,20 @@
 /**
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.apache.hadoop.yarn.server.nodemanager;
 
@@ -53,117 +53,119 @@ import org.junit.Test;
 
 public class TestEventFlow {
 
-  private static final RecordFactory recordFactory =
-      RecordFactoryProvider.getRecordFactory(null);
+    private static final RecordFactory recordFactory =
+            RecordFactoryProvider.getRecordFactory(null);
 
-  private static File localDir = new File("target",
-      TestEventFlow.class.getName() + "-localDir").getAbsoluteFile();
-  private static File localLogDir = new File("target",
-      TestEventFlow.class.getName() + "-localLogDir").getAbsoluteFile();
-  private static File remoteLogDir = new File("target",
-      TestEventFlow.class.getName() + "-remoteLogDir").getAbsoluteFile();
-  private static final long SIMULATED_RM_IDENTIFIER = 1234;
-  
-  @Test
-  public void testSuccessfulContainerLaunch() throws InterruptedException,
-      IOException, YarnException {
+    private static File localDir = new File("target",
+            TestEventFlow.class.getName() + "-localDir").getAbsoluteFile();
+    private static File localLogDir = new File("target",
+            TestEventFlow.class.getName() + "-localLogDir").getAbsoluteFile();
+    private static File remoteLogDir = new File("target",
+            TestEventFlow.class.getName() + "-remoteLogDir").getAbsoluteFile();
+    private static final long SIMULATED_RM_IDENTIFIER = 1234;
 
-    FileContext localFS = FileContext.getLocalFSFileContext();
+    @Test
+    public void testSuccessfulContainerLaunch() throws InterruptedException,
+            IOException, YarnException {
 
-    localFS.delete(new Path(localDir.getAbsolutePath()), true);
-    localFS.delete(new Path(localLogDir.getAbsolutePath()), true);
-    localFS.delete(new Path(remoteLogDir.getAbsolutePath()), true);
-    localDir.mkdir();
-    localLogDir.mkdir();
-    remoteLogDir.mkdir();
+        FileContext localFS = FileContext.getLocalFSFileContext();
 
-    YarnConfiguration conf = new YarnConfiguration();
-    
-    Context context = new NMContext(new NMContainerTokenSecretManager(conf),
-        new NMTokenSecretManagerInNM(), null, null,
-        new NMNullStateStoreService()) {
-      @Override
-      public int getHttpPort() {
-        return 1234;
-      }
-    };
+        localFS.delete(new Path(localDir.getAbsolutePath()), true);
+        localFS.delete(new Path(localLogDir.getAbsolutePath()), true);
+        localFS.delete(new Path(remoteLogDir.getAbsolutePath()), true);
+        localDir.mkdir();
+        localLogDir.mkdir();
+        remoteLogDir.mkdir();
 
-    conf.set(YarnConfiguration.NM_LOCAL_DIRS, localDir.getAbsolutePath());
-    conf.set(YarnConfiguration.NM_LOG_DIRS, localLogDir.getAbsolutePath());
-    conf.set(YarnConfiguration.NM_REMOTE_APP_LOG_DIR, 
-        remoteLogDir.getAbsolutePath());
+        YarnConfiguration conf = new YarnConfiguration();
 
-    ContainerExecutor exec = new DefaultContainerExecutor();
-    exec.setConf(conf);
+        Context context = new NMContext(new NMContainerTokenSecretManager(conf),
+                new NMTokenSecretManagerInNM(), null, null,
+                new NMNullStateStoreService()) {
+            @Override
+            public int getHttpPort() {
+                return 1234;
+            }
+        };
 
-    DeletionService del = new DeletionService(exec);
-    Dispatcher dispatcher = new AsyncDispatcher();
-    NodeHealthCheckerService healthChecker = new NodeHealthCheckerService();
-    healthChecker.init(conf);
-    LocalDirsHandlerService dirsHandler = healthChecker.getDiskHandler();
-    NodeManagerMetrics metrics = NodeManagerMetrics.create();
-    NodeStatusUpdater nodeStatusUpdater =
-        new NodeStatusUpdaterImpl(context, dispatcher, healthChecker, metrics) {
-      @Override
-      protected ResourceTracker getRMClient() {
-        return new LocalRMInterface();
-      };
+        conf.set(YarnConfiguration.NM_LOCAL_DIRS, localDir.getAbsolutePath());
+        conf.set(YarnConfiguration.NM_LOG_DIRS, localLogDir.getAbsolutePath());
+        conf.set(YarnConfiguration.NM_REMOTE_APP_LOG_DIR,
+                remoteLogDir.getAbsolutePath());
 
-          @Override
-          protected void stopRMProxy() {
-            return;
-          }
+        ContainerExecutor exec = new DefaultContainerExecutor();
+        exec.setConf(conf);
 
-      @Override
-      protected void startStatusUpdater() {
-        return; // Don't start any updating thread.
-      }
+        DeletionService del = new DeletionService(exec);
+        Dispatcher dispatcher = new AsyncDispatcher();
+        NodeHealthCheckerService healthChecker = new NodeHealthCheckerService();
+        healthChecker.init(conf);
+        LocalDirsHandlerService dirsHandler = healthChecker.getDiskHandler();
+        NodeManagerMetrics metrics = NodeManagerMetrics.create();
+        NodeStatusUpdater nodeStatusUpdater =
+                new NodeStatusUpdaterImpl(context, dispatcher, healthChecker, metrics) {
+                    @Override
+                    protected ResourceTracker getRMClient() {
+                        return new LocalRMInterface();
+                    }
 
-      @Override
-      public long getRMIdentifier() {
-        return SIMULATED_RM_IDENTIFIER;
-      }
-    };
+                    ;
 
-    DummyContainerManager containerManager =
-        new DummyContainerManager(context, exec, del, nodeStatusUpdater,
-          metrics, new ApplicationACLsManager(conf), dirsHandler);
-    nodeStatusUpdater.init(conf);
-    ((NMContext)context).setContainerManager(containerManager);
-    nodeStatusUpdater.start();
-    containerManager.init(conf);
-    containerManager.start();
+                    @Override
+                    protected void stopRMProxy() {
+                        return;
+                    }
 
-    ContainerLaunchContext launchContext = 
-        recordFactory.newRecordInstance(ContainerLaunchContext.class);
-    ApplicationId applicationId = ApplicationId.newInstance(0, 0);
-    ApplicationAttemptId applicationAttemptId =
-        ApplicationAttemptId.newInstance(applicationId, 0);
-    ContainerId cID = ContainerId.newInstance(applicationAttemptId, 0);
+                    @Override
+                    protected void startStatusUpdater() {
+                        return; // Don't start any updating thread.
+                    }
 
-    String user = "testing";
-    StartContainerRequest scRequest =
-        StartContainerRequest.newInstance(launchContext,
-          TestContainerManager.createContainerToken(cID,
-            SIMULATED_RM_IDENTIFIER, context.getNodeId(), user,
-            context.getContainerTokenSecretManager()));
-    List<StartContainerRequest> list = new ArrayList<StartContainerRequest>();
-    list.add(scRequest);
-    StartContainersRequest allRequests =
-        StartContainersRequest.newInstance(list);
-    containerManager.startContainers(allRequests);
+                    @Override
+                    public long getRMIdentifier() {
+                        return SIMULATED_RM_IDENTIFIER;
+                    }
+                };
 
-    BaseContainerManagerTest.waitForContainerState(containerManager, cID,
-        ContainerState.RUNNING);
+        DummyContainerManager containerManager =
+                new DummyContainerManager(context, exec, del, nodeStatusUpdater,
+                        metrics, new ApplicationACLsManager(conf), dirsHandler);
+        nodeStatusUpdater.init(conf);
+        ((NMContext) context).setContainerManager(containerManager);
+        nodeStatusUpdater.start();
+        containerManager.init(conf);
+        containerManager.start();
 
-    List<ContainerId> containerIds = new ArrayList<ContainerId>();
-    containerIds.add(cID);
-    StopContainersRequest stopRequest =
-        StopContainersRequest.newInstance(containerIds);
-    containerManager.stopContainers(stopRequest);
-    BaseContainerManagerTest.waitForContainerState(containerManager, cID,
-        ContainerState.COMPLETE);
+        ContainerLaunchContext launchContext =
+                recordFactory.newRecordInstance(ContainerLaunchContext.class);
+        ApplicationId applicationId = ApplicationId.newInstance(0, 0);
+        ApplicationAttemptId applicationAttemptId =
+                ApplicationAttemptId.newInstance(applicationId, 0);
+        ContainerId cID = ContainerId.newInstance(applicationAttemptId, 0);
 
-    containerManager.stop();
-  }
+        String user = "testing";
+        StartContainerRequest scRequest =
+                StartContainerRequest.newInstance(launchContext,
+                        TestContainerManager.createContainerToken(cID,
+                                SIMULATED_RM_IDENTIFIER, context.getNodeId(), user,
+                                context.getContainerTokenSecretManager()));
+        List<StartContainerRequest> list = new ArrayList<StartContainerRequest>();
+        list.add(scRequest);
+        StartContainersRequest allRequests =
+                StartContainersRequest.newInstance(list);
+        containerManager.startContainers(allRequests);
+
+        BaseContainerManagerTest.waitForContainerState(containerManager, cID,
+                ContainerState.RUNNING);
+
+        List<ContainerId> containerIds = new ArrayList<ContainerId>();
+        containerIds.add(cID);
+        StopContainersRequest stopRequest =
+                StopContainersRequest.newInstance(containerIds);
+        containerManager.stopContainers(stopRequest);
+        BaseContainerManagerTest.waitForContainerState(containerManager, cID,
+                ContainerState.COMPLETE);
+
+        containerManager.stop();
+    }
 }

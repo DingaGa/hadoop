@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 @InterfaceAudience.LimitedPrivate({"HBase", "HDFS", "MapReduce"})
-@InterfaceStability.Evolving
-package org.apache.hadoop.metrics.util;
+@InterfaceStability.Evolving package org.apache.hadoop.metrics.util;
+
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;

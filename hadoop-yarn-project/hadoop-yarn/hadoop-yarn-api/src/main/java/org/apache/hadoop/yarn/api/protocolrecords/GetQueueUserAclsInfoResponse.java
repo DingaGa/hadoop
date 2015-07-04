@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ import org.apache.hadoop.yarn.util.Records;
  *
  * <p>The response contains a list of {@link QueueUserACLInfo} which
  * provides information about {@link QueueACL} per queue.</p>
- * 
+ *
  * @see QueueACL
  * @see QueueUserACLInfo
  * @see ApplicationClientProtocol#getQueueUserAcls(GetQueueUserAclsInfoRequest)
@@ -44,27 +44,27 @@ import org.apache.hadoop.yarn.util.Records;
 @Stable
 public abstract class GetQueueUserAclsInfoResponse {
 
-  @Private
-  @Unstable
-  public static GetQueueUserAclsInfoResponse newInstance(
-      List<QueueUserACLInfo> queueUserAclsList) {
-    GetQueueUserAclsInfoResponse response =
-        Records.newRecord(GetQueueUserAclsInfoResponse.class);
-    response.setUserAclsInfoList(queueUserAclsList);
-    return response;
-  }
+    @Private
+    @Unstable
+    public static GetQueueUserAclsInfoResponse newInstance(
+            List<QueueUserACLInfo> queueUserAclsList) {
+        GetQueueUserAclsInfoResponse response =
+                Records.newRecord(GetQueueUserAclsInfoResponse.class);
+        response.setUserAclsInfoList(queueUserAclsList);
+        return response;
+    }
 
-  /**
-   * Get the <code>QueueUserACLInfo</code> per queue for the user.
-   * @return <code>QueueUserACLInfo</code> per queue for the user
-   */
-  @Public
-  @Stable
-  public abstract List<QueueUserACLInfo> getUserAclsInfoList();
-  
-  @Private
-  @Unstable
-  public abstract void setUserAclsInfoList(
-      List<QueueUserACLInfo> queueUserAclsList);
-  
+    /**
+     * Get the <code>QueueUserACLInfo</code> per queue for the user.
+     * @return <code>QueueUserACLInfo</code> per queue for the user
+     */
+    @Public
+    @Stable
+    public abstract List<QueueUserACLInfo> getUserAclsInfoList();
+
+    @Private
+    @Unstable
+    public abstract void setUserAclsInfoList(
+            List<QueueUserACLInfo> queueUserAclsList);
+
 }

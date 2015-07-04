@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,17 +25,17 @@ import org.apache.hadoop.yarn.webapp.YarnWebParams;
 
 public class ContainerPage extends AHSView {
 
-  @Override
-  protected void preHead(Page.HTML<_> html) {
-    commonPreHead(html);
+    @Override
+    protected void preHead(Page.HTML<_> html) {
+        commonPreHead(html);
 
-    String containerId = $(YarnWebParams.CONTAINER_ID);
-    set(TITLE, containerId.isEmpty() ? "Bad request: missing container ID"
-        : join("Container ", $(YarnWebParams.CONTAINER_ID)));
-  }
+        String containerId = $(YarnWebParams.CONTAINER_ID);
+        set(TITLE, containerId.isEmpty() ? "Bad request: missing container ID"
+                : join("Container ", $(YarnWebParams.CONTAINER_ID)));
+    }
 
-  @Override
-  protected Class<? extends SubView> content() {
-    return ContainerBlock.class;
-  }
+    @Override
+    protected Class<? extends SubView> content() {
+        return ContainerBlock.class;
+    }
 }

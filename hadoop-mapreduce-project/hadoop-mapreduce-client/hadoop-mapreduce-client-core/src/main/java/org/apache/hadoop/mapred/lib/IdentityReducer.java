@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,21 +29,21 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.MapReduceBase;
 
-/** 
+/**
  * Performs no reduction, writing all input values directly to the output. 
  */
 @InterfaceAudience.Public
 @InterfaceStability.Stable
 public class IdentityReducer<K, V>
-    extends MapReduceBase implements Reducer<K, V, K, V> {
+        extends MapReduceBase implements Reducer<K, V, K, V> {
 
-  /** Writes all keys and values directly to output. */
-  public void reduce(K key, Iterator<V> values,
-                     OutputCollector<K, V> output, Reporter reporter)
-    throws IOException {
-    while (values.hasNext()) {
-      output.collect(key, values.next());
+    /** Writes all keys and values directly to output. */
+    public void reduce(K key, Iterator<V> values,
+                       OutputCollector<K, V> output, Reporter reporter)
+            throws IOException {
+        while (values.hasNext()) {
+            output.collect(key, values.next());
+        }
     }
-  }
-	
+
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,81 +44,81 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestNMReconnect {
-  private static final RecordFactory recordFactory = 
-      RecordFactoryProvider.getRecordFactory(null);
+    private static final RecordFactory recordFactory =
+            RecordFactoryProvider.getRecordFactory(null);
 
-  private RMNodeEvent rmNodeEvent = null;
+    private RMNodeEvent rmNodeEvent = null;
 
-  private class TestRMNodeEventDispatcher implements
-      EventHandler<RMNodeEvent> {
+    private class TestRMNodeEventDispatcher implements
+            EventHandler<RMNodeEvent> {
 
-    @Override
-    public void handle(RMNodeEvent event) {
-      rmNodeEvent = event;
+        @Override
+        public void handle(RMNodeEvent event) {
+            rmNodeEvent = event;
+        }
+
     }
 
-  }
+    ResourceTrackerService resourceTrackerService;
 
-  ResourceTrackerService resourceTrackerService;
+    @Before
+    public void setUp() {
+        Configuration conf = new Configuration();
+        // Dispatcher that processes events inline
+        Dispatcher dispatcher = new InlineDispatcher();
 
-  @Before
-  public void setUp() {
-    Configuration conf = new Configuration();
-    // Dispatcher that processes events inline
-    Dispatcher dispatcher = new InlineDispatcher();
+        dispatcher.register(RMNodeEventType.class,
+                new TestRMNodeEventDispatcher());
 
-    dispatcher.register(RMNodeEventType.class,
-        new TestRMNodeEventDispatcher());
+        RMContext context = new RMContextImpl(dispatcher, null,
+                null, null, null, null, null, null, null, null);
+        dispatcher.register(SchedulerEventType.class,
+                new InlineDispatcher.EmptyEventHandler());
+        dispatcher.register(RMNodeEventType.class,
+                new NodeEventDispatcher(context));
+        NMLivelinessMonitor nmLivelinessMonitor = new NMLivelinessMonitor(
+                dispatcher);
+        nmLivelinessMonitor.init(conf);
+        nmLivelinessMonitor.start();
+        NodesListManager nodesListManager = new NodesListManager(context);
+        nodesListManager.init(conf);
+        RMContainerTokenSecretManager containerTokenSecretManager =
+                new RMContainerTokenSecretManager(conf);
+        containerTokenSecretManager.start();
+        NMTokenSecretManagerInRM nmTokenSecretManager =
+                new NMTokenSecretManagerInRM(conf);
+        nmTokenSecretManager.start();
+        resourceTrackerService = new ResourceTrackerService(context,
+                nodesListManager, nmLivelinessMonitor, containerTokenSecretManager,
+                nmTokenSecretManager);
 
-    RMContext context = new RMContextImpl(dispatcher, null,
-        null, null, null, null, null, null, null, null);
-    dispatcher.register(SchedulerEventType.class,
-        new InlineDispatcher.EmptyEventHandler());
-    dispatcher.register(RMNodeEventType.class,
-        new NodeEventDispatcher(context));
-    NMLivelinessMonitor nmLivelinessMonitor = new NMLivelinessMonitor(
-        dispatcher);
-    nmLivelinessMonitor.init(conf);
-    nmLivelinessMonitor.start();
-    NodesListManager nodesListManager = new NodesListManager(context);
-    nodesListManager.init(conf);
-    RMContainerTokenSecretManager containerTokenSecretManager =
-        new RMContainerTokenSecretManager(conf);
-    containerTokenSecretManager.start();
-    NMTokenSecretManagerInRM nmTokenSecretManager =
-        new NMTokenSecretManagerInRM(conf);
-    nmTokenSecretManager.start();
-    resourceTrackerService = new ResourceTrackerService(context,
-        nodesListManager, nmLivelinessMonitor, containerTokenSecretManager,
-        nmTokenSecretManager);
-    
-    resourceTrackerService.init(conf);
-    resourceTrackerService.start();
-  }
+        resourceTrackerService.init(conf);
+        resourceTrackerService.start();
+    }
 
-  @Test
-  public void testReconnect() throws Exception {
-    String hostname1 = "localhost1";
-    Resource capability = BuilderUtils.newResource(1024, 1);
+    @Test
+    public void testReconnect() throws Exception {
+        String hostname1 = "localhost1";
+        Resource capability = BuilderUtils.newResource(1024, 1);
 
-    RegisterNodeManagerRequest request1 = recordFactory
-        .newRecordInstance(RegisterNodeManagerRequest.class);
-    NodeId nodeId1 = NodeId.newInstance(hostname1, 0);
-    request1.setNodeId(nodeId1);
-    request1.setHttpPort(0);
-    request1.setResource(capability);
-    resourceTrackerService.registerNodeManager(request1);
+        RegisterNodeManagerRequest request1 = recordFactory
+                .newRecordInstance(RegisterNodeManagerRequest.class);
+        NodeId nodeId1 = NodeId.newInstance(hostname1, 0);
+        request1.setNodeId(nodeId1);
+        request1.setHttpPort(0);
+        request1.setResource(capability);
+        resourceTrackerService.registerNodeManager(request1);
 
-    Assert.assertEquals(RMNodeEventType.STARTED, rmNodeEvent.getType());
+        Assert.assertEquals(RMNodeEventType.STARTED, rmNodeEvent.getType());
 
-    rmNodeEvent = null;
-    resourceTrackerService.registerNodeManager(request1);
-    Assert.assertEquals(RMNodeEventType.RECONNECTED, rmNodeEvent.getType());
+        rmNodeEvent = null;
+        resourceTrackerService.registerNodeManager(request1);
+        Assert.assertEquals(RMNodeEventType.RECONNECTED, rmNodeEvent.getType());
 
-    rmNodeEvent = null;
-    resourceTrackerService.registerNodeManager(request1);
-    capability = BuilderUtils.newResource(1024, 2);
-    request1.setResource(capability);
-    Assert.assertEquals(RMNodeEventType.RECONNECTED, rmNodeEvent.getType());
-  }
+        rmNodeEvent = null;
+        resourceTrackerService.registerNodeManager(request1);
+        capability = BuilderUtils.newResource(1024, 2);
+        request1.setResource(capability);
+        Assert.assertEquals(RMNodeEventType.RECONNECTED, rmNodeEvent.getType());
+    }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,62 +39,65 @@ import java.nio.channels.WritableByteChannel;
  */
 public interface CheckpointService {
 
-  public interface CheckpointWriteChannel extends WritableByteChannel { }
-  public interface CheckpointReadChannel extends ReadableByteChannel { }
+    public interface CheckpointWriteChannel extends WritableByteChannel {
+    }
 
-  /**
-   * This method creates a checkpoint and provide a channel to write to it. The
-   * name/location of the checkpoint are unknown to the user as of this time, in
-   * fact, the CheckpointID is not released to the user until commit is called.
-   * This makes enforcing atomicity of writes easy.
-   * @return a channel that can be used to write to the checkpoint
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  public CheckpointWriteChannel create()
-    throws IOException, InterruptedException;
+    public interface CheckpointReadChannel extends ReadableByteChannel {
+    }
 
-  /**
-   * Used to finalize and existing checkpoint. It returns the CheckpointID that
-   * can be later used to access (read-only) this checkpoint. This guarantees
-   * atomicity of the checkpoint.
-   * @param ch the CheckpointWriteChannel to commit
-   * @return a CheckpointID
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  public CheckpointID commit(CheckpointWriteChannel ch)
-    throws IOException, InterruptedException;
+    /**
+     * This method creates a checkpoint and provide a channel to write to it. The
+     * name/location of the checkpoint are unknown to the user as of this time, in
+     * fact, the CheckpointID is not released to the user until commit is called.
+     * This makes enforcing atomicity of writes easy.
+     * @return a channel that can be used to write to the checkpoint
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public CheckpointWriteChannel create()
+            throws IOException, InterruptedException;
 
-  /**
-   * Dual to commit, it aborts the current checkpoint. Garbage collection
-   * choices are left to the implementation. The CheckpointID is not generated
-   * nor released to the user so the checkpoint is not accessible.
-   * @param ch the CheckpointWriteChannel to abort
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  public void abort(CheckpointWriteChannel ch)
-      throws IOException, InterruptedException;
+    /**
+     * Used to finalize and existing checkpoint. It returns the CheckpointID that
+     * can be later used to access (read-only) this checkpoint. This guarantees
+     * atomicity of the checkpoint.
+     * @param ch the CheckpointWriteChannel to commit
+     * @return a CheckpointID
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public CheckpointID commit(CheckpointWriteChannel ch)
+            throws IOException, InterruptedException;
 
-  /**
-   * Given a CheckpointID returns a reading channel.
-   * @param id CheckpointID for the checkpoint to be opened
-   * @return a CheckpointReadChannel
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  public CheckpointReadChannel open(CheckpointID id)
-    throws IOException, InterruptedException;
+    /**
+     * Dual to commit, it aborts the current checkpoint. Garbage collection
+     * choices are left to the implementation. The CheckpointID is not generated
+     * nor released to the user so the checkpoint is not accessible.
+     * @param ch the CheckpointWriteChannel to abort
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void abort(CheckpointWriteChannel ch)
+            throws IOException, InterruptedException;
 
-  /**
-   * It discards an existing checkpoint identified by its CheckpointID.
-   * @param  id CheckpointID for the checkpoint to be deleted
-   * @return a boolean confirming success of the deletion
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  public boolean delete(CheckpointID id)
-    throws IOException, InterruptedException;
+    /**
+     * Given a CheckpointID returns a reading channel.
+     * @param id CheckpointID for the checkpoint to be opened
+     * @return a CheckpointReadChannel
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public CheckpointReadChannel open(CheckpointID id)
+            throws IOException, InterruptedException;
+
+    /**
+     * It discards an existing checkpoint identified by its CheckpointID.
+     * @param  id CheckpointID for the checkpoint to be deleted
+     * @return a boolean confirming success of the deletion
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public boolean delete(CheckpointID id)
+            throws IOException, InterruptedException;
 
 }

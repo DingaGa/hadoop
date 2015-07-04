@@ -1,20 +1,20 @@
 /**
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.apache.hadoop.yarn.server.nodemanager;
 
@@ -115,186 +115,186 @@ public class TestDefaultContainerExecutor {
   }
   */
 
-  private static final Path BASE_TMP_PATH = new Path("target",
-      TestDefaultContainerExecutor.class.getSimpleName());
+    private static final Path BASE_TMP_PATH = new Path("target",
+            TestDefaultContainerExecutor.class.getSimpleName());
 
-  @AfterClass
-  public static void deleteTmpFiles() throws IOException {
-    FileContext lfs = FileContext.getLocalFSFileContext();
-    try {
-      lfs.delete(BASE_TMP_PATH, true);
-    } catch (FileNotFoundException e) {
-    }
-  }
-
-  byte[] createTmpFile(Path dst, Random r, int len)
-      throws IOException {
-    // use unmodified local context
-    FileContext lfs = FileContext.getLocalFSFileContext();
-    dst = lfs.makeQualified(dst);
-    lfs.mkdir(dst.getParent(), null, true);
-    byte[] bytes = new byte[len];
-    FSDataOutputStream out = null;
-    try {
-      out = lfs.create(dst, EnumSet.of(CREATE, OVERWRITE));
-      r.nextBytes(bytes);
-      out.write(bytes);
-    } finally {
-      if (out != null) out.close();
-    }
-    return bytes;
-  }
-
-  @Test
-  public void testDirPermissions() throws Exception {
-    deleteTmpFiles();
-
-    final String user = "somebody";
-    final String appId = "app_12345_123";
-    final FsPermission userCachePerm = new FsPermission(
-        DefaultContainerExecutor.USER_PERM);
-    final FsPermission appCachePerm = new FsPermission(
-        DefaultContainerExecutor.APPCACHE_PERM);
-    final FsPermission fileCachePerm = new FsPermission(
-        DefaultContainerExecutor.FILECACHE_PERM);
-    final FsPermission appDirPerm = new FsPermission(
-        DefaultContainerExecutor.APPDIR_PERM);
-    final FsPermission logDirPerm = new FsPermission(
-        DefaultContainerExecutor.LOGDIR_PERM);
-    List<String> localDirs = new ArrayList<String>();
-    localDirs.add(new Path(BASE_TMP_PATH, "localDirA").toString());
-    localDirs.add(new Path(BASE_TMP_PATH, "localDirB").toString());
-    List<String> logDirs = new ArrayList<String>();
-    logDirs.add(new Path(BASE_TMP_PATH, "logDirA").toString());
-    logDirs.add(new Path(BASE_TMP_PATH, "logDirB").toString());
-
-    Configuration conf = new Configuration();
-    conf.set(CommonConfigurationKeys.FS_PERMISSIONS_UMASK_KEY, "077");
-    FileContext lfs = FileContext.getLocalFSFileContext(conf);
-    DefaultContainerExecutor executor = new DefaultContainerExecutor(lfs);
-    executor.init();
-
-    try {
-      executor.createUserLocalDirs(localDirs, user);
-      executor.createUserCacheDirs(localDirs, user);
-      executor.createAppDirs(localDirs, user, appId);
-
-      for (String dir : localDirs) {
-        FileStatus stats = lfs.getFileStatus(
-            new Path(new Path(dir, ContainerLocalizer.USERCACHE), user));
-        Assert.assertEquals(userCachePerm, stats.getPermission());
-      }
-
-      for (String dir : localDirs) {
-        Path userCachePath = new Path(
-            new Path(dir, ContainerLocalizer.USERCACHE), user);
-        Path appCachePath = new Path(userCachePath,
-            ContainerLocalizer.APPCACHE);
-        FileStatus stats = lfs.getFileStatus(appCachePath);
-        Assert.assertEquals(appCachePerm, stats.getPermission());
-        stats = lfs.getFileStatus(
-            new Path(userCachePath, ContainerLocalizer.FILECACHE));
-        Assert.assertEquals(fileCachePerm, stats.getPermission());
-        stats = lfs.getFileStatus(new Path(appCachePath, appId));
-        Assert.assertEquals(appDirPerm, stats.getPermission());
-      }
-
-      executor.createAppLogDirs(appId, logDirs);
-
-      for (String dir : logDirs) {
-        FileStatus stats = lfs.getFileStatus(new Path(dir, appId));
-        Assert.assertEquals(logDirPerm, stats.getPermission());
-      }
-    } finally {
-      deleteTmpFiles();
-    }
-  }
-
-  @Test
-  public void testContainerLaunchError()
-      throws IOException, InterruptedException {
-
-    Path localDir = new Path(BASE_TMP_PATH, "localDir");
-    List<String> localDirs = new ArrayList<String>();
-    localDirs.add(localDir.toString());
-    List<String> logDirs = new ArrayList<String>();
-    Path logDir = new Path(BASE_TMP_PATH, "logDir");
-    logDirs.add(logDir.toString());
-
-    Configuration conf = new Configuration();
-    conf.set(CommonConfigurationKeys.FS_PERMISSIONS_UMASK_KEY, "077");
-       conf.set(YarnConfiguration.NM_LOCAL_DIRS, localDir.toString());
-    conf.set(YarnConfiguration.NM_LOG_DIRS, logDir.toString());
-    
-    FileContext lfs = FileContext.getLocalFSFileContext(conf);
-    DefaultContainerExecutor mockExec = spy(new DefaultContainerExecutor(lfs));
-    mockExec.setConf(conf);
-    doAnswer(
-        new Answer() {
-          @Override
-          public Object answer(InvocationOnMock invocationOnMock)
-              throws Throwable {
-            String diagnostics = (String) invocationOnMock.getArguments()[0];
-            assertTrue("Invalid Diagnostics message: " + diagnostics,
-                diagnostics.contains("No such file or directory"));
-            return null;
-          }
+    @AfterClass
+    public static void deleteTmpFiles() throws IOException {
+        FileContext lfs = FileContext.getLocalFSFileContext();
+        try {
+            lfs.delete(BASE_TMP_PATH, true);
+        } catch (FileNotFoundException e) {
         }
-    ).when(mockExec).logOutput(any(String.class));
-
-    String appSubmitter = "nobody";
-    String appId = "APP_ID";
-    String containerId = "CONTAINER_ID";
-    Container container = mock(Container.class);
-    ContainerId cId = mock(ContainerId.class);
-    ContainerLaunchContext context = mock(ContainerLaunchContext.class);
-    HashMap<String, String> env = new HashMap<String, String>();
-
-    when(container.getContainerId()).thenReturn(cId);
-    when(container.getLaunchContext()).thenReturn(context);
-    try {
-      doAnswer(new Answer() {
-        @Override
-        public Object answer(InvocationOnMock invocationOnMock)
-            throws Throwable {
-          ContainerDiagnosticsUpdateEvent event =
-              (ContainerDiagnosticsUpdateEvent) invocationOnMock
-                  .getArguments()[0];
-          assertTrue("Invalid Diagnostics message: "
-                  + event.getDiagnosticsUpdate(),
-              event.getDiagnosticsUpdate().contains("No such file or directory")
-          );
-          return null;
-        }
-      }).when(container).handle(any(ContainerDiagnosticsUpdateEvent.class));
-
-      when(cId.toString()).thenReturn(containerId);
-      when(cId.getApplicationAttemptId()).thenReturn(
-          ApplicationAttemptId.newInstance(ApplicationId.newInstance(0, 1), 0));
-
-      when(context.getEnvironment()).thenReturn(env);
-
-      mockExec.createUserLocalDirs(localDirs, appSubmitter);
-      mockExec.createUserCacheDirs(localDirs, appSubmitter);
-      mockExec.createAppDirs(localDirs, appSubmitter, appId);
-      mockExec.createAppLogDirs(appId, logDirs);
-
-      Path scriptPath = new Path("file:///bin/echo");
-      Path tokensPath = new Path("file:///dev/null");
-      Path workDir = localDir;
-      Path pidFile = new Path(workDir, "pid.txt");
-
-      mockExec.init();
-      mockExec.activateContainer(cId, pidFile);
-      int ret = mockExec
-          .launchContainer(container, scriptPath, tokensPath, appSubmitter,
-              appId, workDir, localDirs, localDirs);
-      Assert.assertNotSame(0, ret);
-    } finally {
-      mockExec.deleteAsUser(appSubmitter, localDir);
-      mockExec.deleteAsUser(appSubmitter, logDir);
     }
-  }
+
+    byte[] createTmpFile(Path dst, Random r, int len)
+            throws IOException {
+        // use unmodified local context
+        FileContext lfs = FileContext.getLocalFSFileContext();
+        dst = lfs.makeQualified(dst);
+        lfs.mkdir(dst.getParent(), null, true);
+        byte[] bytes = new byte[len];
+        FSDataOutputStream out = null;
+        try {
+            out = lfs.create(dst, EnumSet.of(CREATE, OVERWRITE));
+            r.nextBytes(bytes);
+            out.write(bytes);
+        } finally {
+            if (out != null) out.close();
+        }
+        return bytes;
+    }
+
+    @Test
+    public void testDirPermissions() throws Exception {
+        deleteTmpFiles();
+
+        final String user = "somebody";
+        final String appId = "app_12345_123";
+        final FsPermission userCachePerm = new FsPermission(
+                DefaultContainerExecutor.USER_PERM);
+        final FsPermission appCachePerm = new FsPermission(
+                DefaultContainerExecutor.APPCACHE_PERM);
+        final FsPermission fileCachePerm = new FsPermission(
+                DefaultContainerExecutor.FILECACHE_PERM);
+        final FsPermission appDirPerm = new FsPermission(
+                DefaultContainerExecutor.APPDIR_PERM);
+        final FsPermission logDirPerm = new FsPermission(
+                DefaultContainerExecutor.LOGDIR_PERM);
+        List<String> localDirs = new ArrayList<String>();
+        localDirs.add(new Path(BASE_TMP_PATH, "localDirA").toString());
+        localDirs.add(new Path(BASE_TMP_PATH, "localDirB").toString());
+        List<String> logDirs = new ArrayList<String>();
+        logDirs.add(new Path(BASE_TMP_PATH, "logDirA").toString());
+        logDirs.add(new Path(BASE_TMP_PATH, "logDirB").toString());
+
+        Configuration conf = new Configuration();
+        conf.set(CommonConfigurationKeys.FS_PERMISSIONS_UMASK_KEY, "077");
+        FileContext lfs = FileContext.getLocalFSFileContext(conf);
+        DefaultContainerExecutor executor = new DefaultContainerExecutor(lfs);
+        executor.init();
+
+        try {
+            executor.createUserLocalDirs(localDirs, user);
+            executor.createUserCacheDirs(localDirs, user);
+            executor.createAppDirs(localDirs, user, appId);
+
+            for (String dir : localDirs) {
+                FileStatus stats = lfs.getFileStatus(
+                        new Path(new Path(dir, ContainerLocalizer.USERCACHE), user));
+                Assert.assertEquals(userCachePerm, stats.getPermission());
+            }
+
+            for (String dir : localDirs) {
+                Path userCachePath = new Path(
+                        new Path(dir, ContainerLocalizer.USERCACHE), user);
+                Path appCachePath = new Path(userCachePath,
+                        ContainerLocalizer.APPCACHE);
+                FileStatus stats = lfs.getFileStatus(appCachePath);
+                Assert.assertEquals(appCachePerm, stats.getPermission());
+                stats = lfs.getFileStatus(
+                        new Path(userCachePath, ContainerLocalizer.FILECACHE));
+                Assert.assertEquals(fileCachePerm, stats.getPermission());
+                stats = lfs.getFileStatus(new Path(appCachePath, appId));
+                Assert.assertEquals(appDirPerm, stats.getPermission());
+            }
+
+            executor.createAppLogDirs(appId, logDirs);
+
+            for (String dir : logDirs) {
+                FileStatus stats = lfs.getFileStatus(new Path(dir, appId));
+                Assert.assertEquals(logDirPerm, stats.getPermission());
+            }
+        } finally {
+            deleteTmpFiles();
+        }
+    }
+
+    @Test
+    public void testContainerLaunchError()
+            throws IOException, InterruptedException {
+
+        Path localDir = new Path(BASE_TMP_PATH, "localDir");
+        List<String> localDirs = new ArrayList<String>();
+        localDirs.add(localDir.toString());
+        List<String> logDirs = new ArrayList<String>();
+        Path logDir = new Path(BASE_TMP_PATH, "logDir");
+        logDirs.add(logDir.toString());
+
+        Configuration conf = new Configuration();
+        conf.set(CommonConfigurationKeys.FS_PERMISSIONS_UMASK_KEY, "077");
+        conf.set(YarnConfiguration.NM_LOCAL_DIRS, localDir.toString());
+        conf.set(YarnConfiguration.NM_LOG_DIRS, logDir.toString());
+
+        FileContext lfs = FileContext.getLocalFSFileContext(conf);
+        DefaultContainerExecutor mockExec = spy(new DefaultContainerExecutor(lfs));
+        mockExec.setConf(conf);
+        doAnswer(
+                new Answer() {
+                    @Override
+                    public Object answer(InvocationOnMock invocationOnMock)
+                            throws Throwable {
+                        String diagnostics = (String) invocationOnMock.getArguments()[0];
+                        assertTrue("Invalid Diagnostics message: " + diagnostics,
+                                diagnostics.contains("No such file or directory"));
+                        return null;
+                    }
+                }
+        ).when(mockExec).logOutput(any(String.class));
+
+        String appSubmitter = "nobody";
+        String appId = "APP_ID";
+        String containerId = "CONTAINER_ID";
+        Container container = mock(Container.class);
+        ContainerId cId = mock(ContainerId.class);
+        ContainerLaunchContext context = mock(ContainerLaunchContext.class);
+        HashMap<String, String> env = new HashMap<String, String>();
+
+        when(container.getContainerId()).thenReturn(cId);
+        when(container.getLaunchContext()).thenReturn(context);
+        try {
+            doAnswer(new Answer() {
+                @Override
+                public Object answer(InvocationOnMock invocationOnMock)
+                        throws Throwable {
+                    ContainerDiagnosticsUpdateEvent event =
+                            (ContainerDiagnosticsUpdateEvent) invocationOnMock
+                                    .getArguments()[0];
+                    assertTrue("Invalid Diagnostics message: "
+                                    + event.getDiagnosticsUpdate(),
+                            event.getDiagnosticsUpdate().contains("No such file or directory")
+                    );
+                    return null;
+                }
+            }).when(container).handle(any(ContainerDiagnosticsUpdateEvent.class));
+
+            when(cId.toString()).thenReturn(containerId);
+            when(cId.getApplicationAttemptId()).thenReturn(
+                    ApplicationAttemptId.newInstance(ApplicationId.newInstance(0, 1), 0));
+
+            when(context.getEnvironment()).thenReturn(env);
+
+            mockExec.createUserLocalDirs(localDirs, appSubmitter);
+            mockExec.createUserCacheDirs(localDirs, appSubmitter);
+            mockExec.createAppDirs(localDirs, appSubmitter, appId);
+            mockExec.createAppLogDirs(appId, logDirs);
+
+            Path scriptPath = new Path("file:///bin/echo");
+            Path tokensPath = new Path("file:///dev/null");
+            Path workDir = localDir;
+            Path pidFile = new Path(workDir, "pid.txt");
+
+            mockExec.init();
+            mockExec.activateContainer(cId, pidFile);
+            int ret = mockExec
+                    .launchContainer(container, scriptPath, tokensPath, appSubmitter,
+                            appId, workDir, localDirs, localDirs);
+            Assert.assertNotSame(0, ret);
+        } finally {
+            mockExec.deleteAsUser(appSubmitter, localDir);
+            mockExec.deleteAsUser(appSubmitter, logDir);
+        }
+    }
 
 //  @Test
 //  public void testInit() throws IOException, InterruptedException {

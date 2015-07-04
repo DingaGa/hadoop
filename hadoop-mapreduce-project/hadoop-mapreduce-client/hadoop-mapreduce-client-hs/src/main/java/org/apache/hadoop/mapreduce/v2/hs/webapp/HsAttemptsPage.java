@@ -1,20 +1,20 @@
 /**
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.apache.hadoop.mapreduce.v2.hs.webapp;
 
@@ -43,55 +43,55 @@ import com.google.inject.Inject;
  * Render a page showing the attempts made of a given type and a given job.
  */
 public class HsAttemptsPage extends HsTaskPage {
-  static class FewAttemptsBlock extends HsTaskPage.AttemptsBlock {
-    @Inject
-    FewAttemptsBlock(App ctx) {
-      super(ctx);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.hadoop.mapreduce.v2.hs.webapp.HsTaskPage.AttemptsBlock#isValidRequest()
-     * Verify that a job is given.
-     */
-    @Override
-    protected boolean isValidRequest() {
-      return app.getJob() != null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.hadoop.mapreduce.v2.hs.webapp.HsTaskPage.AttemptsBlock#getTaskAttempts()
-     * @return the attempts that are for a given job and a specific type/state.
-     */
-    @Override
-    protected Collection<TaskAttempt> getTaskAttempts() {
-      List<TaskAttempt> fewTaskAttemps = new ArrayList<TaskAttempt>();
-      String taskTypeStr = $(TASK_TYPE);
-      TaskType taskType = MRApps.taskType(taskTypeStr);
-      String attemptStateStr = $(ATTEMPT_STATE);
-      TaskAttemptStateUI neededState = MRApps
-          .taskAttemptState(attemptStateStr);
-      Job j = app.getJob();
-      Map<TaskId, Task> tasks = j.getTasks(taskType);
-      for (Task task : tasks.values()) {
-        Map<TaskAttemptId, TaskAttempt> attempts = task.getAttempts();
-        for (TaskAttempt attempt : attempts.values()) {
-          if (neededState.correspondsTo(attempt.getState())) {
-            fewTaskAttemps.add(attempt);
-          }
+    static class FewAttemptsBlock extends HsTaskPage.AttemptsBlock {
+        @Inject
+        FewAttemptsBlock(App ctx) {
+            super(ctx);
         }
-      }
-      return fewTaskAttemps;
-    }
-  }
 
-  /**
-   * The content will render a different set of task attempts.
-   * @return FewAttemptsBlock.class
-   */
-  @Override
-  protected Class<? extends SubView> content() {
-    return FewAttemptsBlock.class;
-  }
+        /*
+         * (non-Javadoc)
+         * @see org.apache.hadoop.mapreduce.v2.hs.webapp.HsTaskPage.AttemptsBlock#isValidRequest()
+         * Verify that a job is given.
+         */
+        @Override
+        protected boolean isValidRequest() {
+            return app.getJob() != null;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.apache.hadoop.mapreduce.v2.hs.webapp.HsTaskPage.AttemptsBlock#getTaskAttempts()
+         * @return the attempts that are for a given job and a specific type/state.
+         */
+        @Override
+        protected Collection<TaskAttempt> getTaskAttempts() {
+            List<TaskAttempt> fewTaskAttemps = new ArrayList<TaskAttempt>();
+            String taskTypeStr = $(TASK_TYPE);
+            TaskType taskType = MRApps.taskType(taskTypeStr);
+            String attemptStateStr = $(ATTEMPT_STATE);
+            TaskAttemptStateUI neededState = MRApps
+                    .taskAttemptState(attemptStateStr);
+            Job j = app.getJob();
+            Map<TaskId, Task> tasks = j.getTasks(taskType);
+            for (Task task : tasks.values()) {
+                Map<TaskAttemptId, TaskAttempt> attempts = task.getAttempts();
+                for (TaskAttempt attempt : attempts.values()) {
+                    if (neededState.correspondsTo(attempt.getState())) {
+                        fewTaskAttemps.add(attempt);
+                    }
+                }
+            }
+            return fewTaskAttemps;
+        }
+    }
+
+    /**
+     * The content will render a different set of task attempts.
+     * @return FewAttemptsBlock.class
+     */
+    @Override
+    protected Class<? extends SubView> content() {
+        return FewAttemptsBlock.class;
+    }
 }

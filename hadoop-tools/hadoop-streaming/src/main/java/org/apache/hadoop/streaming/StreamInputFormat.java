@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,49 +34,49 @@ import org.apache.hadoop.mapred.*;
  */
 public class StreamInputFormat extends KeyValueTextInputFormat {
 
-  @SuppressWarnings("unchecked")
-  public RecordReader<Text, Text> getRecordReader(final InputSplit genericSplit,
-                                      JobConf job, Reporter reporter) throws IOException {
-    String c = job.get("stream.recordreader.class");
-    if (c == null || c.indexOf("LineRecordReader") >= 0) {
-      return super.getRecordReader(genericSplit, job, reporter);
+    @SuppressWarnings("unchecked")
+    public RecordReader<Text, Text> getRecordReader(final InputSplit genericSplit,
+                                                    JobConf job, Reporter reporter) throws IOException {
+        String c = job.get("stream.recordreader.class");
+        if (c == null || c.indexOf("LineRecordReader") >= 0) {
+            return super.getRecordReader(genericSplit, job, reporter);
+        }
+
+        // handling non-standard record reader (likely StreamXmlRecordReader)
+        FileSplit split = (FileSplit) genericSplit;
+        LOG.info("getRecordReader start.....split=" + split);
+        reporter.setStatus(split.toString());
+
+        // Open the file and seek to the start of the split
+        FileSystem fs = split.getPath().getFileSystem(job);
+        FSDataInputStream in = fs.open(split.getPath());
+
+        // Factory dispatch based on available params..
+        Class readerClass;
+
+        {
+            readerClass = StreamUtil.goodClassOrNull(job, c, null);
+            if (readerClass == null) {
+                throw new RuntimeException("Class not found: " + c);
+            }
+        }
+
+        Constructor ctor;
+        try {
+            ctor = readerClass.getConstructor(new Class[]{FSDataInputStream.class,
+                    FileSplit.class, Reporter.class, JobConf.class, FileSystem.class});
+        } catch (NoSuchMethodException nsm) {
+            throw new RuntimeException(nsm);
+        }
+
+        RecordReader<Text, Text> reader;
+        try {
+            reader = (RecordReader<Text, Text>) ctor.newInstance(new Object[]{in, split,
+                    reporter, job, fs});
+        } catch (Exception nsm) {
+            throw new RuntimeException(nsm);
+        }
+        return reader;
     }
-
-    // handling non-standard record reader (likely StreamXmlRecordReader) 
-    FileSplit split = (FileSplit) genericSplit;
-    LOG.info("getRecordReader start.....split=" + split);
-    reporter.setStatus(split.toString());
-
-    // Open the file and seek to the start of the split
-    FileSystem fs = split.getPath().getFileSystem(job);
-    FSDataInputStream in = fs.open(split.getPath());
-
-    // Factory dispatch based on available params..
-    Class readerClass;
-
-    {
-      readerClass = StreamUtil.goodClassOrNull(job, c, null);
-      if (readerClass == null) {
-        throw new RuntimeException("Class not found: " + c);
-      }
-    }
-
-    Constructor ctor;
-    try {
-      ctor = readerClass.getConstructor(new Class[] { FSDataInputStream.class,
-                                                      FileSplit.class, Reporter.class, JobConf.class, FileSystem.class });
-    } catch (NoSuchMethodException nsm) {
-      throw new RuntimeException(nsm);
-    }
-
-    RecordReader<Text, Text> reader;
-    try {
-      reader = (RecordReader<Text, Text>) ctor.newInstance(new Object[] { in, split,
-                                                              reporter, job, fs });
-    } catch (Exception nsm) {
-      throw new RuntimeException(nsm);
-    }
-    return reader;
-  }
 
 }

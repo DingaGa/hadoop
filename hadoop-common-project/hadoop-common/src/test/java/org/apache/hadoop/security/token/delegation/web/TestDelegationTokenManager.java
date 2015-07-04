@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,28 +32,28 @@ import java.util.Arrays;
 
 public class TestDelegationTokenManager {
 
-  private static final long DAY_IN_SECS = 86400;
+    private static final long DAY_IN_SECS = 86400;
 
-  @Test
-  public void testDTManager() throws Exception {
-    DelegationTokenManager tm = new DelegationTokenManager(new Text("foo"),
-        DAY_IN_SECS, DAY_IN_SECS, DAY_IN_SECS, DAY_IN_SECS);
-    tm.init();
-    Token<DelegationTokenIdentifier> token =
-        tm.createToken(UserGroupInformation.getCurrentUser(), "foo");
-    Assert.assertNotNull(token);
-    tm.verifyToken(token);
-    Assert.assertTrue(tm.renewToken(token, "foo") > System.currentTimeMillis());
-    tm.cancelToken(token, "foo");
-    try {
-      tm.verifyToken(token);
-      Assert.fail();
-    } catch (IOException ex) {
-      //NOP
-    } catch (Exception ex) {
-      Assert.fail();
+    @Test
+    public void testDTManager() throws Exception {
+        DelegationTokenManager tm = new DelegationTokenManager(new Text("foo"),
+                DAY_IN_SECS, DAY_IN_SECS, DAY_IN_SECS, DAY_IN_SECS);
+        tm.init();
+        Token<DelegationTokenIdentifier> token =
+                tm.createToken(UserGroupInformation.getCurrentUser(), "foo");
+        Assert.assertNotNull(token);
+        tm.verifyToken(token);
+        Assert.assertTrue(tm.renewToken(token, "foo") > System.currentTimeMillis());
+        tm.cancelToken(token, "foo");
+        try {
+            tm.verifyToken(token);
+            Assert.fail();
+        } catch (IOException ex) {
+            //NOP
+        } catch (Exception ex) {
+            Assert.fail();
+        }
+        tm.destroy();
     }
-    tm.destroy();
-  }
 
 }

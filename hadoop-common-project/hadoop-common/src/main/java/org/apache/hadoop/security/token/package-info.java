@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 @InterfaceAudience.LimitedPrivate({"HBase", "HDFS", "MapReduce"})
-@InterfaceStability.Evolving
-package org.apache.hadoop.security.token;
+@InterfaceStability.Evolving package org.apache.hadoop.security.token;
+
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;

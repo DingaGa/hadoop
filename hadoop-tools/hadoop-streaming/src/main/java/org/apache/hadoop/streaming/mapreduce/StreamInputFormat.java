@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,55 +40,55 @@ import org.apache.hadoop.streaming.StreamUtil;
  */
 public class StreamInputFormat extends KeyValueTextInputFormat {
 
-  @Override
-  public RecordReader<Text, Text> createRecordReader(InputSplit genericSplit,
-      TaskAttemptContext context) throws IOException {
+    @Override
+    public RecordReader<Text, Text> createRecordReader(InputSplit genericSplit,
+                                                       TaskAttemptContext context) throws IOException {
 
-    Configuration conf = context.getConfiguration();
+        Configuration conf = context.getConfiguration();
 
-    String c = conf.get("stream.recordreader.class");
-    if (c == null || c.indexOf("LineRecordReader") >= 0) {
-      return super.createRecordReader(genericSplit, context);
+        String c = conf.get("stream.recordreader.class");
+        if (c == null || c.indexOf("LineRecordReader") >= 0) {
+            return super.createRecordReader(genericSplit, context);
+        }
+
+        // handling non-standard record reader (likely StreamXmlRecordReader)
+        FileSplit split = (FileSplit) genericSplit;
+        // LOG.info("getRecordReader start.....split=" + split);
+        context.setStatus(split.toString());
+        context.progress();
+
+        // Open the file and seek to the start of the split
+        FileSystem fs = split.getPath().getFileSystem(conf);
+        FSDataInputStream in = fs.open(split.getPath());
+
+        // Factory dispatch based on available params..
+        Class readerClass;
+
+        {
+            readerClass = StreamUtil.goodClassOrNull(conf, c, null);
+            if (readerClass == null) {
+                throw new RuntimeException("Class not found: " + c);
+            }
+        }
+        Constructor ctor;
+
+        try {
+            ctor = readerClass.getConstructor(new Class[]{FSDataInputStream.class,
+                    FileSplit.class, TaskAttemptContext.class, Configuration.class,
+                    FileSystem.class});
+        } catch (NoSuchMethodException nsm) {
+            throw new RuntimeException(nsm);
+        }
+
+        RecordReader<Text, Text> reader;
+        try {
+            reader = (RecordReader<Text, Text>) ctor.newInstance(new Object[]{in,
+                    split, context, conf, fs});
+        } catch (Exception nsm) {
+            throw new RuntimeException(nsm);
+        }
+        return reader;
+
     }
-
-    // handling non-standard record reader (likely StreamXmlRecordReader)
-    FileSplit split = (FileSplit) genericSplit;
-    // LOG.info("getRecordReader start.....split=" + split);
-    context.setStatus(split.toString());
-    context.progress();
-
-    // Open the file and seek to the start of the split
-    FileSystem fs = split.getPath().getFileSystem(conf);
-    FSDataInputStream in = fs.open(split.getPath());
-
-    // Factory dispatch based on available params..
-    Class readerClass;
-
-    {
-      readerClass = StreamUtil.goodClassOrNull(conf, c, null);
-      if (readerClass == null) {
-        throw new RuntimeException("Class not found: " + c);
-      }
-    }
-    Constructor ctor;
-
-    try {
-      ctor = readerClass.getConstructor(new Class[] { FSDataInputStream.class,
-          FileSplit.class, TaskAttemptContext.class, Configuration.class,
-          FileSystem.class });
-    } catch (NoSuchMethodException nsm) {
-      throw new RuntimeException(nsm);
-    }
-
-    RecordReader<Text, Text> reader;
-    try {
-      reader = (RecordReader<Text, Text>) ctor.newInstance(new Object[] { in,
-          split, context, conf, fs });
-    } catch (Exception nsm) {
-      throw new RuntimeException(nsm);
-    }
-    return reader;
-
-  }
 
 }

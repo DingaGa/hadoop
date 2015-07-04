@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,24 +41,24 @@ import org.mortbay.util.ajax.JSON;
  */
 @Path("")
 public class JerseyResource {
-  static final Log LOG = LogFactory.getLog(JerseyResource.class);
+    static final Log LOG = LogFactory.getLog(JerseyResource.class);
 
-  public static final String PATH = "path";
-  public static final String OP = "op";
+    public static final String PATH = "path";
+    public static final String OP = "op";
 
-  @GET
-  @Path("{" + PATH + ":.*}")
-  @Produces({MediaType.APPLICATION_JSON})
-  public Response get(
-      @PathParam(PATH) @DefaultValue("UNKNOWN_" + PATH) final String path,
-      @QueryParam(OP) @DefaultValue("UNKNOWN_" + OP) final String op
-      ) throws IOException {
-    LOG.info("get: " + PATH + "=" + path + ", " + OP + "=" + op);
+    @GET
+    @Path("{" + PATH + ":.*}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response get(
+            @PathParam(PATH) @DefaultValue("UNKNOWN_" + PATH) final String path,
+            @QueryParam(OP) @DefaultValue("UNKNOWN_" + OP) final String op
+    ) throws IOException {
+        LOG.info("get: " + PATH + "=" + path + ", " + OP + "=" + op);
 
-    final Map<String, Object> m = new TreeMap<String, Object>();
-    m.put(PATH, path);
-    m.put(OP, op);
-    final String js = JSON.toString(m);
-    return Response.ok(js).type(MediaType.APPLICATION_JSON).build();
-  }
+        final Map<String, Object> m = new TreeMap<String, Object>();
+        m.put(PATH, path);
+        m.put(OP, op);
+        final String js = JSON.toString(m);
+        return Response.ok(js).type(MediaType.APPLICATION_JSON).build();
+    }
 }

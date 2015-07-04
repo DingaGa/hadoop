@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,69 +48,69 @@ import static org.mockito.Mockito.when;
 
 public class TestRMWebAppFairScheduler {
 
-  @Test
-  public void testFairSchedulerWebAppPage() {
-    List<RMAppState> appStates = Arrays.asList(RMAppState.NEW,
-        RMAppState.NEW_SAVING, RMAppState.SUBMITTED);
-    final RMContext rmContext = mockRMContext(appStates);
-    Injector injector = WebAppTests.createMockInjector(RMContext.class,
-        rmContext,
-        new Module() {
-          @Override
-          public void configure(Binder binder) {
-            try {
-              ResourceManager mockRmWithFairScheduler =
-                  mockRm(rmContext);
-              binder.bind(ResourceManager.class).toInstance
-                  (mockRmWithFairScheduler);
+    @Test
+    public void testFairSchedulerWebAppPage() {
+        List<RMAppState> appStates = Arrays.asList(RMAppState.NEW,
+                RMAppState.NEW_SAVING, RMAppState.SUBMITTED);
+        final RMContext rmContext = mockRMContext(appStates);
+        Injector injector = WebAppTests.createMockInjector(RMContext.class,
+                rmContext,
+                new Module() {
+                    @Override
+                    public void configure(Binder binder) {
+                        try {
+                            ResourceManager mockRmWithFairScheduler =
+                                    mockRm(rmContext);
+                            binder.bind(ResourceManager.class).toInstance
+                                    (mockRmWithFairScheduler);
 
-            } catch (IOException e) {
-              throw new IllegalStateException(e);
-            }
-          }
-        });
-    FairSchedulerPage fsViewInstance = injector.getInstance(FairSchedulerPage
-        .class);
-    fsViewInstance.render();
-    WebAppTests.flushOutput(injector);
-  }
-
-  private static RMContext mockRMContext(List<RMAppState> states) {
-    final ConcurrentMap<ApplicationId, RMApp> applicationsMaps = Maps
-        .newConcurrentMap();
-    int i = 0;
-    for (RMAppState state : states) {
-      MockRMApp app = new MockRMApp(i, i, state);
-      applicationsMaps.put(app.getApplicationId(), app);
-      i++;
+                        } catch (IOException e) {
+                            throw new IllegalStateException(e);
+                        }
+                    }
+                });
+        FairSchedulerPage fsViewInstance = injector.getInstance(FairSchedulerPage
+                .class);
+        fsViewInstance.render();
+        WebAppTests.flushOutput(injector);
     }
 
-    return new RMContextImpl(null, null, null, null,
-        null, null, null, null, null, null) {
-      @Override
-      public ConcurrentMap<ApplicationId, RMApp> getRMApps() {
-        return applicationsMaps;
-      }
-    };
-  }
+    private static RMContext mockRMContext(List<RMAppState> states) {
+        final ConcurrentMap<ApplicationId, RMApp> applicationsMaps = Maps
+                .newConcurrentMap();
+        int i = 0;
+        for (RMAppState state : states) {
+            MockRMApp app = new MockRMApp(i, i, state);
+            applicationsMaps.put(app.getApplicationId(), app);
+            i++;
+        }
 
-  private static ResourceManager mockRm(RMContext rmContext) throws
-      IOException {
-    ResourceManager rm = mock(ResourceManager.class);
-    ResourceScheduler rs = mockFairScheduler();
-    when(rm.getResourceScheduler()).thenReturn(rs);
-    when(rm.getRMContext()).thenReturn(rmContext);
-    return rm;
-  }
+        return new RMContextImpl(null, null, null, null,
+                null, null, null, null, null, null) {
+            @Override
+            public ConcurrentMap<ApplicationId, RMApp> getRMApps() {
+                return applicationsMaps;
+            }
+        };
+    }
 
-  private static FairScheduler mockFairScheduler() throws IOException {
-    FairScheduler fs = new FairScheduler();
-    FairSchedulerConfiguration conf = new FairSchedulerConfiguration();
-    fs.setRMContext(new RMContextImpl(null, null, null, null, null,
-        null, new RMContainerTokenSecretManager(conf),
-        new NMTokenSecretManagerInRM(conf),
-        new ClientToAMTokenSecretManagerInRM(), null));
-    fs.init(conf);
-    return fs;
-  }
+    private static ResourceManager mockRm(RMContext rmContext) throws
+            IOException {
+        ResourceManager rm = mock(ResourceManager.class);
+        ResourceScheduler rs = mockFairScheduler();
+        when(rm.getResourceScheduler()).thenReturn(rs);
+        when(rm.getRMContext()).thenReturn(rmContext);
+        return rm;
+    }
+
+    private static FairScheduler mockFairScheduler() throws IOException {
+        FairScheduler fs = new FairScheduler();
+        FairSchedulerConfiguration conf = new FairSchedulerConfiguration();
+        fs.setRMContext(new RMContextImpl(null, null, null, null, null,
+                null, new RMContainerTokenSecretManager(conf),
+                new NMTokenSecretManagerInRM(conf),
+                new ClientToAMTokenSecretManagerInRM(), null));
+        fs.init(conf);
+        return fs;
+    }
 }

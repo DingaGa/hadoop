@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,42 +34,56 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 @InterfaceAudience.Public
 @InterfaceStability.Stable
 public class NullOutputFormat<K, V> extends OutputFormat<K, V> {
-  
-  @Override
-  public RecordWriter<K, V> 
-         getRecordWriter(TaskAttemptContext context) {
-    return new RecordWriter<K, V>(){
-        public void write(K key, V value) { }
-        public void close(TaskAttemptContext context) { }
-      };
-  }
-  
-  @Override
-  public void checkOutputSpecs(JobContext context) { }
-  
-  @Override
-  public OutputCommitter getOutputCommitter(TaskAttemptContext context) {
-    return new OutputCommitter() {
-      public void abortTask(TaskAttemptContext taskContext) { }
-      public void cleanupJob(JobContext jobContext) { }
-      public void commitTask(TaskAttemptContext taskContext) { }
-      public boolean needsTaskCommit(TaskAttemptContext taskContext) {
-        return false;
-      }
-      public void setupJob(JobContext jobContext) { }
-      public void setupTask(TaskAttemptContext taskContext) { }
 
-      @Override
-      @Deprecated
-      public boolean isRecoverySupported() {
-        return true;
-      }
+    @Override
+    public RecordWriter<K, V>
+    getRecordWriter(TaskAttemptContext context) {
+        return new RecordWriter<K, V>() {
+            public void write(K key, V value) {
+            }
 
-      @Override
-      public void recoverTask(TaskAttemptContext taskContext)
-          throws IOException {
-        // Nothing to do for recovering the task.
-      }
-    };
-  }
+            public void close(TaskAttemptContext context) {
+            }
+        };
+    }
+
+    @Override
+    public void checkOutputSpecs(JobContext context) {
+    }
+
+    @Override
+    public OutputCommitter getOutputCommitter(TaskAttemptContext context) {
+        return new OutputCommitter() {
+            public void abortTask(TaskAttemptContext taskContext) {
+            }
+
+            public void cleanupJob(JobContext jobContext) {
+            }
+
+            public void commitTask(TaskAttemptContext taskContext) {
+            }
+
+            public boolean needsTaskCommit(TaskAttemptContext taskContext) {
+                return false;
+            }
+
+            public void setupJob(JobContext jobContext) {
+            }
+
+            public void setupTask(TaskAttemptContext taskContext) {
+            }
+
+            @Override
+            @Deprecated
+            public boolean isRecoverySupported() {
+                return true;
+            }
+
+            @Override
+            public void recoverTask(TaskAttemptContext taskContext)
+                    throws IOException {
+                // Nothing to do for recovering the task.
+            }
+        };
+    }
 }

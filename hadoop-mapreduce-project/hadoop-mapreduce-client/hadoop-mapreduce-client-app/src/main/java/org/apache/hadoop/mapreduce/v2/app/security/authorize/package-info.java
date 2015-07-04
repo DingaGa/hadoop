@@ -15,6 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@InterfaceAudience.Private
-package org.apache.hadoop.mapreduce.v2.app.security.authorize;
+@InterfaceAudience.Private package org.apache.hadoop.mapreduce.v2.app.security.authorize;
+
 import org.apache.hadoop.classification.InterfaceAudience;

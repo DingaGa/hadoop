@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,127 +59,127 @@ import com.google.protobuf.ServiceException;
  */
 @InterfaceAudience.Private
 public class ClientDatanodeProtocolServerSideTranslatorPB implements
-    ClientDatanodeProtocolPB {
-  private final static RefreshNamenodesResponseProto REFRESH_NAMENODE_RESP =
-      RefreshNamenodesResponseProto.newBuilder().build();
-  private final static DeleteBlockPoolResponseProto DELETE_BLOCKPOOL_RESP =
-      DeleteBlockPoolResponseProto.newBuilder().build();
-  private final static ShutdownDatanodeResponseProto SHUTDOWN_DATANODE_RESP =
-      ShutdownDatanodeResponseProto.newBuilder().build();
-  
-  private final ClientDatanodeProtocol impl;
+        ClientDatanodeProtocolPB {
+    private final static RefreshNamenodesResponseProto REFRESH_NAMENODE_RESP =
+            RefreshNamenodesResponseProto.newBuilder().build();
+    private final static DeleteBlockPoolResponseProto DELETE_BLOCKPOOL_RESP =
+            DeleteBlockPoolResponseProto.newBuilder().build();
+    private final static ShutdownDatanodeResponseProto SHUTDOWN_DATANODE_RESP =
+            ShutdownDatanodeResponseProto.newBuilder().build();
 
-  public ClientDatanodeProtocolServerSideTranslatorPB(
-      ClientDatanodeProtocol impl) {
-    this.impl = impl;
-  }
+    private final ClientDatanodeProtocol impl;
 
-  @Override
-  public GetReplicaVisibleLengthResponseProto getReplicaVisibleLength(
-      RpcController unused, GetReplicaVisibleLengthRequestProto request)
-      throws ServiceException {
-    long len;
-    try {
-      len = impl.getReplicaVisibleLength(PBHelper.convert(request.getBlock()));
-    } catch (IOException e) {
-      throw new ServiceException(e);
+    public ClientDatanodeProtocolServerSideTranslatorPB(
+            ClientDatanodeProtocol impl) {
+        this.impl = impl;
     }
-    return GetReplicaVisibleLengthResponseProto.newBuilder().setLength(len)
-        .build();
-  }
 
-  @Override
-  public RefreshNamenodesResponseProto refreshNamenodes(
-      RpcController unused, RefreshNamenodesRequestProto request)
-      throws ServiceException {
-    try {
-      impl.refreshNamenodes();
-    } catch (IOException e) {
-      throw new ServiceException(e);
+    @Override
+    public GetReplicaVisibleLengthResponseProto getReplicaVisibleLength(
+            RpcController unused, GetReplicaVisibleLengthRequestProto request)
+            throws ServiceException {
+        long len;
+        try {
+            len = impl.getReplicaVisibleLength(PBHelper.convert(request.getBlock()));
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return GetReplicaVisibleLengthResponseProto.newBuilder().setLength(len)
+                .build();
     }
-    return REFRESH_NAMENODE_RESP;
-  }
 
-  @Override
-  public DeleteBlockPoolResponseProto deleteBlockPool(RpcController unused,
-      DeleteBlockPoolRequestProto request) throws ServiceException {
-    try {
-      impl.deleteBlockPool(request.getBlockPool(), request.getForce());
-    } catch (IOException e) {
-      throw new ServiceException(e);
+    @Override
+    public RefreshNamenodesResponseProto refreshNamenodes(
+            RpcController unused, RefreshNamenodesRequestProto request)
+            throws ServiceException {
+        try {
+            impl.refreshNamenodes();
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return REFRESH_NAMENODE_RESP;
     }
-    return DELETE_BLOCKPOOL_RESP;
-  }
 
-  @Override
-  public GetBlockLocalPathInfoResponseProto getBlockLocalPathInfo(
-      RpcController unused, GetBlockLocalPathInfoRequestProto request)
-      throws ServiceException {
-    BlockLocalPathInfo resp;
-    try {
-      resp = impl.getBlockLocalPathInfo(PBHelper.convert(request.getBlock()), PBHelper.convert(request.getToken()));
-    } catch (IOException e) {
-      throw new ServiceException(e);
+    @Override
+    public DeleteBlockPoolResponseProto deleteBlockPool(RpcController unused,
+                                                        DeleteBlockPoolRequestProto request) throws ServiceException {
+        try {
+            impl.deleteBlockPool(request.getBlockPool(), request.getForce());
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return DELETE_BLOCKPOOL_RESP;
     }
-    return GetBlockLocalPathInfoResponseProto.newBuilder()
-        .setBlock(PBHelper.convert(resp.getBlock()))
-        .setLocalPath(resp.getBlockPath()).setLocalMetaPath(resp.getMetaPath())
-        .build();
-  }
 
-  @Override
-  public GetHdfsBlockLocationsResponseProto getHdfsBlockLocations(
-      RpcController controller, GetHdfsBlockLocationsRequestProto request)
-      throws ServiceException {
-    HdfsBlocksMetadata resp;
-    try {
-      String poolId = request.getBlockPoolId();
+    @Override
+    public GetBlockLocalPathInfoResponseProto getBlockLocalPathInfo(
+            RpcController unused, GetBlockLocalPathInfoRequestProto request)
+            throws ServiceException {
+        BlockLocalPathInfo resp;
+        try {
+            resp = impl.getBlockLocalPathInfo(PBHelper.convert(request.getBlock()), PBHelper.convert(request.getToken()));
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return GetBlockLocalPathInfoResponseProto.newBuilder()
+                .setBlock(PBHelper.convert(resp.getBlock()))
+                .setLocalPath(resp.getBlockPath()).setLocalMetaPath(resp.getMetaPath())
+                .build();
+    }
 
-      List<Token<BlockTokenIdentifier>> tokens = 
-          new ArrayList<Token<BlockTokenIdentifier>>(request.getTokensCount());
-      for (TokenProto b : request.getTokensList()) {
-        tokens.add(PBHelper.convert(b));
-      }
-      long[] blockIds = Longs.toArray(request.getBlockIdsList());
-      
-      // Call the real implementation
-      resp = impl.getHdfsBlocksMetadata(poolId, blockIds, tokens);
-    } catch (IOException e) {
-      throw new ServiceException(e);
-    }
-    List<ByteString> volumeIdsByteStrings = 
-        new ArrayList<ByteString>(resp.getVolumeIds().size());
-    for (byte[] b : resp.getVolumeIds()) {
-      volumeIdsByteStrings.add(ByteString.copyFrom(b));
-    }
-    // Build and return the response
-    Builder builder = GetHdfsBlockLocationsResponseProto.newBuilder();
-    builder.addAllVolumeIds(volumeIdsByteStrings);
-    builder.addAllVolumeIndexes(resp.getVolumeIndexes());
-    return builder.build();
-  }
+    @Override
+    public GetHdfsBlockLocationsResponseProto getHdfsBlockLocations(
+            RpcController controller, GetHdfsBlockLocationsRequestProto request)
+            throws ServiceException {
+        HdfsBlocksMetadata resp;
+        try {
+            String poolId = request.getBlockPoolId();
 
-  @Override
-  public ShutdownDatanodeResponseProto shutdownDatanode(
-      RpcController unused, ShutdownDatanodeRequestProto request)
-      throws ServiceException {
-    try {
-      impl.shutdownDatanode(request.getForUpgrade());
-    } catch (IOException e) {
-      throw new ServiceException(e);
-    }
-    return SHUTDOWN_DATANODE_RESP;
-  }
+            List<Token<BlockTokenIdentifier>> tokens =
+                    new ArrayList<Token<BlockTokenIdentifier>>(request.getTokensCount());
+            for (TokenProto b : request.getTokensList()) {
+                tokens.add(PBHelper.convert(b));
+            }
+            long[] blockIds = Longs.toArray(request.getBlockIdsList());
 
-  public GetDatanodeInfoResponseProto getDatanodeInfo(RpcController unused,
-      GetDatanodeInfoRequestProto request) throws ServiceException {
-    GetDatanodeInfoResponseProto res;
-    try {
-      res = GetDatanodeInfoResponseProto.newBuilder()
-          .setLocalInfo(PBHelper.convert(impl.getDatanodeInfo())).build();
-    } catch (IOException e) {
-      throw new ServiceException(e);
+            // Call the real implementation
+            resp = impl.getHdfsBlocksMetadata(poolId, blockIds, tokens);
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        List<ByteString> volumeIdsByteStrings =
+                new ArrayList<ByteString>(resp.getVolumeIds().size());
+        for (byte[] b : resp.getVolumeIds()) {
+            volumeIdsByteStrings.add(ByteString.copyFrom(b));
+        }
+        // Build and return the response
+        Builder builder = GetHdfsBlockLocationsResponseProto.newBuilder();
+        builder.addAllVolumeIds(volumeIdsByteStrings);
+        builder.addAllVolumeIndexes(resp.getVolumeIndexes());
+        return builder.build();
     }
-    return res;
-  }
+
+    @Override
+    public ShutdownDatanodeResponseProto shutdownDatanode(
+            RpcController unused, ShutdownDatanodeRequestProto request)
+            throws ServiceException {
+        try {
+            impl.shutdownDatanode(request.getForUpgrade());
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return SHUTDOWN_DATANODE_RESP;
+    }
+
+    public GetDatanodeInfoResponseProto getDatanodeInfo(RpcController unused,
+                                                        GetDatanodeInfoRequestProto request) throws ServiceException {
+        GetDatanodeInfoResponseProto res;
+        try {
+            res = GetDatanodeInfoResponseProto.newBuilder()
+                    .setLocalInfo(PBHelper.convert(impl.getDatanodeInfo())).build();
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return res;
+    }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,160 +34,160 @@ import org.apache.hadoop.fs.Path;
  */
 public class FSCheckpointService implements CheckpointService {
 
-  private final Path base;
-  private final FileSystem fs;
-  private final CheckpointNamingService namingPolicy;
-  private final short replication;
+    private final Path base;
+    private final FileSystem fs;
+    private final CheckpointNamingService namingPolicy;
+    private final short replication;
 
-  public FSCheckpointService(FileSystem fs, Path base,
-      CheckpointNamingService namingPolicy, short replication) {
-    this.fs = fs;
-    this.base = base;
-    this.namingPolicy = namingPolicy;
-    this.replication = replication;
-  }
-
-  public CheckpointWriteChannel create()
-      throws IOException {
-
-    String name = namingPolicy.getNewName();
-
-    Path p = new Path(name);
-    if (p.isUriPathAbsolute()) {
-      throw new IOException("Checkpoint cannot be an absolute path");
-    }
-    return createInternal(new Path(base, p));
-  }
-
-  CheckpointWriteChannel createInternal(Path name) throws IOException {
-
-    //create a temp file, fail if file exists
-    return new FSCheckpointWriteChannel(name, fs.create(tmpfile(name),
-          replication));
-  }
-
-  private static class FSCheckpointWriteChannel
-      implements CheckpointWriteChannel {
-    private boolean isOpen = true;
-    private final Path finalDst;
-    private final WritableByteChannel out;
-
-    FSCheckpointWriteChannel(Path finalDst, FSDataOutputStream out) {
-      this.finalDst = finalDst;
-      this.out = Channels.newChannel(out);
+    public FSCheckpointService(FileSystem fs, Path base,
+                               CheckpointNamingService namingPolicy, short replication) {
+        this.fs = fs;
+        this.base = base;
+        this.namingPolicy = namingPolicy;
+        this.replication = replication;
     }
 
-    public int write(ByteBuffer b) throws IOException {
-      return out.write(b);
+    public CheckpointWriteChannel create()
+            throws IOException {
+
+        String name = namingPolicy.getNewName();
+
+        Path p = new Path(name);
+        if (p.isUriPathAbsolute()) {
+            throw new IOException("Checkpoint cannot be an absolute path");
+        }
+        return createInternal(new Path(base, p));
     }
 
-    public Path getDestination() {
-      return finalDst;
+    CheckpointWriteChannel createInternal(Path name) throws IOException {
+
+        //create a temp file, fail if file exists
+        return new FSCheckpointWriteChannel(name, fs.create(tmpfile(name),
+                replication));
     }
 
-    @Override
-    public void close() throws IOException {
-      isOpen=false;
-      out.close();
-    }
+    private static class FSCheckpointWriteChannel
+            implements CheckpointWriteChannel {
+        private boolean isOpen = true;
+        private final Path finalDst;
+        private final WritableByteChannel out;
 
-    @Override
-    public boolean isOpen() {
-      return isOpen;
-    }
+        FSCheckpointWriteChannel(Path finalDst, FSDataOutputStream out) {
+            this.finalDst = finalDst;
+            this.out = Channels.newChannel(out);
+        }
 
-  }
+        public int write(ByteBuffer b) throws IOException {
+            return out.write(b);
+        }
 
-  @Override
-  public CheckpointReadChannel open(CheckpointID id)
-      throws IOException, InterruptedException {
-      if (!(id instanceof FSCheckpointID)) {
-        throw new IllegalArgumentException(
-            "Mismatched checkpoint type: " + id.getClass());
-      }
-      return new FSCheckpointReadChannel(
-          fs.open(((FSCheckpointID) id).getPath()));
-  }
+        public Path getDestination() {
+            return finalDst;
+        }
 
-  private static class FSCheckpointReadChannel
-      implements CheckpointReadChannel {
+        @Override
+        public void close() throws IOException {
+            isOpen = false;
+            out.close();
+        }
 
-    private boolean isOpen = true;
-    private final ReadableByteChannel in;
+        @Override
+        public boolean isOpen() {
+            return isOpen;
+        }
 
-    FSCheckpointReadChannel(FSDataInputStream in){
-      this.in = Channels.newChannel(in);
     }
 
     @Override
-    public int read(ByteBuffer bb) throws IOException {
-      return in.read(bb);
+    public CheckpointReadChannel open(CheckpointID id)
+            throws IOException, InterruptedException {
+        if (!(id instanceof FSCheckpointID)) {
+            throw new IllegalArgumentException(
+                    "Mismatched checkpoint type: " + id.getClass());
+        }
+        return new FSCheckpointReadChannel(
+                fs.open(((FSCheckpointID) id).getPath()));
+    }
+
+    private static class FSCheckpointReadChannel
+            implements CheckpointReadChannel {
+
+        private boolean isOpen = true;
+        private final ReadableByteChannel in;
+
+        FSCheckpointReadChannel(FSDataInputStream in) {
+            this.in = Channels.newChannel(in);
+        }
+
+        @Override
+        public int read(ByteBuffer bb) throws IOException {
+            return in.read(bb);
+        }
+
+        @Override
+        public void close() throws IOException {
+            isOpen = false;
+            in.close();
+        }
+
+        @Override
+        public boolean isOpen() {
+            return isOpen;
+        }
+
     }
 
     @Override
-    public void close() throws IOException {
-      isOpen = false;
-      in.close();
+    public CheckpointID commit(CheckpointWriteChannel ch)
+            throws IOException, InterruptedException {
+        if (ch.isOpen()) {
+            ch.close();
+        }
+        FSCheckpointWriteChannel hch = (FSCheckpointWriteChannel) ch;
+        Path dst = hch.getDestination();
+        if (!fs.rename(tmpfile(dst), dst)) {
+            // attempt to clean up
+            abort(ch);
+            throw new IOException("Failed to promote checkpoint" +
+                    tmpfile(dst) + " -> " + dst);
+        }
+        return new FSCheckpointID(hch.getDestination());
     }
 
     @Override
-    public boolean isOpen() {
-      return isOpen;
+    public void abort(CheckpointWriteChannel ch) throws IOException {
+        if (ch.isOpen()) {
+            ch.close();
+        }
+        FSCheckpointWriteChannel hch = (FSCheckpointWriteChannel) ch;
+        Path tmp = tmpfile(hch.getDestination());
+        try {
+            if (!fs.delete(tmp, false)) {
+                throw new IOException("Failed to delete checkpoint during abort");
+            }
+        } catch (FileNotFoundException e) {
+            // IGNORE
+        }
     }
 
-  }
+    @Override
+    public boolean delete(CheckpointID id) throws IOException,
+            InterruptedException {
+        if (!(id instanceof FSCheckpointID)) {
+            throw new IllegalArgumentException(
+                    "Mismatched checkpoint type: " + id.getClass());
+        }
+        Path tmp = ((FSCheckpointID) id).getPath();
+        try {
+            return fs.delete(tmp, false);
+        } catch (FileNotFoundException e) {
+            // IGNORE
+        }
+        return true;
+    }
 
-  @Override
-  public CheckpointID commit(CheckpointWriteChannel ch)
-      throws IOException, InterruptedException {
-    if (ch.isOpen()) {
-      ch.close();
+    static final Path tmpfile(Path p) {
+        return new Path(p.getParent(), p.getName() + ".tmp");
     }
-    FSCheckpointWriteChannel hch = (FSCheckpointWriteChannel)ch;
-    Path dst = hch.getDestination();
-    if (!fs.rename(tmpfile(dst), dst)) {
-      // attempt to clean up
-      abort(ch);
-      throw new IOException("Failed to promote checkpoint" +
-      		 tmpfile(dst) + " -> " + dst);
-    }
-    return new FSCheckpointID(hch.getDestination());
-  }
-
-  @Override
-  public void abort(CheckpointWriteChannel ch) throws IOException {
-    if (ch.isOpen()) {
-      ch.close();
-    }
-    FSCheckpointWriteChannel hch = (FSCheckpointWriteChannel)ch;
-    Path tmp = tmpfile(hch.getDestination());
-    try {
-      if (!fs.delete(tmp, false)) {
-        throw new IOException("Failed to delete checkpoint during abort");
-      }
-    } catch (FileNotFoundException e) {
-      // IGNORE
-    }
-  }
-
-  @Override
-  public boolean delete(CheckpointID id) throws IOException,
-      InterruptedException {
-    if (!(id instanceof FSCheckpointID)) {
-      throw new IllegalArgumentException(
-          "Mismatched checkpoint type: " + id.getClass());
-    }
-    Path tmp = ((FSCheckpointID)id).getPath();
-    try {
-      return fs.delete(tmp, false);
-    } catch (FileNotFoundException e) {
-      // IGNORE
-    }
-    return true;
-  }
-
-  static final Path tmpfile(Path p) {
-    return new Path(p.getParent(), p.getName() + ".tmp");
-  }
 
 }

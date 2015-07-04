@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,138 +57,138 @@ import com.microsoft.windowsazure.storage.StorageEvent;
 
 
 /**
- * 
+ *
  * Introduces delays in our Azure traffic to prevent overrunning the server-side throttling limits.
  *
  */
 @InterfaceAudience.Private
 public class SelfThrottlingIntercept {
-  public static final Log LOG = LogFactory
-      .getLog(SelfThrottlingIntercept.class);
+    public static final Log LOG = LogFactory
+            .getLog(SelfThrottlingIntercept.class);
 
-  private final float readFactor;
-  private final float writeFactor;
+    private final float readFactor;
+    private final float writeFactor;
 
-  // Concurrency: access to non-final members must be thread-safe
-  private long lastE2Elatency;
+    // Concurrency: access to non-final members must be thread-safe
+    private long lastE2Elatency;
 
-  public SelfThrottlingIntercept(OperationContext operationContext,
-      float readFactor, float writeFactor) {
-    this.readFactor = readFactor;
-    this.writeFactor = writeFactor;
-  }
-
-  public static void hook(OperationContext operationContext, float readFactor,
-      float writeFactor) {
-
-    SelfThrottlingIntercept throttler = new SelfThrottlingIntercept(
-        operationContext, readFactor, writeFactor);
-    ResponseReceivedListener responseListener = throttler.new ResponseReceivedListener();
-    SendingRequestListener sendingListener = throttler.new SendingRequestListener();
-
-    operationContext.getResponseReceivedEventHandler().addListener(
-        responseListener);
-    operationContext.getSendingRequestEventHandler().addListener(
-        sendingListener);
-  }
-
-  public void responseReceived(ResponseReceivedEvent event) {
-    RequestResult result = event.getRequestResult();
-    Date startDate = result.getStartDate();
-    Date stopDate = result.getStopDate();
-    long elapsed = stopDate.getTime() - startDate.getTime();
-
-    synchronized (this) {
-      this.lastE2Elatency = elapsed;
+    public SelfThrottlingIntercept(OperationContext operationContext,
+                                   float readFactor, float writeFactor) {
+        this.readFactor = readFactor;
+        this.writeFactor = writeFactor;
     }
 
-    if (LOG.isDebugEnabled()) {
-      int statusCode = result.getStatusCode();
-      String etag = result.getEtag();
-      HttpURLConnection urlConnection = (HttpURLConnection) event
-          .getConnectionObject();
-      int contentLength = urlConnection.getContentLength();
-      String requestMethod = urlConnection.getRequestMethod();
-      long threadId = Thread.currentThread().getId();
-      LOG.debug(String
-          .format(
-              "SelfThrottlingIntercept:: ResponseReceived: threadId=%d, Status=%d, Elapsed(ms)=%d, ETAG=%s, contentLength=%d, requestMethod=%s",
-              threadId, statusCode, elapsed, etag, contentLength, requestMethod));
-    }
-  }
+    public static void hook(OperationContext operationContext, float readFactor,
+                            float writeFactor) {
 
-  public void sendingRequest(SendingRequestEvent sendEvent) {
-    long lastLatency;
-    boolean operationIsRead; // for logging
-    synchronized (this) {
+        SelfThrottlingIntercept throttler = new SelfThrottlingIntercept(
+                operationContext, readFactor, writeFactor);
+        ResponseReceivedListener responseListener = throttler.new ResponseReceivedListener();
+        SendingRequestListener sendingListener = throttler.new SendingRequestListener();
 
-      lastLatency = this.lastE2Elatency;
+        operationContext.getResponseReceivedEventHandler().addListener(
+                responseListener);
+        operationContext.getSendingRequestEventHandler().addListener(
+                sendingListener);
     }
 
-    float sleepMultiple;
-    HttpURLConnection urlConnection = (HttpURLConnection) sendEvent
-        .getConnectionObject();
+    public void responseReceived(ResponseReceivedEvent event) {
+        RequestResult result = event.getRequestResult();
+        Date startDate = result.getStartDate();
+        Date stopDate = result.getStopDate();
+        long elapsed = stopDate.getTime() - startDate.getTime();
 
-    // Azure REST API never uses POST, so PUT is a sufficient test for an
-    // upload.
-    if (urlConnection.getRequestMethod().equalsIgnoreCase("PUT")) {
-      operationIsRead = false;
-      sleepMultiple = (1 / writeFactor) - 1;
-    } else {
-      operationIsRead = true;
-      sleepMultiple = (1 / readFactor) - 1;
+        synchronized (this) {
+            this.lastE2Elatency = elapsed;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            int statusCode = result.getStatusCode();
+            String etag = result.getEtag();
+            HttpURLConnection urlConnection = (HttpURLConnection) event
+                    .getConnectionObject();
+            int contentLength = urlConnection.getContentLength();
+            String requestMethod = urlConnection.getRequestMethod();
+            long threadId = Thread.currentThread().getId();
+            LOG.debug(String
+                    .format(
+                            "SelfThrottlingIntercept:: ResponseReceived: threadId=%d, Status=%d, Elapsed(ms)=%d, ETAG=%s, contentLength=%d, requestMethod=%s",
+                            threadId, statusCode, elapsed, etag, contentLength, requestMethod));
+        }
     }
 
-    long sleepDuration = (long) (sleepMultiple * lastLatency);
-    if (sleepDuration < 0) {
-      sleepDuration = 0;
+    public void sendingRequest(SendingRequestEvent sendEvent) {
+        long lastLatency;
+        boolean operationIsRead; // for logging
+        synchronized (this) {
+
+            lastLatency = this.lastE2Elatency;
+        }
+
+        float sleepMultiple;
+        HttpURLConnection urlConnection = (HttpURLConnection) sendEvent
+                .getConnectionObject();
+
+        // Azure REST API never uses POST, so PUT is a sufficient test for an
+        // upload.
+        if (urlConnection.getRequestMethod().equalsIgnoreCase("PUT")) {
+            operationIsRead = false;
+            sleepMultiple = (1 / writeFactor) - 1;
+        } else {
+            operationIsRead = true;
+            sleepMultiple = (1 / readFactor) - 1;
+        }
+
+        long sleepDuration = (long) (sleepMultiple * lastLatency);
+        if (sleepDuration < 0) {
+            sleepDuration = 0;
+        }
+
+        if (sleepDuration > 0) {
+            try {
+                // Thread.sleep() is not exact but it seems sufficiently accurate for
+                // our needs. If needed this could become a loop of small waits that
+                // tracks actual
+                // elapsed time.
+                Thread.sleep(sleepDuration);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+
+            // reset to avoid counting the sleep against request latency
+            sendEvent.getRequestResult().setStartDate(new Date());
+        }
+
+        if (LOG.isDebugEnabled()) {
+            boolean isFirstRequest = (lastLatency == 0);
+            long threadId = Thread.currentThread().getId();
+            LOG.debug(String
+                    .format(
+                            " SelfThrottlingIntercept:: SendingRequest:   threadId=%d, requestType=%s, isFirstRequest=%b, sleepDuration=%d",
+                            threadId, operationIsRead ? "read " : "write", isFirstRequest,
+                            sleepDuration));
+        }
     }
 
-    if (sleepDuration > 0) {
-      try {
-        // Thread.sleep() is not exact but it seems sufficiently accurate for
-        // our needs. If needed this could become a loop of small waits that
-        // tracks actual
-        // elapsed time.
-        Thread.sleep(sleepDuration);
-      } catch (InterruptedException ie) {
-        Thread.currentThread().interrupt();
-      }
+    // simply forwards back to the main class.
+    // this is necessary as our main class cannot implement two base-classes.
+    @InterfaceAudience.Private
+    class SendingRequestListener extends StorageEvent<SendingRequestEvent> {
 
-      // reset to avoid counting the sleep against request latency
-      sendEvent.getRequestResult().setStartDate(new Date());
+        @Override
+        public void eventOccurred(SendingRequestEvent event) {
+            sendingRequest(event);
+        }
     }
 
-    if (LOG.isDebugEnabled()) {
-      boolean isFirstRequest = (lastLatency == 0);
-      long threadId = Thread.currentThread().getId();
-      LOG.debug(String
-          .format(
-              " SelfThrottlingIntercept:: SendingRequest:   threadId=%d, requestType=%s, isFirstRequest=%b, sleepDuration=%d",
-              threadId, operationIsRead ? "read " : "write", isFirstRequest,
-              sleepDuration));
+    // simply forwards back to the main class.
+    // this is necessary as our main class cannot implement two base-classes.
+    @InterfaceAudience.Private
+    class ResponseReceivedListener extends StorageEvent<ResponseReceivedEvent> {
+
+        @Override
+        public void eventOccurred(ResponseReceivedEvent event) {
+            responseReceived(event);
+        }
     }
-  }
-
-  // simply forwards back to the main class.
-  // this is necessary as our main class cannot implement two base-classes.
-  @InterfaceAudience.Private
-  class SendingRequestListener extends StorageEvent<SendingRequestEvent> {
-
-    @Override
-    public void eventOccurred(SendingRequestEvent event) {
-      sendingRequest(event);
-    }
-  }
-
-  // simply forwards back to the main class.
-  // this is necessary as our main class cannot implement two base-classes.
-  @InterfaceAudience.Private
-  class ResponseReceivedListener extends StorageEvent<ResponseReceivedEvent> {
-
-    @Override
-    public void eventOccurred(ResponseReceivedEvent event) {
-      responseReceived(event);
-    }
-  }
 }

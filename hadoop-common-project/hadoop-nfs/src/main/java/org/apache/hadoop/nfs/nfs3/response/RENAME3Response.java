@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,32 +24,32 @@ import org.apache.hadoop.oncrpc.security.Verifier;
  * RENAME3 Response
  */
 public class RENAME3Response extends NFS3Response {
-  private final WccData fromDirWcc;
-  private final WccData toDirWcc;
+    private final WccData fromDirWcc;
+    private final WccData toDirWcc;
 
-  public RENAME3Response(int status) {
-    this(status, new WccData(null, null), new WccData(null, null));
-  }
-  
-  public RENAME3Response(int status, WccData fromWccData, WccData toWccData) {
-    super(status);
-    this.fromDirWcc = fromWccData;
-    this.toDirWcc = toWccData;
-  }
+    public RENAME3Response(int status) {
+        this(status, new WccData(null, null), new WccData(null, null));
+    }
 
-  public WccData getFromDirWcc() {
-    return fromDirWcc;
-  }
+    public RENAME3Response(int status, WccData fromWccData, WccData toWccData) {
+        super(status);
+        this.fromDirWcc = fromWccData;
+        this.toDirWcc = toWccData;
+    }
 
-  public WccData getToDirWcc() {
-    return toDirWcc;
-  }
+    public WccData getFromDirWcc() {
+        return fromDirWcc;
+    }
 
-  @Override
-  public XDR writeHeaderAndResponse(XDR out, int xid, Verifier verifier) {
-    super.writeHeaderAndResponse(out, xid, verifier);
-    fromDirWcc.serialize(out);
-    toDirWcc.serialize(out);
-    return out;
-  }
+    public WccData getToDirWcc() {
+        return toDirWcc;
+    }
+
+    @Override
+    public XDR writeHeaderAndResponse(XDR out, int xid, Verifier verifier) {
+        super.writeHeaderAndResponse(out, xid, verifier);
+        fromDirWcc.serialize(out);
+        toDirWcc.serialize(out);
+        return out;
+    }
 }

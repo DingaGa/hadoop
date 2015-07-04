@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,42 +29,42 @@ import com.google.protobuf.TextFormat;
 @Private
 @Unstable
 public class GetNewApplicationRequestPBImpl extends GetNewApplicationRequest {
-  GetNewApplicationRequestProto proto = GetNewApplicationRequestProto.getDefaultInstance();
-  GetNewApplicationRequestProto.Builder builder = null;
-  boolean viaProto = false;
-  
-  public GetNewApplicationRequestPBImpl() {
-    builder = GetNewApplicationRequestProto.newBuilder();
-  }
+    GetNewApplicationRequestProto proto = GetNewApplicationRequestProto.getDefaultInstance();
+    GetNewApplicationRequestProto.Builder builder = null;
+    boolean viaProto = false;
 
-  public GetNewApplicationRequestPBImpl(GetNewApplicationRequestProto proto) {
-    this.proto = proto;
-    viaProto = true;
-  }
-  
-  public GetNewApplicationRequestProto getProto() {
-    proto = viaProto ? proto : builder.build();
-    viaProto = true;
-    return proto;
-  }
-
-  @Override
-  public int hashCode() {
-    return getProto().hashCode();
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other == null)
-      return false;
-    if (other.getClass().isAssignableFrom(this.getClass())) {
-      return this.getProto().equals(this.getClass().cast(other).getProto());
+    public GetNewApplicationRequestPBImpl() {
+        builder = GetNewApplicationRequestProto.newBuilder();
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    return TextFormat.shortDebugString(getProto());
-  }
+    public GetNewApplicationRequestPBImpl(GetNewApplicationRequestProto proto) {
+        this.proto = proto;
+        viaProto = true;
+    }
+
+    public GetNewApplicationRequestProto getProto() {
+        proto = viaProto ? proto : builder.build();
+        viaProto = true;
+        return proto;
+    }
+
+    @Override
+    public int hashCode() {
+        return getProto().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (other.getClass().isAssignableFrom(this.getClass())) {
+            return this.getProto().equals(this.getClass().cast(other).getProto());
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return TextFormat.shortDebugString(getProto());
+    }
 }  

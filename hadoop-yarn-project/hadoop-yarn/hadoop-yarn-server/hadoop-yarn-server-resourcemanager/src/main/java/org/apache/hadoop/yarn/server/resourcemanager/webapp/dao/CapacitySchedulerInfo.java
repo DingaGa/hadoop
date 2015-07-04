@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,64 +32,64 @@ import org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.LeafQueu
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CapacitySchedulerInfo extends SchedulerInfo {
 
-  protected float capacity;
-  protected float usedCapacity;
-  protected float maxCapacity;
-  protected String queueName;
-  protected CapacitySchedulerQueueInfoList queues;
+    protected float capacity;
+    protected float usedCapacity;
+    protected float maxCapacity;
+    protected String queueName;
+    protected CapacitySchedulerQueueInfoList queues;
 
-  @XmlTransient
-  static final float EPSILON = 1e-8f;
+    @XmlTransient
+    static final float EPSILON = 1e-8f;
 
-  public CapacitySchedulerInfo() {
-  } // JAXB needs this
+    public CapacitySchedulerInfo() {
+    } // JAXB needs this
 
-  public CapacitySchedulerInfo(CSQueue parent) {
-    this.queueName = parent.getQueueName();
-    this.usedCapacity = parent.getUsedCapacity() * 100;
-    this.capacity = parent.getCapacity() * 100;
-    float max = parent.getMaximumCapacity();
-    if (max < EPSILON || max > 1f)
-      max = 1f;
-    this.maxCapacity = max * 100;
+    public CapacitySchedulerInfo(CSQueue parent) {
+        this.queueName = parent.getQueueName();
+        this.usedCapacity = parent.getUsedCapacity() * 100;
+        this.capacity = parent.getCapacity() * 100;
+        float max = parent.getMaximumCapacity();
+        if (max < EPSILON || max > 1f)
+            max = 1f;
+        this.maxCapacity = max * 100;
 
-    queues = getQueues(parent);
-  }
-
-  public float getCapacity() {
-    return this.capacity;
-  }
-
-  public float getUsedCapacity() {
-    return this.usedCapacity;
-  }
-
-  public float getMaxCapacity() {
-    return this.maxCapacity;
-  }
-
-  public String getQueueName() {
-    return this.queueName;
-  }
-
-  public CapacitySchedulerQueueInfoList getQueues() {
-    return this.queues;
-  }
-
-  protected CapacitySchedulerQueueInfoList getQueues(CSQueue parent) {
-    CSQueue parentQueue = parent;
-    CapacitySchedulerQueueInfoList queuesInfo = new CapacitySchedulerQueueInfoList();
-    for (CSQueue queue : parentQueue.getChildQueues()) {
-      CapacitySchedulerQueueInfo info;
-      if (queue instanceof LeafQueue) {
-        info = new CapacitySchedulerLeafQueueInfo((LeafQueue)queue);
-      } else {
-        info = new CapacitySchedulerQueueInfo(queue);
-        info.queues = getQueues(queue);
-      }
-      queuesInfo.addToQueueInfoList(info);
+        queues = getQueues(parent);
     }
-    return queuesInfo;
-  }
+
+    public float getCapacity() {
+        return this.capacity;
+    }
+
+    public float getUsedCapacity() {
+        return this.usedCapacity;
+    }
+
+    public float getMaxCapacity() {
+        return this.maxCapacity;
+    }
+
+    public String getQueueName() {
+        return this.queueName;
+    }
+
+    public CapacitySchedulerQueueInfoList getQueues() {
+        return this.queues;
+    }
+
+    protected CapacitySchedulerQueueInfoList getQueues(CSQueue parent) {
+        CSQueue parentQueue = parent;
+        CapacitySchedulerQueueInfoList queuesInfo = new CapacitySchedulerQueueInfoList();
+        for (CSQueue queue : parentQueue.getChildQueues()) {
+            CapacitySchedulerQueueInfo info;
+            if (queue instanceof LeafQueue) {
+                info = new CapacitySchedulerLeafQueueInfo((LeafQueue) queue);
+            } else {
+                info = new CapacitySchedulerQueueInfo(queue);
+                info.queues = getQueues(queue);
+            }
+            queuesInfo.addToQueueInfoList(info);
+        }
+        return queuesInfo;
+    }
 
 }

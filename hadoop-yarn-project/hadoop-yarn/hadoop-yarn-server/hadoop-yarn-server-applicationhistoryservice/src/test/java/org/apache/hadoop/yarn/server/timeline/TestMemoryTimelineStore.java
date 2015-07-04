@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,57 +29,57 @@ import java.io.IOException;
 
 public class TestMemoryTimelineStore extends TimelineStoreTestUtils {
 
-  @Before
-  public void setup() throws Exception {
-    store = new MemoryTimelineStore();
-    store.init(new YarnConfiguration());
-    store.start();
-    loadTestData();
-    loadVerificationData();
-  }
+    @Before
+    public void setup() throws Exception {
+        store = new MemoryTimelineStore();
+        store.init(new YarnConfiguration());
+        store.start();
+        loadTestData();
+        loadVerificationData();
+    }
 
-  @After
-  public void tearDown() throws Exception {
-    store.stop();
-  }
+    @After
+    public void tearDown() throws Exception {
+        store.stop();
+    }
 
-  public TimelineStore getTimelineStore() {
-    return store;
-  }
+    public TimelineStore getTimelineStore() {
+        return store;
+    }
 
-  @Test
-  public void testGetSingleEntity() throws IOException {
-    super.testGetSingleEntity();
-  }
+    @Test
+    public void testGetSingleEntity() throws IOException {
+        super.testGetSingleEntity();
+    }
 
-  @Test
-  public void testGetEntities() throws IOException {
-    super.testGetEntities();
-  }
+    @Test
+    public void testGetEntities() throws IOException {
+        super.testGetEntities();
+    }
 
-  @Test
-  public void testGetEntitiesWithFromId() throws IOException {
-    super.testGetEntitiesWithFromId();
-  }
+    @Test
+    public void testGetEntitiesWithFromId() throws IOException {
+        super.testGetEntitiesWithFromId();
+    }
 
-  @Test
-  public void testGetEntitiesWithFromTs() throws IOException {
-    super.testGetEntitiesWithFromTs();
-  }
+    @Test
+    public void testGetEntitiesWithFromTs() throws IOException {
+        super.testGetEntitiesWithFromTs();
+    }
 
-  @Test
-  public void testGetEntitiesWithPrimaryFilters() throws IOException {
-    super.testGetEntitiesWithPrimaryFilters();
-  }
+    @Test
+    public void testGetEntitiesWithPrimaryFilters() throws IOException {
+        super.testGetEntitiesWithPrimaryFilters();
+    }
 
-  @Test
-  public void testGetEntitiesWithSecondaryFilters() throws IOException {
-    super.testGetEntitiesWithSecondaryFilters();
-  }
+    @Test
+    public void testGetEntitiesWithSecondaryFilters() throws IOException {
+        super.testGetEntitiesWithSecondaryFilters();
+    }
 
-  @Test
-  public void testGetEvents() throws IOException {
-    super.testGetEvents();
-  }
+    @Test
+    public void testGetEvents() throws IOException {
+        super.testGetEvents();
+    }
 
 }

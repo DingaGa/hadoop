@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,71 +41,71 @@ import org.apache.hadoop.util.ReflectionUtils;
 @InterfaceStability.Evolving
 public class SerializationFactory extends Configured {
 
-  static final Log LOG =
-    LogFactory.getLog(SerializationFactory.class.getName());
+    static final Log LOG =
+            LogFactory.getLog(SerializationFactory.class.getName());
 
-  private List<Serialization<?>> serializations = new ArrayList<Serialization<?>>();
+    private List<Serialization<?>> serializations = new ArrayList<Serialization<?>>();
 
-  /**
-   * <p>
-   * Serializations are found by reading the <code>io.serializations</code>
-   * property from <code>conf</code>, which is a comma-delimited list of
-   * classnames.
-   * </p>
-   */
-  public SerializationFactory(Configuration conf) {
-    super(conf);
-    if (conf.get(CommonConfigurationKeys.IO_SERIALIZATIONS_KEY).equals("")) {
-      LOG.warn("Serialization for various data types may not be available. Please configure "
-          + CommonConfigurationKeys.IO_SERIALIZATIONS_KEY
-          + " properly to have serialization support (it is currently not set).");
-    } else {
-      for (String serializerName : conf.getStrings(
-          CommonConfigurationKeys.IO_SERIALIZATIONS_KEY, new String[] {
-              WritableSerialization.class.getName(),
-              AvroSpecificSerialization.class.getName(),
-              AvroReflectSerialization.class.getName() })) {
-        add(conf, serializerName);
-      }
+    /**
+     * <p>
+     * Serializations are found by reading the <code>io.serializations</code>
+     * property from <code>conf</code>, which is a comma-delimited list of
+     * classnames.
+     * </p>
+     */
+    public SerializationFactory(Configuration conf) {
+        super(conf);
+        if (conf.get(CommonConfigurationKeys.IO_SERIALIZATIONS_KEY).equals("")) {
+            LOG.warn("Serialization for various data types may not be available. Please configure "
+                    + CommonConfigurationKeys.IO_SERIALIZATIONS_KEY
+                    + " properly to have serialization support (it is currently not set).");
+        } else {
+            for (String serializerName : conf.getStrings(
+                    CommonConfigurationKeys.IO_SERIALIZATIONS_KEY, new String[]{
+                            WritableSerialization.class.getName(),
+                            AvroSpecificSerialization.class.getName(),
+                            AvroReflectSerialization.class.getName()})) {
+                add(conf, serializerName);
+            }
+        }
     }
-  }
 
-  @SuppressWarnings("unchecked")
-  private void add(Configuration conf, String serializationName) {
-    try {
-      Class<? extends Serialization> serializionClass =
-        (Class<? extends Serialization>) conf.getClassByName(serializationName);
-      serializations.add((Serialization)
-      ReflectionUtils.newInstance(serializionClass, getConf()));
-    } catch (ClassNotFoundException e) {
-      LOG.warn("Serialization class not found: ", e);
+    @SuppressWarnings("unchecked")
+    private void add(Configuration conf, String serializationName) {
+        try {
+            Class<? extends Serialization> serializionClass =
+                    (Class<? extends Serialization>) conf.getClassByName(serializationName);
+            serializations.add((Serialization)
+                    ReflectionUtils.newInstance(serializionClass, getConf()));
+        } catch (ClassNotFoundException e) {
+            LOG.warn("Serialization class not found: ", e);
+        }
     }
-  }
 
-  public <T> Serializer<T> getSerializer(Class<T> c) {
-    Serialization<T> serializer = getSerialization(c);
-    if (serializer != null) {
-      return serializer.getSerializer(c);
+    public <T> Serializer<T> getSerializer(Class<T> c) {
+        Serialization<T> serializer = getSerialization(c);
+        if (serializer != null) {
+            return serializer.getSerializer(c);
+        }
+        return null;
     }
-    return null;
-  }
 
-  public <T> Deserializer<T> getDeserializer(Class<T> c) {
-    Serialization<T> serializer = getSerialization(c);
-    if (serializer != null) {
-      return serializer.getDeserializer(c);
+    public <T> Deserializer<T> getDeserializer(Class<T> c) {
+        Serialization<T> serializer = getSerialization(c);
+        if (serializer != null) {
+            return serializer.getDeserializer(c);
+        }
+        return null;
     }
-    return null;
-  }
 
-  @SuppressWarnings("unchecked")
-  public <T> Serialization<T> getSerialization(Class<T> c) {
-    for (Serialization serialization : serializations) {
-      if (serialization.accept(c)) {
-        return (Serialization<T>) serialization;
-      }
+    @SuppressWarnings("unchecked")
+    public <T> Serialization<T> getSerialization(Class<T> c) {
+        for (Serialization serialization : serializations) {
+            if (serialization.accept(c)) {
+                return (Serialization<T>) serialization;
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
 }

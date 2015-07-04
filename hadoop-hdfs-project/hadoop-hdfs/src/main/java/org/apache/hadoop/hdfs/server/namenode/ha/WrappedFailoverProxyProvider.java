@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,44 +37,44 @@ import com.google.common.base.Preconditions;
  * It is assumed that the old impelmentation is using logical URI.
  */
 public class WrappedFailoverProxyProvider<T> extends
-    AbstractNNFailoverProxyProvider<T> {
-  private final FailoverProxyProvider<T> proxyProvider;
-  
-  /**
-   * Wrap the given instance of an old FailoverProxyProvider.
-   */
-  public WrappedFailoverProxyProvider(FailoverProxyProvider<T> provider) {
-    proxyProvider = provider;
-  }
-    
-  @Override
-  public Class<T> getInterface() {
-    return proxyProvider.getInterface();
-  }
+        AbstractNNFailoverProxyProvider<T> {
+    private final FailoverProxyProvider<T> proxyProvider;
 
-  @Override
-  public synchronized ProxyInfo<T> getProxy() {
-    return proxyProvider.getProxy();
-  }
+    /**
+     * Wrap the given instance of an old FailoverProxyProvider.
+     */
+    public WrappedFailoverProxyProvider(FailoverProxyProvider<T> provider) {
+        proxyProvider = provider;
+    }
 
-  @Override
-  public void performFailover(T currentProxy) {
-    proxyProvider.performFailover(currentProxy);
-  }
+    @Override
+    public Class<T> getInterface() {
+        return proxyProvider.getInterface();
+    }
 
-  /**
-   * Close the proxy,
-   */
-  @Override
-  public synchronized void close() throws IOException {
-    proxyProvider.close();
-  }
+    @Override
+    public synchronized ProxyInfo<T> getProxy() {
+        return proxyProvider.getProxy();
+    }
 
-  /**
-   * Assume logical URI is used for old proxy provider implementations.
-   */
-  @Override
-  public boolean useLogicalURI() {
-    return true;
-  }
+    @Override
+    public void performFailover(T currentProxy) {
+        proxyProvider.performFailover(currentProxy);
+    }
+
+    /**
+     * Close the proxy,
+     */
+    @Override
+    public synchronized void close() throws IOException {
+        proxyProvider.close();
+    }
+
+    /**
+     * Assume logical URI is used for old proxy provider implementations.
+     */
+    @Override
+    public boolean useLogicalURI() {
+        return true;
+    }
 }

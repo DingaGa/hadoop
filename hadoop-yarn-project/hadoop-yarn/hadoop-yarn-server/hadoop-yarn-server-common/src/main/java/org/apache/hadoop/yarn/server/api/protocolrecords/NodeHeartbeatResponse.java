@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,30 +26,35 @@ import org.apache.hadoop.yarn.server.api.records.MasterKey;
 import org.apache.hadoop.yarn.server.api.records.NodeAction;
 
 public interface NodeHeartbeatResponse {
-  int getResponseId();
-  NodeAction getNodeAction();
+    int getResponseId();
 
-  List<ContainerId> getContainersToCleanup();
+    NodeAction getNodeAction();
 
-  List<ApplicationId> getApplicationsToCleanup();
+    List<ContainerId> getContainersToCleanup();
 
-  void setResponseId(int responseId);
-  void setNodeAction(NodeAction action);
+    List<ApplicationId> getApplicationsToCleanup();
 
-  MasterKey getContainerTokenMasterKey();
-  void setContainerTokenMasterKey(MasterKey secretKey);
-  
-  MasterKey getNMTokenMasterKey();
-  void setNMTokenMasterKey(MasterKey secretKey);
+    void setResponseId(int responseId);
 
-  void addAllContainersToCleanup(List<ContainerId> containers);
-  
-  void addAllApplicationsToCleanup(List<ApplicationId> applications);
+    void setNodeAction(NodeAction action);
 
-  long getNextHeartBeatInterval();
-  void setNextHeartBeatInterval(long nextHeartBeatInterval);
-  
-  String getDiagnosticsMessage();
+    MasterKey getContainerTokenMasterKey();
 
-  void setDiagnosticsMessage(String diagnosticsMessage);
+    void setContainerTokenMasterKey(MasterKey secretKey);
+
+    MasterKey getNMTokenMasterKey();
+
+    void setNMTokenMasterKey(MasterKey secretKey);
+
+    void addAllContainersToCleanup(List<ContainerId> containers);
+
+    void addAllApplicationsToCleanup(List<ApplicationId> applications);
+
+    long getNextHeartBeatInterval();
+
+    void setNextHeartBeatInterval(long nextHeartBeatInterval);
+
+    String getDiagnosticsMessage();
+
+    void setDiagnosticsMessage(String diagnosticsMessage);
 }

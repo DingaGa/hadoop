@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 @InterfaceAudience.Private
-@InterfaceStability.Unstable
-package org.apache.hadoop.io.compress.zlib;
+@InterfaceStability.Unstable package org.apache.hadoop.io.compress.zlib;
+
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 

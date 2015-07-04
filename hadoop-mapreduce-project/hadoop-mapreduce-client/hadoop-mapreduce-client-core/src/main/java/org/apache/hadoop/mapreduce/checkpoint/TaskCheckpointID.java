@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,86 +36,86 @@ import org.apache.hadoop.mapred.Counters;
  */
 public class TaskCheckpointID implements CheckpointID {
 
-  final FSCheckpointID rawId;
-  private final List<Path> partialOutput;
-  private final Counters counters;
+    final FSCheckpointID rawId;
+    private final List<Path> partialOutput;
+    private final Counters counters;
 
-  public TaskCheckpointID() {
-    this(new FSCheckpointID(), new ArrayList<Path>(), new Counters());
-  }
-
-  public TaskCheckpointID(FSCheckpointID rawId, List<Path> partialOutput,
-          Counters counters) {
-    this.rawId = rawId;
-    this.counters = counters;
-    this.partialOutput = null == partialOutput
-      ? new ArrayList<Path>()
-      : partialOutput;
-  }
-
-  @Override
-  public void write(DataOutput out) throws IOException {
-    counters.write(out);
-    WritableUtils.writeVLong(out, partialOutput.size());
-    for (Path p : partialOutput) {
-      Text.writeString(out, p.toString());
+    public TaskCheckpointID() {
+        this(new FSCheckpointID(), new ArrayList<Path>(), new Counters());
     }
-    rawId.write(out);
-  }
 
-  @Override
-  public void readFields(DataInput in) throws IOException {
-    partialOutput.clear();
-    counters.readFields(in);
-    long numPout = WritableUtils.readVLong(in);
-    for (int i = 0; i < numPout; i++) {
-      partialOutput.add(new Path(Text.readString(in)));
+    public TaskCheckpointID(FSCheckpointID rawId, List<Path> partialOutput,
+                            Counters counters) {
+        this.rawId = rawId;
+        this.counters = counters;
+        this.partialOutput = null == partialOutput
+                ? new ArrayList<Path>()
+                : partialOutput;
     }
-    rawId.readFields(in);
-  }
 
-  @Override
-  public boolean equals(Object other) {
-    if (other instanceof TaskCheckpointID){
-      TaskCheckpointID o = (TaskCheckpointID) other;
-      return rawId.equals(o.rawId) &&
-             counters.equals(o.counters) &&
-             partialOutput.containsAll(o.partialOutput) &&
-             o.partialOutput.containsAll(partialOutput);
+    @Override
+    public void write(DataOutput out) throws IOException {
+        counters.write(out);
+        WritableUtils.writeVLong(out, partialOutput.size());
+        for (Path p : partialOutput) {
+            Text.writeString(out, p.toString());
+        }
+        rawId.write(out);
     }
-    return false;
-  }
 
-  @Override
-  public int hashCode() {
-    return rawId.hashCode();
-  }
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        partialOutput.clear();
+        counters.readFields(in);
+        long numPout = WritableUtils.readVLong(in);
+        for (int i = 0; i < numPout; i++) {
+            partialOutput.add(new Path(Text.readString(in)));
+        }
+        rawId.readFields(in);
+    }
 
-  /**
-   * @return the size of the checkpoint in bytes
-   */
-  public long getCheckpointBytes() {
-    return counters.findCounter(EnumCounter.CHECKPOINT_BYTES).getValue();
-  }
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof TaskCheckpointID) {
+            TaskCheckpointID o = (TaskCheckpointID) other;
+            return rawId.equals(o.rawId) &&
+                    counters.equals(o.counters) &&
+                    partialOutput.containsAll(o.partialOutput) &&
+                    o.partialOutput.containsAll(partialOutput);
+        }
+        return false;
+    }
 
-  /**
-   * @return how long it took to take this checkpoint
-   */
-  public long getCheckpointTime() {
-    return counters.findCounter(EnumCounter.CHECKPOINT_MS).getValue();
-  }
+    @Override
+    public int hashCode() {
+        return rawId.hashCode();
+    }
 
-  public String toString() {
-    return rawId.toString() + " counters:" + counters;
+    /**
+     * @return the size of the checkpoint in bytes
+     */
+    public long getCheckpointBytes() {
+        return counters.findCounter(EnumCounter.CHECKPOINT_BYTES).getValue();
+    }
 
-  }
+    /**
+     * @return how long it took to take this checkpoint
+     */
+    public long getCheckpointTime() {
+        return counters.findCounter(EnumCounter.CHECKPOINT_MS).getValue();
+    }
 
-  public List<Path> getPartialCommittedOutput() {
-    return partialOutput;
-  }
+    public String toString() {
+        return rawId.toString() + " counters:" + counters;
 
-  public Counters getCounters() {
-    return counters;
-  }
+    }
+
+    public List<Path> getPartialCommittedOutput() {
+        return partialOutput;
+    }
+
+    public Counters getCounters() {
+        return counters;
+    }
 
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,27 +31,27 @@ import org.apache.hadoop.util.ToolRunner;
  */
 public class GetGroups extends GetGroupsBase {
 
-  static {
-    Configuration.addDefaultResource("mapred-default.xml");
-    Configuration.addDefaultResource("mapred-site.xml");
-  }
-  
-  GetGroups(Configuration conf) {
-    super(conf);
-  }
-  
-  GetGroups(Configuration conf, PrintStream out) {
-    super(conf, out);
-  }
+    static {
+        Configuration.addDefaultResource("mapred-default.xml");
+        Configuration.addDefaultResource("mapred-site.xml");
+    }
 
-  @Override
-  protected InetSocketAddress getProtocolAddress(Configuration conf)
-      throws IOException {
-    throw new UnsupportedOperationException();
-  }
+    GetGroups(Configuration conf) {
+        super(conf);
+    }
 
-  public static void main(String[] argv) throws Exception {
-    int res = ToolRunner.run(new GetGroups(new Configuration()), argv);
-    System.exit(res);
-  }
+    GetGroups(Configuration conf, PrintStream out) {
+        super(conf, out);
+    }
+
+    @Override
+    protected InetSocketAddress getProtocolAddress(Configuration conf)
+            throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    public static void main(String[] argv) throws Exception {
+        int res = ToolRunner.run(new GetGroups(new Configuration()), argv);
+        System.exit(res);
+    }
 }

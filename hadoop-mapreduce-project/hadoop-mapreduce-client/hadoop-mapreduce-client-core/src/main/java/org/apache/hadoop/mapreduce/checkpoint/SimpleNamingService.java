@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,20 +20,20 @@ package org.apache.hadoop.mapreduce.checkpoint;
 /**
  * A naming service that simply returns the name it has been initialized with.
  */
-public class SimpleNamingService implements CheckpointNamingService{
+public class SimpleNamingService implements CheckpointNamingService {
 
-  final String name;
+    final String name;
 
-  public SimpleNamingService(String name){
-    this.name = name;
-  }
+    public SimpleNamingService(String name) {
+        this.name = name;
+    }
 
-  /**
-   * Generate a new checkpoint Name
-   * @return the checkpoint name
-   */
-  public String getNewName(){
-    return "checkpoint_" + name;
-  }
+    /**
+     * Generate a new checkpoint Name
+     * @return the checkpoint name
+     */
+    public String getNewName() {
+        return "checkpoint_" + name;
+    }
 
 }

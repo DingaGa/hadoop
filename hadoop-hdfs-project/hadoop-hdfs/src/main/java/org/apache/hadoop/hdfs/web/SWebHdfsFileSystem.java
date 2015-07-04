@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,26 +22,26 @@ import org.apache.hadoop.io.Text;
 
 public class SWebHdfsFileSystem extends WebHdfsFileSystem {
 
-  public static final Text TOKEN_KIND = new Text("SWEBHDFS delegation");
-  public static final String SCHEME = "swebhdfs";
+    public static final Text TOKEN_KIND = new Text("SWEBHDFS delegation");
+    public static final String SCHEME = "swebhdfs";
 
-  @Override
-  public String getScheme() {
-    return SCHEME;
-  }
+    @Override
+    public String getScheme() {
+        return SCHEME;
+    }
 
-  @Override
-  protected String getTransportScheme() {
-    return "https";
-  }
+    @Override
+    protected String getTransportScheme() {
+        return "https";
+    }
 
-  @Override
-  protected Text getTokenKind() {
-    return TOKEN_KIND;
-  }
+    @Override
+    protected Text getTokenKind() {
+        return TOKEN_KIND;
+    }
 
-  @Override
-  protected int getDefaultPort() {
-    return DFSConfigKeys.DFS_NAMENODE_HTTPS_PORT_DEFAULT;
-  }
+    @Override
+    protected int getDefaultPort() {
+        return DFSConfigKeys.DFS_NAMENODE_HTTPS_PORT_DEFAULT;
+    }
 }

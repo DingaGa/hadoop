@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,155 +32,155 @@ import org.apache.hadoop.yarn.api.records.Priority;
 /**
  * Simple class to allow users to send information required to create an
  * ApplicationSubmissionContext which can then be used to submit an app
- * 
+ *
  */
 @XmlRootElement(name = "application-submission-context")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ApplicationSubmissionContextInfo {
 
-  @XmlElement(name = "application-id")
-  String applicationId;
+    @XmlElement(name = "application-id")
+    String applicationId;
 
-  @XmlElement(name = "application-name")
-  String applicationName;
+    @XmlElement(name = "application-name")
+    String applicationName;
 
-  String queue;
-  int priority;
+    String queue;
+    int priority;
 
-  @XmlElement(name = "am-container-spec")
-  ContainerLaunchContextInfo containerInfo;
+    @XmlElement(name = "am-container-spec")
+    ContainerLaunchContextInfo containerInfo;
 
-  @XmlElement(name = "unmanaged-AM")
-  boolean isUnmanagedAM;
+    @XmlElement(name = "unmanaged-AM")
+    boolean isUnmanagedAM;
 
-  @XmlElement(name = "cancel-tokens-when-complete")
-  boolean cancelTokensWhenComplete;
+    @XmlElement(name = "cancel-tokens-when-complete")
+    boolean cancelTokensWhenComplete;
 
-  @XmlElement(name = "max-app-attempts")
-  int maxAppAttempts;
+    @XmlElement(name = "max-app-attempts")
+    int maxAppAttempts;
 
-  @XmlElement(name = "resource")
-  ResourceInfo resource;
+    @XmlElement(name = "resource")
+    ResourceInfo resource;
 
-  @XmlElement(name = "application-type")
-  String applicationType;
+    @XmlElement(name = "application-type")
+    String applicationType;
 
-  @XmlElement(name = "keep-containers-across-application-attempts")
-  boolean keepContainers;
+    @XmlElement(name = "keep-containers-across-application-attempts")
+    boolean keepContainers;
 
-  @XmlElementWrapper(name = "application-tags")
-  @XmlElement(name = "tag")
-  Set<String> tags;
+    @XmlElementWrapper(name = "application-tags")
+    @XmlElement(name = "tag")
+    Set<String> tags;
 
-  public ApplicationSubmissionContextInfo() {
-    applicationId = "";
-    applicationName = "";
-    containerInfo = new ContainerLaunchContextInfo();
-    resource = new ResourceInfo();
-    priority = Priority.UNDEFINED.getPriority();
-    isUnmanagedAM = false;
-    cancelTokensWhenComplete = true;
-    keepContainers = false;
-    applicationType = "";
-    tags = new HashSet<String>();
-  }
+    public ApplicationSubmissionContextInfo() {
+        applicationId = "";
+        applicationName = "";
+        containerInfo = new ContainerLaunchContextInfo();
+        resource = new ResourceInfo();
+        priority = Priority.UNDEFINED.getPriority();
+        isUnmanagedAM = false;
+        cancelTokensWhenComplete = true;
+        keepContainers = false;
+        applicationType = "";
+        tags = new HashSet<String>();
+    }
 
-  public String getApplicationId() {
-    return applicationId;
-  }
+    public String getApplicationId() {
+        return applicationId;
+    }
 
-  public String getApplicationName() {
-    return applicationName;
-  }
+    public String getApplicationName() {
+        return applicationName;
+    }
 
-  public String getQueue() {
-    return queue;
-  }
+    public String getQueue() {
+        return queue;
+    }
 
-  public int getPriority() {
-    return priority;
-  }
+    public int getPriority() {
+        return priority;
+    }
 
-  public ContainerLaunchContextInfo getContainerLaunchContextInfo() {
-    return containerInfo;
-  }
+    public ContainerLaunchContextInfo getContainerLaunchContextInfo() {
+        return containerInfo;
+    }
 
-  public boolean getUnmanagedAM() {
-    return isUnmanagedAM;
-  }
+    public boolean getUnmanagedAM() {
+        return isUnmanagedAM;
+    }
 
-  public boolean getCancelTokensWhenComplete() {
-    return cancelTokensWhenComplete;
-  }
+    public boolean getCancelTokensWhenComplete() {
+        return cancelTokensWhenComplete;
+    }
 
-  public int getMaxAppAttempts() {
-    return maxAppAttempts;
-  }
+    public int getMaxAppAttempts() {
+        return maxAppAttempts;
+    }
 
-  public ResourceInfo getResource() {
-    return resource;
-  }
+    public ResourceInfo getResource() {
+        return resource;
+    }
 
-  public String getApplicationType() {
-    return applicationType;
-  }
+    public String getApplicationType() {
+        return applicationType;
+    }
 
-  public boolean getKeepContainersAcrossApplicationAttempts() {
-    return keepContainers;
-  }
+    public boolean getKeepContainersAcrossApplicationAttempts() {
+        return keepContainers;
+    }
 
-  public Set<String> getApplicationTags() {
-    return tags;
-  }
+    public Set<String> getApplicationTags() {
+        return tags;
+    }
 
-  public void setApplicationId(String applicationId) {
-    this.applicationId = applicationId;
-  }
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
+    }
 
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
-  }
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 
-  public void setQueue(String queue) {
-    this.queue = queue;
-  }
+    public void setQueue(String queue) {
+        this.queue = queue;
+    }
 
-  public void setPriority(int priority) {
-    this.priority = priority;
-  }
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
-  public void setContainerLaunchContextInfo(
-      ContainerLaunchContextInfo containerLaunchContext) {
-    this.containerInfo = containerLaunchContext;
-  }
+    public void setContainerLaunchContextInfo(
+            ContainerLaunchContextInfo containerLaunchContext) {
+        this.containerInfo = containerLaunchContext;
+    }
 
-  public void setUnmanagedAM(boolean isUnmanagedAM) {
-    this.isUnmanagedAM = isUnmanagedAM;
-  }
+    public void setUnmanagedAM(boolean isUnmanagedAM) {
+        this.isUnmanagedAM = isUnmanagedAM;
+    }
 
-  public void setCancelTokensWhenComplete(boolean cancelTokensWhenComplete) {
-    this.cancelTokensWhenComplete = cancelTokensWhenComplete;
-  }
+    public void setCancelTokensWhenComplete(boolean cancelTokensWhenComplete) {
+        this.cancelTokensWhenComplete = cancelTokensWhenComplete;
+    }
 
-  public void setMaxAppAttempts(int maxAppAttempts) {
-    this.maxAppAttempts = maxAppAttempts;
-  }
+    public void setMaxAppAttempts(int maxAppAttempts) {
+        this.maxAppAttempts = maxAppAttempts;
+    }
 
-  public void setResource(ResourceInfo resource) {
-    this.resource = resource;
-  }
+    public void setResource(ResourceInfo resource) {
+        this.resource = resource;
+    }
 
-  public void setApplicationType(String applicationType) {
-    this.applicationType = applicationType;
-  }
+    public void setApplicationType(String applicationType) {
+        this.applicationType = applicationType;
+    }
 
-  public void
-      setKeepContainersAcrossApplicationAttempts(boolean keepContainers) {
-    this.keepContainers = keepContainers;
-  }
+    public void
+    setKeepContainersAcrossApplicationAttempts(boolean keepContainers) {
+        this.keepContainers = keepContainers;
+    }
 
-  public void setApplicationTags(Set<String> tags) {
-    this.tags = tags;
-  }
+    public void setApplicationTags(Set<String> tags) {
+        this.tags = tags;
+    }
 
 }

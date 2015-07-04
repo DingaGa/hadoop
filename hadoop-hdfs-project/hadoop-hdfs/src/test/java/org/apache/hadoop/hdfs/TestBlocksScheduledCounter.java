@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,32 +36,32 @@ import org.junit.Test;
  */
 public class TestBlocksScheduledCounter {
 
-  @Test
-  public void testBlocksScheduledCounter() throws IOException {
-    MiniDFSCluster cluster = new MiniDFSCluster.Builder(new HdfsConfiguration())
-                                               .build();
+    @Test
+    public void testBlocksScheduledCounter() throws IOException {
+        MiniDFSCluster cluster = new MiniDFSCluster.Builder(new HdfsConfiguration())
+                .build();
 
-    cluster.waitActive();
-    FileSystem fs = cluster.getFileSystem();
-    
-    //open a file an write a few bytes:
-    FSDataOutputStream out = fs.create(new Path("/testBlockScheduledCounter"));
-    for (int i=0; i<1024; i++) {
-      out.write(i);
-    }
-    // flush to make sure a block is allocated.
-    out.hflush();
-    
-    ArrayList<DatanodeDescriptor> dnList = new ArrayList<DatanodeDescriptor>();
-    final DatanodeManager dm = cluster.getNamesystem().getBlockManager(
+        cluster.waitActive();
+        FileSystem fs = cluster.getFileSystem();
+
+        //open a file an write a few bytes:
+        FSDataOutputStream out = fs.create(new Path("/testBlockScheduledCounter"));
+        for (int i = 0; i < 1024; i++) {
+            out.write(i);
+        }
+        // flush to make sure a block is allocated.
+        out.hflush();
+
+        ArrayList<DatanodeDescriptor> dnList = new ArrayList<DatanodeDescriptor>();
+        final DatanodeManager dm = cluster.getNamesystem().getBlockManager(
         ).getDatanodeManager();
-    dm.fetchDatanodes(dnList, dnList, false);
-    DatanodeDescriptor dn = dnList.get(0);
-    
-    assertEquals(1, dn.getBlocksScheduled());
-   
-    // close the file and the counter should go to zero.
-    out.close();   
-    assertEquals(0, dn.getBlocksScheduled());
-  }
+        dm.fetchDatanodes(dnList, dnList, false);
+        DatanodeDescriptor dn = dnList.get(0);
+
+        assertEquals(1, dn.getBlocksScheduled());
+
+        // close the file and the counter should go to zero.
+        out.close();
+        assertEquals(0, dn.getBlocksScheduled());
+    }
 }

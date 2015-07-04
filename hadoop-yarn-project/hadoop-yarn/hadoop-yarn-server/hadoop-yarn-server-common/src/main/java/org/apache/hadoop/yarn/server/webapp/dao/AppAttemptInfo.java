@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,56 +29,56 @@ import org.apache.hadoop.yarn.api.records.YarnApplicationAttemptState;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AppAttemptInfo {
 
-  protected String appAttemptId;
-  protected String host;
-  protected int rpcPort;
-  protected String trackingUrl;
-  protected String diagnosticsInfo;
-  protected YarnApplicationAttemptState appAttemptState;
-  protected String amContainerId;
+    protected String appAttemptId;
+    protected String host;
+    protected int rpcPort;
+    protected String trackingUrl;
+    protected String diagnosticsInfo;
+    protected YarnApplicationAttemptState appAttemptState;
+    protected String amContainerId;
 
-  public AppAttemptInfo() {
-    // JAXB needs this
-  }
-
-  public AppAttemptInfo(ApplicationAttemptReport appAttempt) {
-    appAttemptId = appAttempt.getApplicationAttemptId().toString();
-    host = appAttempt.getHost();
-    rpcPort = appAttempt.getRpcPort();
-    trackingUrl = appAttempt.getTrackingUrl();
-    diagnosticsInfo = appAttempt.getDiagnostics();
-    appAttemptState = appAttempt.getYarnApplicationAttemptState();
-    if (appAttempt.getAMContainerId() != null) {
-      amContainerId = appAttempt.getAMContainerId().toString();
+    public AppAttemptInfo() {
+        // JAXB needs this
     }
-  }
 
-  public String getAppAttemptId() {
-    return appAttemptId;
-  }
+    public AppAttemptInfo(ApplicationAttemptReport appAttempt) {
+        appAttemptId = appAttempt.getApplicationAttemptId().toString();
+        host = appAttempt.getHost();
+        rpcPort = appAttempt.getRpcPort();
+        trackingUrl = appAttempt.getTrackingUrl();
+        diagnosticsInfo = appAttempt.getDiagnostics();
+        appAttemptState = appAttempt.getYarnApplicationAttemptState();
+        if (appAttempt.getAMContainerId() != null) {
+            amContainerId = appAttempt.getAMContainerId().toString();
+        }
+    }
 
-  public String getHost() {
-    return host;
-  }
+    public String getAppAttemptId() {
+        return appAttemptId;
+    }
 
-  public int getRpcPort() {
-    return rpcPort;
-  }
+    public String getHost() {
+        return host;
+    }
 
-  public String getTrackingUrl() {
-    return trackingUrl;
-  }
+    public int getRpcPort() {
+        return rpcPort;
+    }
 
-  public String getDiagnosticsInfo() {
-    return diagnosticsInfo;
-  }
+    public String getTrackingUrl() {
+        return trackingUrl;
+    }
 
-  public YarnApplicationAttemptState getAppAttemptState() {
-    return appAttemptState;
-  }
+    public String getDiagnosticsInfo() {
+        return diagnosticsInfo;
+    }
 
-  public String getAmContainerId() {
-    return amContainerId;
-  }
+    public YarnApplicationAttemptState getAppAttemptState() {
+        return appAttemptState;
+    }
+
+    public String getAmContainerId() {
+        return amContainerId;
+    }
 
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import org.apache.hadoop.yarn.util.Records;
 /**
  * <p><code>NodeReport</code> is a summary of runtime information of a 
  * node in the cluster.</p>
- * 
+ *
  * <p>It includes details such as:
  *   <ul>
  *     <li>{@link NodeId} of the node.</li>
@@ -46,130 +46,130 @@ import org.apache.hadoop.yarn.util.Records;
 @Stable
 public abstract class NodeReport {
 
-  @Private
-  @Unstable
-  public static NodeReport newInstance(NodeId nodeId, NodeState nodeState,
-      String httpAddress, String rackName, Resource used, Resource capability,
-      int numContainers, String healthReport, long lastHealthReportTime) {
-    NodeReport nodeReport = Records.newRecord(NodeReport.class);
-    nodeReport.setNodeId(nodeId);
-    nodeReport.setNodeState(nodeState);
-    nodeReport.setHttpAddress(httpAddress);
-    nodeReport.setRackName(rackName);
-    nodeReport.setUsed(used);
-    nodeReport.setCapability(capability);
-    nodeReport.setNumContainers(numContainers);
-    nodeReport.setHealthReport(healthReport);
-    nodeReport.setLastHealthReportTime(lastHealthReportTime);
-    return nodeReport;
-  }
+    @Private
+    @Unstable
+    public static NodeReport newInstance(NodeId nodeId, NodeState nodeState,
+                                         String httpAddress, String rackName, Resource used, Resource capability,
+                                         int numContainers, String healthReport, long lastHealthReportTime) {
+        NodeReport nodeReport = Records.newRecord(NodeReport.class);
+        nodeReport.setNodeId(nodeId);
+        nodeReport.setNodeState(nodeState);
+        nodeReport.setHttpAddress(httpAddress);
+        nodeReport.setRackName(rackName);
+        nodeReport.setUsed(used);
+        nodeReport.setCapability(capability);
+        nodeReport.setNumContainers(numContainers);
+        nodeReport.setHealthReport(healthReport);
+        nodeReport.setLastHealthReportTime(lastHealthReportTime);
+        return nodeReport;
+    }
 
-  /**
-   * Get the <code>NodeId</code> of the node.
-   * @return <code>NodeId</code> of the node
-   */
-  @Public
-  @Stable
-  public abstract NodeId getNodeId();
-  
-  @Private
-  @Unstable
-  public abstract void setNodeId(NodeId nodeId);
-  
-  /**
-   * Get the <code>NodeState</code> of the node.
-   * @return <code>NodeState</code> of the node
-   */
-  @Public
-  @Stable
-  public abstract NodeState getNodeState();
-  
-  @Private
-  @Unstable
-  public abstract void setNodeState(NodeState nodeState);
-  
-  /**
-   * Get the <em>http address</em> of the node.
-   * @return <em>http address</em> of the node
-   */
-  @Public
-  @Stable
-  public abstract String getHttpAddress();
-  
-  @Private
-  @Unstable
-  public abstract void setHttpAddress(String httpAddress);
-  
-  /**
-   * Get the <em>rack name</em> for the node.
-   * @return <em>rack name</em> for the node
-   */
-  @Public
-  @Stable
-  public abstract String getRackName();
-  
-  @Private
-  @Unstable
-  public abstract void setRackName(String rackName);
-  
-  /**
-   * Get <em>used</em> <code>Resource</code> on the node.
-   * @return <em>used</em> <code>Resource</code> on the node
-   */
-  @Public
-  @Stable
-  public abstract Resource getUsed();
-  
-  @Private
-  @Unstable
-  public abstract void setUsed(Resource used);
-  
-  /**
-   * Get the <em>total</em> <code>Resource</code> on the node.
-   * @return <em>total</em> <code>Resource</code> on the node
-   */
-  @Public
-  @Stable
-  public abstract Resource getCapability();
-  
-  @Private
-  @Unstable
-  public abstract void setCapability(Resource capability);
-  
-  /**
-   * Get the <em>number of allocated containers</em> on the node.
-   * @return <em>number of allocated containers</em> on the node
-   */
-  @Private
-  @Unstable
-  public abstract int getNumContainers();
-  
-  @Private
-  @Unstable
-  public abstract void setNumContainers(int numContainers);
-  
+    /**
+     * Get the <code>NodeId</code> of the node.
+     * @return <code>NodeId</code> of the node
+     */
+    @Public
+    @Stable
+    public abstract NodeId getNodeId();
 
-  /** 
-   * Get the <em>diagnostic health report</em> of the node.
-   * @return <em>diagnostic health report</em> of the node
-   */
-  @Public
-  @Stable
-  public abstract String getHealthReport();
+    @Private
+    @Unstable
+    public abstract void setNodeId(NodeId nodeId);
 
-  @Private
-  @Unstable
-  public abstract void setHealthReport(String healthReport);
+    /**
+     * Get the <code>NodeState</code> of the node.
+     * @return <code>NodeState</code> of the node
+     */
+    @Public
+    @Stable
+    public abstract NodeState getNodeState();
 
-  /**
-   * Get the <em>last timestamp</em> at which the health report was received.
-   * @return <em>last timestamp</em> at which the health report was received
-   */
-  @Public
-  @Stable
-  public abstract long getLastHealthReportTime();
+    @Private
+    @Unstable
+    public abstract void setNodeState(NodeState nodeState);
 
-  @Private
-  @Unstable
-  public abstract void setLastHealthReportTime(long lastHealthReport);
+    /**
+     * Get the <em>http address</em> of the node.
+     * @return <em>http address</em> of the node
+     */
+    @Public
+    @Stable
+    public abstract String getHttpAddress();
+
+    @Private
+    @Unstable
+    public abstract void setHttpAddress(String httpAddress);
+
+    /**
+     * Get the <em>rack name</em> for the node.
+     * @return <em>rack name</em> for the node
+     */
+    @Public
+    @Stable
+    public abstract String getRackName();
+
+    @Private
+    @Unstable
+    public abstract void setRackName(String rackName);
+
+    /**
+     * Get <em>used</em> <code>Resource</code> on the node.
+     * @return <em>used</em> <code>Resource</code> on the node
+     */
+    @Public
+    @Stable
+    public abstract Resource getUsed();
+
+    @Private
+    @Unstable
+    public abstract void setUsed(Resource used);
+
+    /**
+     * Get the <em>total</em> <code>Resource</code> on the node.
+     * @return <em>total</em> <code>Resource</code> on the node
+     */
+    @Public
+    @Stable
+    public abstract Resource getCapability();
+
+    @Private
+    @Unstable
+    public abstract void setCapability(Resource capability);
+
+    /**
+     * Get the <em>number of allocated containers</em> on the node.
+     * @return <em>number of allocated containers</em> on the node
+     */
+    @Private
+    @Unstable
+    public abstract int getNumContainers();
+
+    @Private
+    @Unstable
+    public abstract void setNumContainers(int numContainers);
+
+
+    /**
+     * Get the <em>diagnostic health report</em> of the node.
+     * @return <em>diagnostic health report</em> of the node
+     */
+    @Public
+    @Stable
+    public abstract String getHealthReport();
+
+    @Private
+    @Unstable
+    public abstract void setHealthReport(String healthReport);
+
+    /**
+     * Get the <em>last timestamp</em> at which the health report was received.
+     * @return <em>last timestamp</em> at which the health report was received
+     */
+    @Public
+    @Stable
+    public abstract long getLastHealthReportTime();
+
+    @Private
+    @Unstable
+    public abstract void setLastHealthReportTime(long lastHealthReport);
 }

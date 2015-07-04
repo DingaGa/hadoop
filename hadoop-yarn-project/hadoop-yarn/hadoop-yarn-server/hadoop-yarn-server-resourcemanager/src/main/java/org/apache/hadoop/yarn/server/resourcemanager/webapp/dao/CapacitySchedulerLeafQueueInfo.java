@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,72 +27,74 @@ import org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.LeafQueu
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CapacitySchedulerLeafQueueInfo extends CapacitySchedulerQueueInfo {
 
-  protected int numActiveApplications;
-  protected int numPendingApplications;
-  protected int numContainers;
-  protected int maxApplications;
-  protected int maxApplicationsPerUser;
-  protected int maxActiveApplications;
-  protected int maxActiveApplicationsPerUser;
-  protected int userLimit;
-  protected UsersInfo users; // To add another level in the XML
-  protected float userLimitFactor;
+    protected int numActiveApplications;
+    protected int numPendingApplications;
+    protected int numContainers;
+    protected int maxApplications;
+    protected int maxApplicationsPerUser;
+    protected int maxActiveApplications;
+    protected int maxActiveApplicationsPerUser;
+    protected int userLimit;
+    protected UsersInfo users; // To add another level in the XML
+    protected float userLimitFactor;
 
-  CapacitySchedulerLeafQueueInfo() {
-  };
+    CapacitySchedulerLeafQueueInfo() {
+    }
 
-  CapacitySchedulerLeafQueueInfo(LeafQueue q) {
-    super(q);
-    numActiveApplications = q.getNumActiveApplications();
-    numPendingApplications = q.getNumPendingApplications();
-    numContainers = q.getNumContainers();
-    maxApplications = q.getMaxApplications();
-    maxApplicationsPerUser = q.getMaxApplicationsPerUser();
-    maxActiveApplications = q.getMaximumActiveApplications();
-    maxActiveApplicationsPerUser = q.getMaximumActiveApplicationsPerUser();
-    userLimit = q.getUserLimit();
-    users = new UsersInfo(q.getUsers());
-    userLimitFactor = q.getUserLimitFactor();
-  }
+    ;
 
-  public int getNumActiveApplications() {
-    return numActiveApplications;
-  }
+    CapacitySchedulerLeafQueueInfo(LeafQueue q) {
+        super(q);
+        numActiveApplications = q.getNumActiveApplications();
+        numPendingApplications = q.getNumPendingApplications();
+        numContainers = q.getNumContainers();
+        maxApplications = q.getMaxApplications();
+        maxApplicationsPerUser = q.getMaxApplicationsPerUser();
+        maxActiveApplications = q.getMaximumActiveApplications();
+        maxActiveApplicationsPerUser = q.getMaximumActiveApplicationsPerUser();
+        userLimit = q.getUserLimit();
+        users = new UsersInfo(q.getUsers());
+        userLimitFactor = q.getUserLimitFactor();
+    }
 
-  public int getNumPendingApplications() {
-    return numPendingApplications;
-  }
+    public int getNumActiveApplications() {
+        return numActiveApplications;
+    }
 
-  public int getNumContainers() {
-    return numContainers;
-  }
+    public int getNumPendingApplications() {
+        return numPendingApplications;
+    }
 
-  public int getMaxApplications() {
-    return maxApplications;
-  }
+    public int getNumContainers() {
+        return numContainers;
+    }
 
-  public int getMaxApplicationsPerUser() {
-    return maxApplicationsPerUser;
-  }
+    public int getMaxApplications() {
+        return maxApplications;
+    }
 
-  public int getMaxActiveApplications() {
-    return maxActiveApplications;
-  }
+    public int getMaxApplicationsPerUser() {
+        return maxApplicationsPerUser;
+    }
 
-  public int getMaxActiveApplicationsPerUser() {
-    return maxActiveApplicationsPerUser;
-  }
+    public int getMaxActiveApplications() {
+        return maxActiveApplications;
+    }
 
-  public int getUserLimit() {
-    return userLimit;
-  }
+    public int getMaxActiveApplicationsPerUser() {
+        return maxActiveApplicationsPerUser;
+    }
 
-  //Placing here because of JERSEY-1199
-  public UsersInfo getUsers() {
-    return users;
-  }
+    public int getUserLimit() {
+        return userLimit;
+    }
 
-  public float getUserLimitFactor() {
-    return userLimitFactor;
-  }
+    //Placing here because of JERSEY-1199
+    public UsersInfo getUsers() {
+        return users;
+    }
+
+    public float getUserLimitFactor() {
+        return userLimitFactor;
+    }
 }

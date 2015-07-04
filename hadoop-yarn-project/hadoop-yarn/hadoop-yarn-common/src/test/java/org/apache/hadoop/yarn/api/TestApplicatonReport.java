@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,38 +29,38 @@ import org.junit.Test;
 
 public class TestApplicatonReport {
 
-  @Test
-  public void testApplicationReport() {
-    long timestamp = System.currentTimeMillis();
-    ApplicationReport appReport1 =
-        createApplicationReport(1, 1, timestamp);
-    ApplicationReport appReport2 =
-        createApplicationReport(1, 1, timestamp);
-    ApplicationReport appReport3 =
-        createApplicationReport(1, 1, timestamp);
-    Assert.assertEquals(appReport1, appReport2);
-    Assert.assertEquals(appReport2, appReport3);
-    appReport1.setApplicationId(null);
-    Assert.assertNull(appReport1.getApplicationId());
-    Assert.assertNotSame(appReport1, appReport2);
-    appReport2.setCurrentApplicationAttemptId(null);
-    Assert.assertNull(appReport2.getCurrentApplicationAttemptId());
-    Assert.assertNotSame(appReport2, appReport3);
-    Assert.assertNull(appReport1.getAMRMToken());
-  }
+    @Test
+    public void testApplicationReport() {
+        long timestamp = System.currentTimeMillis();
+        ApplicationReport appReport1 =
+                createApplicationReport(1, 1, timestamp);
+        ApplicationReport appReport2 =
+                createApplicationReport(1, 1, timestamp);
+        ApplicationReport appReport3 =
+                createApplicationReport(1, 1, timestamp);
+        Assert.assertEquals(appReport1, appReport2);
+        Assert.assertEquals(appReport2, appReport3);
+        appReport1.setApplicationId(null);
+        Assert.assertNull(appReport1.getApplicationId());
+        Assert.assertNotSame(appReport1, appReport2);
+        appReport2.setCurrentApplicationAttemptId(null);
+        Assert.assertNull(appReport2.getCurrentApplicationAttemptId());
+        Assert.assertNotSame(appReport2, appReport3);
+        Assert.assertNull(appReport1.getAMRMToken());
+    }
 
-  protected static ApplicationReport createApplicationReport(
-      int appIdInt, int appAttemptIdInt, long timestamp) {
-    ApplicationId appId = ApplicationId.newInstance(timestamp, appIdInt);
-    ApplicationAttemptId appAttemptId =
-        ApplicationAttemptId.newInstance(appId, appAttemptIdInt);
-    ApplicationReport appReport =
-        ApplicationReport.newInstance(appId, appAttemptId, "user", "queue",
-          "appname", "host", 124, null, YarnApplicationState.FINISHED,
-          "diagnostics", "url", 0, 0, FinalApplicationStatus.SUCCEEDED, null,
-          "N/A", 0.53789f, YarnConfiguration.DEFAULT_APPLICATION_TYPE, null);
-    return appReport;
-  }
+    protected static ApplicationReport createApplicationReport(
+            int appIdInt, int appAttemptIdInt, long timestamp) {
+        ApplicationId appId = ApplicationId.newInstance(timestamp, appIdInt);
+        ApplicationAttemptId appAttemptId =
+                ApplicationAttemptId.newInstance(appId, appAttemptIdInt);
+        ApplicationReport appReport =
+                ApplicationReport.newInstance(appId, appAttemptId, "user", "queue",
+                        "appname", "host", 124, null, YarnApplicationState.FINISHED,
+                        "diagnostics", "url", 0, 0, FinalApplicationStatus.SUCCEEDED, null,
+                        "N/A", 0.53789f, YarnConfiguration.DEFAULT_APPLICATION_TYPE, null);
+        return appReport;
+    }
 
 }
 

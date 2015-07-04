@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,54 +35,54 @@ import com.google.protobuf.ServiceException;
 @InterfaceAudience.Private
 @InterfaceStability.Stable
 public class ZKFCProtocolServerSideTranslatorPB implements
-    ZKFCProtocolPB {
-  private final ZKFCProtocol server;
-  
-  public ZKFCProtocolServerSideTranslatorPB(ZKFCProtocol server) {
-    this.server = server;
-  }
+        ZKFCProtocolPB {
+    private final ZKFCProtocol server;
 
-  @Override
-  public CedeActiveResponseProto cedeActive(RpcController controller,
-      CedeActiveRequestProto request) throws ServiceException {
-    try {
-      server.cedeActive(request.getMillisToCede());
-      return CedeActiveResponseProto.getDefaultInstance();
-    } catch (IOException e) {
-      throw new ServiceException(e);
-    }
-  }
-
-  @Override
-  public GracefulFailoverResponseProto gracefulFailover(
-      RpcController controller, GracefulFailoverRequestProto request)
-      throws ServiceException {
-    try {
-      server.gracefulFailover();
-      return GracefulFailoverResponseProto.getDefaultInstance();
-    } catch (IOException e) {
-      throw new ServiceException(e);
-    }
-  }
-
-  @Override
-  public long getProtocolVersion(String protocol, long clientVersion)
-      throws IOException {
-    return RPC.getProtocolVersion(ZKFCProtocolPB.class);
-  }
-
-  @Override
-  public ProtocolSignature getProtocolSignature(String protocol,
-      long clientVersion, int clientMethodsHash) throws IOException {
-    if (!protocol.equals(RPC.getProtocolName(ZKFCProtocolPB.class))) {
-      throw new IOException("Serverside implements " +
-          RPC.getProtocolName(ZKFCProtocolPB.class) +
-          ". The following requested protocol is unknown: " + protocol);
+    public ZKFCProtocolServerSideTranslatorPB(ZKFCProtocol server) {
+        this.server = server;
     }
 
-    return ProtocolSignature.getProtocolSignature(clientMethodsHash,
-        RPC.getProtocolVersion(ZKFCProtocolPB.class),
-        HAServiceProtocolPB.class);
-  }
+    @Override
+    public CedeActiveResponseProto cedeActive(RpcController controller,
+                                              CedeActiveRequestProto request) throws ServiceException {
+        try {
+            server.cedeActive(request.getMillisToCede());
+            return CedeActiveResponseProto.getDefaultInstance();
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public GracefulFailoverResponseProto gracefulFailover(
+            RpcController controller, GracefulFailoverRequestProto request)
+            throws ServiceException {
+        try {
+            server.gracefulFailover();
+            return GracefulFailoverResponseProto.getDefaultInstance();
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public long getProtocolVersion(String protocol, long clientVersion)
+            throws IOException {
+        return RPC.getProtocolVersion(ZKFCProtocolPB.class);
+    }
+
+    @Override
+    public ProtocolSignature getProtocolSignature(String protocol,
+                                                  long clientVersion, int clientMethodsHash) throws IOException {
+        if (!protocol.equals(RPC.getProtocolName(ZKFCProtocolPB.class))) {
+            throw new IOException("Serverside implements " +
+                    RPC.getProtocolName(ZKFCProtocolPB.class) +
+                    ". The following requested protocol is unknown: " + protocol);
+        }
+
+        return ProtocolSignature.getProtocolSignature(clientMethodsHash,
+                RPC.getProtocolVersion(ZKFCProtocolPB.class),
+                HAServiceProtocolPB.class);
+    }
 
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,54 +40,54 @@ import com.google.common.annotations.VisibleForTesting;
 @Private
 public class TimelineACLsManager {
 
-  private static final Log LOG = LogFactory.getLog(TimelineACLsManager.class);
+    private static final Log LOG = LogFactory.getLog(TimelineACLsManager.class);
 
-  private AdminACLsManager adminAclsManager;
+    private AdminACLsManager adminAclsManager;
 
-  public TimelineACLsManager(Configuration conf) {
-    this.adminAclsManager = new AdminACLsManager(conf);
-  }
-
-  public boolean checkAccess(UserGroupInformation callerUGI,
-      TimelineEntity entity) throws YarnException, IOException {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Verifying the access of "
-          + (callerUGI == null ? null : callerUGI.getShortUserName())
-          + " on the timeline entity "
-          + new EntityIdentifier(entity.getEntityId(), entity.getEntityType()));
+    public TimelineACLsManager(Configuration conf) {
+        this.adminAclsManager = new AdminACLsManager(conf);
     }
 
-    if (!adminAclsManager.areACLsEnabled()) {
-      return true;
+    public boolean checkAccess(UserGroupInformation callerUGI,
+                               TimelineEntity entity) throws YarnException, IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Verifying the access of "
+                    + (callerUGI == null ? null : callerUGI.getShortUserName())
+                    + " on the timeline entity "
+                    + new EntityIdentifier(entity.getEntityId(), entity.getEntityType()));
+        }
+
+        if (!adminAclsManager.areACLsEnabled()) {
+            return true;
+        }
+
+        Set<Object> values =
+                entity.getPrimaryFilters().get(
+                        SystemFilter.ENTITY_OWNER.toString());
+        if (values == null || values.size() != 1) {
+            throw new YarnException("Owner information of the timeline entity "
+                    + new EntityIdentifier(entity.getEntityId(), entity.getEntityType())
+                    + " is corrupted.");
+        }
+        String owner = values.iterator().next().toString();
+        // TODO: Currently we just check the user is the admin or the timeline
+        // entity owner. In the future, we need to check whether the user is in the
+        // allowed user/group list
+        if (callerUGI != null
+                && (adminAclsManager.isAdmin(callerUGI) ||
+                callerUGI.getShortUserName().equals(owner))) {
+            return true;
+        }
+        return false;
     }
 
-    Set<Object> values =
-        entity.getPrimaryFilters().get(
-            SystemFilter.ENTITY_OWNER.toString());
-    if (values == null || values.size() != 1) {
-      throw new YarnException("Owner information of the timeline entity "
-          + new EntityIdentifier(entity.getEntityId(), entity.getEntityType())
-          + " is corrupted.");
+    @Private
+    @VisibleForTesting
+    public AdminACLsManager
+    setAdminACLsManager(AdminACLsManager adminAclsManager) {
+        AdminACLsManager oldAdminACLsManager = this.adminAclsManager;
+        this.adminAclsManager = adminAclsManager;
+        return oldAdminACLsManager;
     }
-    String owner = values.iterator().next().toString();
-    // TODO: Currently we just check the user is the admin or the timeline
-    // entity owner. In the future, we need to check whether the user is in the
-    // allowed user/group list
-    if (callerUGI != null
-        && (adminAclsManager.isAdmin(callerUGI) ||
-            callerUGI.getShortUserName().equals(owner))) {
-      return true;
-    }
-    return false;
-  }
-
-  @Private
-  @VisibleForTesting
-  public AdminACLsManager
-      setAdminACLsManager(AdminACLsManager adminAclsManager) {
-    AdminACLsManager oldAdminACLsManager = this.adminAclsManager;
-    this.adminAclsManager = adminAclsManager;
-    return oldAdminACLsManager;
-  }
 
 }

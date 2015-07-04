@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,16 +26,16 @@ import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;
 import org.apache.hadoop.security.token.Token;
 
 public interface RemotePeerFactory {
-  /**
-   * @param addr          The address to connect to.
-   * @param blockToken    Token used during optional SASL negotiation
-   * @param datanodeId    ID of destination DataNode
-   * @return              A new Peer connected to the address.
-   *
-   * @throws IOException  If there was an error connecting or creating 
-   *                      the remote socket, encrypted stream, etc.
-   */
-  Peer newConnectedPeer(InetSocketAddress addr,
-      Token<BlockTokenIdentifier> blockToken, DatanodeID datanodeId)
-      throws IOException;
+    /**
+     * @param addr          The address to connect to.
+     * @param blockToken    Token used during optional SASL negotiation
+     * @param datanodeId    ID of destination DataNode
+     * @return A new Peer connected to the address.
+     *
+     * @throws IOException  If there was an error connecting or creating
+     *                      the remote socket, encrypted stream, etc.
+     */
+    Peer newConnectedPeer(InetSocketAddress addr,
+                          Token<BlockTokenIdentifier> blockToken, DatanodeID datanodeId)
+            throws IOException;
 }

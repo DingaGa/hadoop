@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,37 +26,37 @@ import org.apache.hadoop.oncrpc.XDR;
  * RENAME3 Request
  */
 public class RENAME3Request {
-  private final FileHandle fromDirHandle;
-  private final String fromName;
-  private final FileHandle toDirHandle;
-  private final String toName;
-  
-  public RENAME3Request(XDR xdr) throws IOException {
-    fromDirHandle = new FileHandle();
-    if (!fromDirHandle.deserialize(xdr)) {
-      throw new IOException("can't deserialize file handle");
+    private final FileHandle fromDirHandle;
+    private final String fromName;
+    private final FileHandle toDirHandle;
+    private final String toName;
+
+    public RENAME3Request(XDR xdr) throws IOException {
+        fromDirHandle = new FileHandle();
+        if (!fromDirHandle.deserialize(xdr)) {
+            throw new IOException("can't deserialize file handle");
+        }
+        fromName = xdr.readString();
+        toDirHandle = new FileHandle();
+        if (!toDirHandle.deserialize(xdr)) {
+            throw new IOException("can't deserialize file handle");
+        }
+        toName = xdr.readString();
     }
-    fromName = xdr.readString();
-    toDirHandle = new FileHandle();
-    if (!toDirHandle.deserialize(xdr)) {
-      throw new IOException("can't deserialize file handle");
+
+    public FileHandle getFromDirHandle() {
+        return fromDirHandle;
     }
-    toName = xdr.readString();
-  }
-  
-  public FileHandle getFromDirHandle() {
-    return fromDirHandle;
-  }
 
-  public String getFromName() {
-    return fromName;
-  }
+    public String getFromName() {
+        return fromName;
+    }
 
-  public FileHandle getToDirHandle() {
-    return toDirHandle;
-  }
+    public FileHandle getToDirHandle() {
+        return toDirHandle;
+    }
 
-  public String getToName() {
-    return toName;
-  }
+    public String getToName() {
+        return toName;
+    }
 }

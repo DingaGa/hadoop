@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,96 +32,96 @@ import com.google.common.annotations.VisibleForTesting;
  * READDIR3 Response
  */
 public class READDIR3Response extends NFS3Response {
-  private final Nfs3FileAttributes postOpDirAttr;
-  private final long cookieVerf;
-  private final DirList3 dirList;
+    private final Nfs3FileAttributes postOpDirAttr;
+    private final long cookieVerf;
+    private final DirList3 dirList;
 
-  public static class Entry3 {
-    private final long fileId;
-    private final String name;
-    private final long cookie;
-    
-    public Entry3(long fileId, String name, long cookie) {
-      this.fileId = fileId;
-      this.name = name;
-      this.cookie = cookie;
+    public static class Entry3 {
+        private final long fileId;
+        private final String name;
+        private final long cookie;
+
+        public Entry3(long fileId, String name, long cookie) {
+            this.fileId = fileId;
+            this.name = name;
+            this.cookie = cookie;
+        }
+
+        long getFileId() {
+            return fileId;
+        }
+
+        @VisibleForTesting
+        public String getName() {
+            return name;
+        }
+
+        long getCookie() {
+            return cookie;
+        }
     }
 
-    long getFileId() {
-      return fileId;
+    public static class DirList3 {
+        final List<Entry3> entries;
+        final boolean eof;
+
+        public DirList3(Entry3[] entries, boolean eof) {
+            this.entries = Collections.unmodifiableList(Arrays.asList(entries));
+            this.eof = eof;
+        }
+
+        @VisibleForTesting
+        public List<Entry3> getEntries() {
+            return this.entries;
+        }
     }
 
-    @VisibleForTesting
-    public String getName() {
-      return name;
+    public READDIR3Response(int status) {
+        this(status, new Nfs3FileAttributes());
     }
 
-    long getCookie() {
-      return cookie;
+    public READDIR3Response(int status, Nfs3FileAttributes postOpAttr) {
+        this(status, postOpAttr, 0, null);
     }
-  }
 
-  public static class DirList3 {
-    final List<Entry3> entries;
-    final boolean eof;
-    
-    public DirList3(Entry3[] entries, boolean eof) {
-      this.entries = Collections.unmodifiableList(Arrays.asList(entries));
-      this.eof = eof;
+    public READDIR3Response(int status, Nfs3FileAttributes postOpAttr,
+                            final long cookieVerf, final DirList3 dirList) {
+        super(status);
+        this.postOpDirAttr = postOpAttr;
+        this.cookieVerf = cookieVerf;
+        this.dirList = dirList;
     }
-    
-    @VisibleForTesting
-    public List<Entry3> getEntries() {
-      return this.entries;
+
+    public Nfs3FileAttributes getPostOpAttr() {
+        return postOpDirAttr;
     }
-  }
 
-  public READDIR3Response(int status) {
-    this(status, new Nfs3FileAttributes());
-  }
-
-  public READDIR3Response(int status, Nfs3FileAttributes postOpAttr) {
-    this(status, postOpAttr, 0, null); 
-  }
-
-  public READDIR3Response(int status, Nfs3FileAttributes postOpAttr,
-      final long cookieVerf, final DirList3 dirList) {
-    super(status);
-    this.postOpDirAttr = postOpAttr;
-    this.cookieVerf = cookieVerf;
-    this.dirList = dirList;
-  }
-
-  public Nfs3FileAttributes getPostOpAttr() {
-    return postOpDirAttr;
-  }
-
-  public long getCookieVerf() {
-    return cookieVerf;
-  }
-
-  public DirList3 getDirList() {
-    return dirList;
-  }
-
-  @Override
-  public XDR writeHeaderAndResponse(XDR xdr, int xid, Verifier verifier) {
-    super.writeHeaderAndResponse(xdr, xid, verifier);
-    xdr.writeBoolean(true); // Attributes follow
-    postOpDirAttr.serialize(xdr);
-
-    if (getStatus() == Nfs3Status.NFS3_OK) {
-      xdr.writeLongAsHyper(cookieVerf);
-      for (Entry3 e : dirList.entries) {
-        xdr.writeBoolean(true); // Value follows
-        xdr.writeLongAsHyper(e.getFileId());
-        xdr.writeString(e.getName());
-        xdr.writeLongAsHyper(e.getCookie());
-      }
-
-      xdr.writeBoolean(false);
-      xdr.writeBoolean(dirList.eof);
+    public long getCookieVerf() {
+        return cookieVerf;
     }
-    return xdr;
-  }
+
+    public DirList3 getDirList() {
+        return dirList;
+    }
+
+    @Override
+    public XDR writeHeaderAndResponse(XDR xdr, int xid, Verifier verifier) {
+        super.writeHeaderAndResponse(xdr, xid, verifier);
+        xdr.writeBoolean(true); // Attributes follow
+        postOpDirAttr.serialize(xdr);
+
+        if (getStatus() == Nfs3Status.NFS3_OK) {
+            xdr.writeLongAsHyper(cookieVerf);
+            for (Entry3 e : dirList.entries) {
+                xdr.writeBoolean(true); // Value follows
+                xdr.writeLongAsHyper(e.getFileId());
+                xdr.writeString(e.getName());
+                xdr.writeLongAsHyper(e.getCookie());
+            }
+
+            xdr.writeBoolean(false);
+            xdr.writeBoolean(dirList.eof);
+        }
+        return xdr;
+    }
 }

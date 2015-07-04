@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,121 +40,121 @@ import org.apache.hadoop.conf.Configuration;
 @InterfaceStability.Stable
 public class CombineFileRecordReader<K, V> implements RecordReader<K, V> {
 
-  static final Class [] constructorSignature = new Class [] 
-                                         {CombineFileSplit.class, 
-                                          Configuration.class, 
-                                          Reporter.class,
-                                          Integer.class};
+    static final Class[] constructorSignature = new Class[]
+            {CombineFileSplit.class,
+                    Configuration.class,
+                    Reporter.class,
+                    Integer.class};
 
-  protected CombineFileSplit split;
-  protected JobConf jc;
-  protected Reporter reporter;
-  protected Class<RecordReader<K, V>> rrClass;
-  protected Constructor<RecordReader<K, V>> rrConstructor;
-  protected FileSystem fs;
-  
-  protected int idx;
-  protected long progress;
-  protected RecordReader<K, V> curReader;
-  
-  public boolean next(K key, V value) throws IOException {
+    protected CombineFileSplit split;
+    protected JobConf jc;
+    protected Reporter reporter;
+    protected Class<RecordReader<K, V>> rrClass;
+    protected Constructor<RecordReader<K, V>> rrConstructor;
+    protected FileSystem fs;
 
-    while ((curReader == null) || !curReader.next(key, value)) {
-      if (!initNextRecordReader()) {
-        return false;
-      }
-    }
-    return true;
-  }
+    protected int idx;
+    protected long progress;
+    protected RecordReader<K, V> curReader;
 
-  public K createKey() {
-    return curReader.createKey();
-  }
-  
-  public V createValue() {
-    return curReader.createValue();
-  }
-  
-  /**
-   * return the amount of data processed
-   */
-  public long getPos() throws IOException {
-    return progress;
-  }
-  
-  public void close() throws IOException {
-    if (curReader != null) {
-      curReader.close();
-      curReader = null;
-    }
-  }
-  
-  /**
-   * return progress based on the amount of data processed so far.
-   */
-  public float getProgress() throws IOException {
-    return Math.min(1.0f,  progress/(float)(split.getLength()));
-  }
-  
-  /**
-   * A generic RecordReader that can hand out different recordReaders
-   * for each chunk in the CombineFileSplit.
-   */
-  public CombineFileRecordReader(JobConf job, CombineFileSplit split, 
-                                 Reporter reporter,
-                                 Class<RecordReader<K, V>> rrClass)
-    throws IOException {
-    this.split = split;
-    this.jc = job;
-    this.rrClass = rrClass;
-    this.reporter = reporter;
-    this.idx = 0;
-    this.curReader = null;
-    this.progress = 0;
+    public boolean next(K key, V value) throws IOException {
 
-    try {
-      rrConstructor = rrClass.getDeclaredConstructor(constructorSignature);
-      rrConstructor.setAccessible(true);
-    } catch (Exception e) {
-      throw new RuntimeException(rrClass.getName() + 
-                                 " does not have valid constructor", e);
-    }
-    initNextRecordReader();
-  }
-  
-  /**
-   * Get the record reader for the next chunk in this CombineFileSplit.
-   */
-  protected boolean initNextRecordReader() throws IOException {
-
-    if (curReader != null) {
-      curReader.close();
-      curReader = null;
-      if (idx > 0) {
-        progress += split.getLength(idx-1);    // done processing so far
-      }
+        while ((curReader == null) || !curReader.next(key, value)) {
+            if (!initNextRecordReader()) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    // if all chunks have been processed, nothing more to do.
-    if (idx == split.getNumPaths()) {
-      return false;
+    public K createKey() {
+        return curReader.createKey();
     }
 
-    reporter.progress();
-
-    // get a record reader for the idx-th chunk
-    try {
-      curReader =  rrConstructor.newInstance(new Object [] 
-                            {split, jc, reporter, Integer.valueOf(idx)});
-
-      // setup some helper config variables.
-      jc.set(JobContext.MAP_INPUT_FILE, split.getPath(idx).toString());
-      jc.setLong(JobContext.MAP_INPUT_START, split.getOffset(idx));
-      jc.setLong(JobContext.MAP_INPUT_PATH, split.getLength(idx));
-    } catch (Exception e) {
-      throw new RuntimeException (e);
+    public V createValue() {
+        return curReader.createValue();
     }
-    idx++;
-    return true;
-  }
+
+    /**
+     * return the amount of data processed
+     */
+    public long getPos() throws IOException {
+        return progress;
+    }
+
+    public void close() throws IOException {
+        if (curReader != null) {
+            curReader.close();
+            curReader = null;
+        }
+    }
+
+    /**
+     * return progress based on the amount of data processed so far.
+     */
+    public float getProgress() throws IOException {
+        return Math.min(1.0f, progress / (float) (split.getLength()));
+    }
+
+    /**
+     * A generic RecordReader that can hand out different recordReaders
+     * for each chunk in the CombineFileSplit.
+     */
+    public CombineFileRecordReader(JobConf job, CombineFileSplit split,
+                                   Reporter reporter,
+                                   Class<RecordReader<K, V>> rrClass)
+            throws IOException {
+        this.split = split;
+        this.jc = job;
+        this.rrClass = rrClass;
+        this.reporter = reporter;
+        this.idx = 0;
+        this.curReader = null;
+        this.progress = 0;
+
+        try {
+            rrConstructor = rrClass.getDeclaredConstructor(constructorSignature);
+            rrConstructor.setAccessible(true);
+        } catch (Exception e) {
+            throw new RuntimeException(rrClass.getName() +
+                    " does not have valid constructor", e);
+        }
+        initNextRecordReader();
+    }
+
+    /**
+     * Get the record reader for the next chunk in this CombineFileSplit.
+     */
+    protected boolean initNextRecordReader() throws IOException {
+
+        if (curReader != null) {
+            curReader.close();
+            curReader = null;
+            if (idx > 0) {
+                progress += split.getLength(idx - 1);    // done processing so far
+            }
+        }
+
+        // if all chunks have been processed, nothing more to do.
+        if (idx == split.getNumPaths()) {
+            return false;
+        }
+
+        reporter.progress();
+
+        // get a record reader for the idx-th chunk
+        try {
+            curReader = rrConstructor.newInstance(new Object[]
+                    {split, jc, reporter, Integer.valueOf(idx)});
+
+            // setup some helper config variables.
+            jc.set(JobContext.MAP_INPUT_FILE, split.getPath(idx).toString());
+            jc.setLong(JobContext.MAP_INPUT_START, split.getOffset(idx));
+            jc.setLong(JobContext.MAP_INPUT_PATH, split.getLength(idx));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        idx++;
+        return true;
+    }
 }
